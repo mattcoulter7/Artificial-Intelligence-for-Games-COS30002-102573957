@@ -1,8 +1,10 @@
-# 2019 AI for Games
+# 2020 AI for Games
 
 ## Who Am I?
 
-TODO: Add your name, student id, and easy email link here, formatted as a unordered list.
+* Name : Matthew Coulter
+* Student ID : 102573957
+* Email : 102573957@student.vid.edu.au; mattcoul7@gmail.com
 
 ## Purpose
 
@@ -11,15 +13,6 @@ TODO: Add your name, student id, and easy email link here, formatted as a unorde
 * The unit teaching staff account for bitbucket is ai4g.swin.repos@gmail.com
 * Make sure that your account has your real name, and uses your swinburne email address. This allows us to find you and your work easily.
 * We have provided a folder structure for the unit tasks. You don't have to use it, but we highly recommend that you do.
-
-## Anything Else?
-
-TODO: You can use this file as a quick way to get to useful locations in your repository, links to resources/notes and other handy details. It is here for you.
-
-TODO: You can delete all the text we have put here to start with, but keep the essential "who am I" details in some form.
-
-A useful "README" file is considered a good practice for shared or world-visible repositories, so it makes sense to get into the
-habit for this unit. However, please keep in mind that this repository should NOT be made visible to the world.
 
 ## Notes
 * Do not share teaching materials provided in this unit online. That include lecture notes, sample code, spike documents, as well as your own work that could be inappropriately used by someone else.
