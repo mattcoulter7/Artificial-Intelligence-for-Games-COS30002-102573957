@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="514px" height="241px" viewBox="0 0 514 241" enable-background="new 0 0 514 241" xml:space="preserve">
+<path fill="none" d="z"/>
+<g>
+	<path pointer-events="stroke" fill="none" stroke="#000000" stroke-miterlimit="10" d="M227,134h113.63"/>
+	<path pointer-events="all" stroke="#000000" stroke-miterlimit="10" d="M345.88,134l-7,3.5l1.75-3.5l-1.75-3.5L345.88,134z"/>
+	<g transform="translate(-0.5 -0.5)">
+		<text transform="matrix(1 0 0 1 241.4561 117)" enable-background="new    "><tspan x="0" y="0" font-family="'Helvetica'" font-size="11">Once the NPC is </tspan><tspan x="0" y="13.2" font-family="'Helvetica'" font-size="11">in reach of the ball</tspan></text>
+	</g>
+	<path pointer-events="all" fill="#FFFFFF" stroke="#000000" d="M113,114h108c3.313,0,6,2.686,6,6v28c0,3.314-2.687,6-6,6H113
+		c-3.313,0-6-2.686-6-6v-28C107,116.686,109.687,114,113,114z"/>
+	<g transform="translate(-0.5 -0.5)">
+		<text transform="matrix(1 0 0 1 124.9736 138)" font-family="'Helvetica'" font-size="12">Running for ball</text>
+	</g>
+	<path pointer-events="all" fill="#FFFFFF" stroke="#000000" d="M353,114h108c3.313,0,6,2.686,6,6v28c0,3.314-2.687,6-6,6H353
+		c-3.313,0-6-2.686-6-6v-28C347,116.686,349.687,114,353,114z"/>
+	<g transform="translate(-0.5 -0.5)">
+		<text transform="matrix(1 0 0 1 368.9785 138)" font-family="'Helvetica'" font-size="12">Hitting the ball</text>
+	</g>
+	<path pointer-events="all" fill="#FFFFFF" stroke="#000000" d="M233,194h108c3.313,0,6,2.686,6,6v28c0,3.314-2.687,6-6,6H233
+		c-3.313,0-6-2.686-6-6v-28C227,196.686,229.687,194,233,194z"/>
+	<g transform="translate(-0.5 -0.5)">
+		<text transform="matrix(1 0 0 1 256.3145 218)" font-family="'Helvetica'" font-size="12">Celebrating</text>
+	</g>
+	<path pointer-events="all" fill="#FFFFFF" stroke="#000000" d="M233,34h108c3.313,0,6,2.686,6,6v28c0,3.314-2.687,6-6,6H233
+		c-3.313,0-6-2.686-6-6V40C227,36.686,229.687,34,233,34z"/>
+	<g transform="translate(-0.5 -0.5)">
+		<text transform="matrix(1 0 0 1 267.2129 58)" font-family="'Helvetica'" font-size="12">Waiting</text>
+	</g>
+	<path pointer-events="stroke" fill="none" stroke="#000000" stroke-miterlimit="10" d="M227,54c-6.667,0-18.333,1.667-35,5
+		s-25,19.543-25,48.63"/>
+	<path pointer-events="all" stroke="#000000" stroke-miterlimit="10" d="M167,112.88l-3.5-7l3.5,1.75l3.5-1.75L167,112.88z"/>
+	<g transform="translate(-0.5 -0.5)">
+		<text transform="matrix(1 0 0 1 112.4077 72)" enable-background="new    "><tspan x="0" y="0" font-family="'Helvetica'" font-size="11">Ball is coming towards </tspan><tspan x="0" y="13.2" font-family="'Helvetica'" font-size="11">NPC but out of reach</tspan></text>
+	</g>
+	<path pointer-events="stroke" fill="none" stroke="#000000" stroke-miterlimit="10" d="M347,54
+		c46.667,6.667,67.083,24.586,61.25,53.76"/>
+	<path pointer-events="all" stroke="#000000" stroke-miterlimit="10" d="M407.22,112.9l-2.06-7.55l3.09,2.41l3.77-1.03L407.22,112.9
+		z"/>
+	<g transform="translate(-0.5 -0.5)">
+		<text transform="matrix(1 0 0 1 380.4082 77)" enable-background="new    "><tspan x="0" y="0" font-family="'Helvetica'" font-size="11">Ball is coming directly</tspan><tspan x="0" y="13.2" font-family="'Helvetica'" font-size="11">towards NPC</tspan></text>
+	</g>
+	<path pointer-events="stroke" fill="none" stroke="#000000" stroke-miterlimit="10" d="M407,154
+		c6.667,33.334-11.233,53.033-53.7,59.1"/>
+	<path pointer-events="all" stroke="#000000" stroke-miterlimit="10" d="M348.11,213.84l6.43-4.449l-1.24,3.709l2.23,3.221
+		L348.11,213.84z"/>
+	<g transform="translate(-0.5 -0.5)">
+		<text transform="matrix(1 0 0 1 302.5449 184.0498)" font-family="'Helvetica'" font-size="11">If the NPC plays a winner to win the point</text>
+	</g>
+	<path pointer-events="stroke" fill="none" stroke="#000000" stroke-miterlimit="10" stroke-dasharray="3,3" d="M467,134
+		c26.667-66.667,18.333-105-25-115s-92.986-5.67-148.96,12.99"/>
+	<path pointer-events="all" stroke="#000000" stroke-miterlimit="10" d="M288.061,33.65l5.529-5.54l-0.55,3.88l2.771,2.76
+		L288.061,33.65z"/>
+	<g transform="translate(-0.5 -0.5)">
+		<text transform="matrix(1 0 0 1 395.7871 28.6099)" enable-background="new    "><tspan x="0" y="0" font-family="'Helvetica'" font-size="11">When the ball is moving</tspan><tspan x="0" y="13.2" font-family="'Helvetica'" font-size="11">away from the NPC</tspan></text>
+	</g>
+	<path pointer-events="stroke" fill="none" stroke="#000000" stroke-miterlimit="10" stroke-dasharray="3,3" d="M227,214
+		c-82.667-13.334-134-33.334-154-60S48,99,58,69s31.667-50,65-60s66.293-2.93,98.88,21.21"/>
+	<path pointer-events="all" stroke="#000000" stroke-miterlimit="10" d="M226.1,33.33l-7.71-1.35l3.49-1.77l0.68-3.85L226.1,33.33z"
+		/>
+	<g transform="translate(-0.5 -0.5)">
+		<text transform="matrix(1 0 0 1 9.3823 117)" font-family="'Helvetica'" font-size="11">After time passing </text>
+	</g>
+</g>
+<path fill="none" d="z"/>
+</svg>
