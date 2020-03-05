@@ -1,0 +1,11 @@
+Name : Matthew Coulter,
+Student_ID : 102573957,
+Unit_Code : COS30002,
+Task_Number : T01,
+Date : 05/03/2020
+
+Release_Notes
+	T01_V01 : Attempted to use Git Bash to push the 25 task folders into the repository. I got stuck with a few commands which resulted in the Vim Console. After pressing I to insert the description and commiting with :wq, it returned sucessful however nothing showed in the repository.
+	T01_V02 : As an alternative, I tried to avoid using Vim, instead using the commmand git commit -m 'test' Whilst this also returns successful, nothing showed up in the repository.
+	T01_V03 : Whilst trying to figure out why this wasn't working, I found online that git bash would not let empty folders to be pushed. So, we filled each folder with the readme file and commited this change. However, the folders would still not show.
+	T01_V04 : The final solution which worked was to use BitBuckets software called Sourcetree which allows Git Bash functionalitiesto be achieved through an interface. This allowed the folders to be commited instantly.
