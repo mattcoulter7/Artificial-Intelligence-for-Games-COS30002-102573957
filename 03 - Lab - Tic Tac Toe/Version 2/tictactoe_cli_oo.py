@@ -84,9 +84,7 @@ class TicTacToe(object):
         '''Get the AI's next move '''
         
         return randrange(9)
-            
-
-        # return input('[0-8] >> ')
+        #return input('[0-8] >> ')
 
     def get_ai_move(self):
         '''Get the AI's next move '''
