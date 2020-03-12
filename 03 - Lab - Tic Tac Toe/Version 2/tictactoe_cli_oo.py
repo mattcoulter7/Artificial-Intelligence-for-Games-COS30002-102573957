@@ -30,6 +30,9 @@ class TicTacToe(object):
 
     HR = '-' * 40
 
+    moves = ""
+    
+
     def __init__(self):
         # class instance variables for game data (were global variables)
         self.board = [' '] * 9
@@ -78,89 +81,29 @@ class TicTacToe(object):
 
     #===========================================================================
     # agent (human or AI) functions
-
     def get_human_move(self):
         '''Get a human players raw input '''
         return input('[0-8] >> ')
 
     def get_ai_move(self):
         '''Get the AI's next move '''
-        # A simple dumb random move - valid or NOT!
-
-        # Note: It is the models responsibility to check for valid moves...
-        exo = ['x','o']
-        # BLOCKING & WINNING
-        # rows
-        for i in exo:
-            if (self.board[0] == i & self.board[1] == i & self.board[2] == ' '):
-                return 2
-            if (self.board[3] == i & self.board[4] == i & self.board[5] == ' '):
-                return 5
-            if (self.board[6] == i & self.board[7] == i & self.board[8] == ' '):
-                return 8
-            
-            if (self.board[0] == i & self.board[2] == i & self.board[1] == ' '):
-                return 1
-            if (self.board[3] == i & self.board[5] == i & self.board[4] == ' '):
-                return 4
-            if (self.board[6] == i & self.board[8] == i & self.board[7] == ' '):
-                return 7
-
-            if (self.board[2] == i & self.board[1] == i & self.board[0] == ' '):
-                return 0
-            if (self.board[5] == i & self.board[4] == i & self.board[3] == ' '):
-                return 3
-            if (self.board[8] == i & self.board[7] == i & self.board[6] == ' '):
-                return 6
-
-            # columns
-            if (self.board[0] == i & self.board[3] == i & self.board[6] == ' '):
-                return 6
-            if (self.board[1] == i & self.board[4] == i & self.board[7] == ' '):
-                return 7
-            if (self.board[2] == i & self.board[5] == i & self.board[8] == ' '):
-                return 8
-
-            if (self.board[0] == i & self.board[6] == i & self.board[3] == ' '):
-                return 3
-            if (self.board[1] == i & self.board[7] == i & self.board[4] == ' '):
-                return 4
-            if (self.board[2] == i & self.board[8] == i & self.board[5] == ' '):
-                return 5
-            
-            if (self.board[6] == i & self.board[3] == i & self.board[0] == ' '):
-                return 0
-            if (self.board[7] == i & self.board[4] == i & self.board[1] == ' '):
-                return 1
-            if (self.board[8] == i & self.board[5] == i & self.board[2] == ' '):
-                return 2
-
-            # diagonals
-            if (self.board[0] == i & self.board[4] == i & self.board[8] == ' '):
-                return 8
-            if (self.board[0] == i & self.board[8] == i & self.board[4] == ' '):
-                return 4
-            if (self.board[8] == i & self.board[5] == i & self.board[0] == ' '):
-                return 0
-
-            if (self.board[2] == i & self.board[4] == i & self.board[6] == ' '):
-                return 6
-            if (self.board[2] == i & self.board[6] == i & self.board[4] == ' '):
-                return 4
-            if (self.board[6] == i & self.board[4] == i & self.board[2] == ' '):
-                return 2
-        # TAKING THE WIN
-        return randrange(9) # [0..8]
-
+        with open('data.txt') as f:
+            datamoves = f.readlines()
+        for i in datamoves:
+            if ('o' in i):
+                if (self.moves in i[0:len(self.moves)]):
+                    return i[1]
+        return randrange(9)
     #===========================================================================
     # Standard trinity of game loop methods (functions)
-
+    
     def process_input(self):
         '''Get the current players next move.'''
         if self.current_player == 'x':
             self.move = self.get_human_move()
         else:
             self.move = self.get_ai_move()
+        
 
     def update_model(self):
         '''If the current players input is a valid move, update the board and check
@@ -175,9 +118,12 @@ class TicTacToe(object):
             self.winner = self._check_for_result()
             # change the current player (regardless of the outcome)
             if self.current_player == 'x':
+                self.moves += str(self.move)
                 self.current_player = 'o'
             else:
+                self.moves += str(self.move)
                 self.current_player = 'x'
+                
         else:
             print('Try again')
 
@@ -218,6 +164,9 @@ class TicTacToe(object):
             print('%s is the WINNER!!!' % self.players[self.winner])
         print(self.HR)
         print('Game over. Goodbye')
+        f = open("data.txt", "a")
+        f.write(self.moves + self.winner + "\n")
+        f.close()
 
 
 #==============================================================================
