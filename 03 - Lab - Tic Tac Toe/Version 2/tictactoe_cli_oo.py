@@ -31,7 +31,6 @@ class TicTacToe(object):
     HR = '-' * 40
 
     moves = ""
-    
 
     def __init__(self):
         # class instance variables for game data (were global variables)
@@ -82,17 +81,24 @@ class TicTacToe(object):
     #===========================================================================
     # agent (human or AI) functions
     def get_human_move(self):
-        '''Get a human players raw input '''
-        return input('[0-8] >> ')
+        '''Get the AI's next move '''
+        
+        return randrange(9)
+            
+
+        # return input('[0-8] >> ')
 
     def get_ai_move(self):
         '''Get the AI's next move '''
+
         with open('data.txt') as f:
             datamoves = f.readlines()
         for i in datamoves:
             if ('o' in i):
                 if (self.moves in i[0:len(self.moves)]):
-                    return i[1]
+                    return randrange(9)
+                    #return i[len(self.moves)]
+        
         return randrange(9)
     #===========================================================================
     # Standard trinity of game loop methods (functions)
@@ -167,15 +173,15 @@ class TicTacToe(object):
         f = open("data.txt", "a")
         f.write(self.moves + self.winner + "\n")
         f.close()
+        
+        
 
 
 #==============================================================================
 # Separate the running of the game using a __name__ test. Allows the use of this
 # file as an imported module
 #==============================================================================
-
-
-if __name__ == '__main__':
+def main():
     # create instance (~ "new") object of type TicTacToe class
     game = TicTacToe()
 
@@ -184,6 +190,14 @@ if __name__ == '__main__':
         game.process_input()
         game.update_model()
         game.render_board()
+        
 
     # Some pretty messages for the result
     game.show_gameresult()
+    main()
+
+if __name__ == '__main__':
+    main()
+    
+    
+    
