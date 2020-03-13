@@ -81,9 +81,83 @@ class TicTacToe(object):
     #===========================================================================
     # agent (human or AI) functions
     def get_human_move(self):
-        '''Get the Player's next move '''
-        return randrange(9)
-        #return input('[0-8] >> ')
+        '''Get Mihai's AI's next move '''
+        corners =  [0, 2, 6, 8]
+
+        symbols = ["o", "x"]
+
+        for j in symbols:
+            space = 0
+            for i in self.board:
+                if(space % 3 == 0) & (self.board[space] == j):
+                    if(self.board[space+2] == j) & (self.board[space+1] == ' '):
+                        return space+1
+                elif((space == 1) | (space ==  4) | (space == 7)) & (self.board[space] == j):
+                    if(self.board[space+1] == j) & (self.board[space-1] == ' '):
+                        return space-1
+                    elif(self.board[space-1] == j) & (self.board[space+1] == ' '):
+                        return space+1
+                if(space < 3) & (self.board[space] == j):
+                    if(self.board[space+6] == j) & (self.board[space+3] == ' '):
+                        return space+3
+                elif((space == 3) | (space ==  4) | (space == 5)) & (self.board[space] == j):
+                    if(self.board[space+3] == j) & (self.board[space-3] == ' '):
+                        return space-3
+                    elif(self.board[space-3] == j) & (self.board[space+3] == ' '):
+                        return space+3
+                if(space in corners) & (self.board[space] == j) & (self.board[4] == j):
+                    if(space == 0) & (self.board[8] == " "):
+                        return 8
+                    if(space == 2) & (self.board[6] == " "):
+                        return 6
+                    if(space == 6) & (self.board[2] == " "):
+                        return 2
+                    if(space == 8) & (self.board[0] == " "):
+                        return 0
+                space += 1
+
+        if(self.move == 0):
+            if(self.board[8] == " "):
+                return 8
+        if(self.move == 2):
+            if(self.board[6] == " "):
+                return 6
+        if(self.move == 6):
+            if(self.board[2] == " "):
+                return 2
+        if(self.move == 8):
+            if(self.board[0] == " "):
+                return 0
+
+        if (self.board[4] == ' '):
+            return 4
+
+        if(self.move == 1) | (self.move == 7):
+            if(randrange(2) == 0):
+                if(self.board[self.move - 1] == " "):
+                    return (self.move - 1)
+            else:
+                if(self.board[self.move + 1] == " "):
+                    return (self.move + 1)
+        elif(self.move == 3) | (self.move == 5):
+            if(randrange(2) == 0):
+                if(self.board[self.move - 3] == " "):
+                    return (self.move - 3)
+            else:
+                if(self.board[self.move + 3] == " "):
+                    return (self.move + 3)
+
+        if(self.board[0] != " ") & (self.board[2] != " ") & (self.board[6] != " ") & (self.board[8] != " "):
+            space = randrange(9)
+            while(self.board[space] != " "):
+                space = randrange(9)
+            return space
+        else:
+            corner = 0
+            while(self.board[corner] != " "):
+                x = randrange(len(corners))
+                corner = corners[x]
+            return corner
 
     def get_ai_move(self):
         '''Get the AI's next move '''
@@ -98,9 +172,9 @@ class TicTacToe(object):
                     if (len(self.moves) < len(i)):
                         if (i[len(self.moves) + 1] == 'o'):
                             return i[len(self.moves)]
-                        #if (self.moves in i):
-                            #if (i[len(self.moves)] not in potMoves):
-                               # potMoves.insert(-1,int(i[len(self.moves)]))
+                        if (self.moves in i):
+                            if (i[len(self.moves)] not in potMoves):
+                                potMoves.insert(-1,int(i[len(self.moves)]))
                 if ('x' in i): #avoid a loss
                     if (len(self.moves) < len(i) + 1):
                         if (i[len(self.moves) + 2] == 'x'):
@@ -187,15 +261,10 @@ class TicTacToe(object):
         print(self.HR)
         print('Game over. Goodbye')
 
-        with open('data.txt', "r+") as f:
-            datamoves = f.read().splitlines()
-            if (self.moves + self.winner not in datamoves):
-                f.write(self.moves + self.winner + "\n")
+        with open('1000GamesResult.txt', "a") as f:
+            f.write(self.moves + self.winner + "\n")
         f.close()
         
-        
-
-
 #==============================================================================
 # Separate the running of the game using a __name__ test. Allows the use of this
 # file as an imported module
@@ -216,7 +285,7 @@ if __name__ == '__main__':
         # Some pretty messages for the result
         game.show_gameresult()
 
-        if(gameCount < 100000):
+        if(gameCount < 1000):
             game = TicTacToe()
             gameCount += 1
         else:
