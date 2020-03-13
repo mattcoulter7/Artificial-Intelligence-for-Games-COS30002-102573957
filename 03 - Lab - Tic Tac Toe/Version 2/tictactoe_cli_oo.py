@@ -83,21 +83,32 @@ class TicTacToe(object):
     def get_human_move(self):
         '''Get the AI's next move '''
         
-        return randrange(9)
-        #return input('[0-8] >> ')
+        #return randrange(9)
+        return input('[0-8] >> ')
 
     def get_ai_move(self):
         '''Get the AI's next move '''
-
+        avoidMoves = []
+        allMoves = [0,1,2,3,4,5,6,7,8]
+        goodMoves = []
         with open('data.txt') as f:
             datamoves = f.readlines()
         for i in datamoves:
-            if ('o' in i):
+            if ('o' in i): #if winning outcome exists, play appropriate move
                 if (self.moves in i[0:len(self.moves)]):
-                    return randrange(9)
-                    #return i[len(self.moves)]
+                    goodMoves.insert(-1,i[len(self.moves)])
+            elif ('tie' in i): #if tie exists, play appropriate move
+                if (self.moves in i[0:len(self.moves)]):
+                    goodMoves.insert(-1,i[len(self.moves)])
+            elif ('x' in i): #if a move leads to a loss, don't play it
+                if (self.moves in i[0:len(self.moves)]):
+                    avoidMoves.insert(-1,i[len(self.moves)])
+                for j in avoidMoves:
+                    if (j in allMoves):
+                        allMoves.remove(j)
+                goodMoves.Insert(allMoves[randrange(len(allMoves))])
+        return goodMoves[randrange(len(goodMoves))]
         
-        return randrange(9)
     #===========================================================================
     # Standard trinity of game loop methods (functions)
     
