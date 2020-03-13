@@ -261,15 +261,10 @@ class TicTacToe(object):
         print(self.HR)
         print('Game over. Goodbye')
 
-        with open('data.txt', "r+") as f:
-            datamoves = f.read().splitlines()
-            if (self.moves + self.winner not in datamoves):
-                f.write(self.moves + self.winner + "\n")
+        with open('1000GamesResult.txt', "a") as f:
+            f.write(self.moves + self.winner + "\n")
         f.close()
         
-        
-
-
 #==============================================================================
 # Separate the running of the game using a __name__ test. Allows the use of this
 # file as an imported module
