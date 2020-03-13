@@ -82,12 +82,13 @@ class TicTacToe(object):
     # agent (human or AI) functions
     def get_human_move(self):
         '''Get the Player's next move '''
-        return input('[0-8] >> ')
+        return randrange(9)
+        #return input('[0-8] >> ')
 
     def get_ai_move(self):
         '''Get the AI's next move '''
         avoidMoves = []
-        potMoves = []
+        potMoves = [0,1,2,3,4,5,6,7,8]
         with open('data.txt') as f:
             datamoves = f.readlines()
        
@@ -97,9 +98,9 @@ class TicTacToe(object):
                     if (len(self.moves) < len(i)):
                         if (i[len(self.moves) + 1] == 'o'):
                             return i[len(self.moves)]
-                        if (self.moves in i):
-                            if (i[len(self.moves)] not in potMoves):
-                                potMoves.insert(-1,int(i[len(self.moves)]))
+                        #if (self.moves in i):
+                            #if (i[len(self.moves)] not in potMoves):
+                               # potMoves.insert(-1,int(i[len(self.moves)]))
                 if ('x' in i): #avoid a loss
                     if (len(self.moves) < len(i) + 1):
                         if (i[len(self.moves) + 2] == 'x'):
@@ -215,7 +216,7 @@ if __name__ == '__main__':
         # Some pretty messages for the result
         game.show_gameresult()
 
-        if(gameCount < 1000):
+        if(gameCount < 100000):
             game = TicTacToe()
             gameCount += 1
         else:
