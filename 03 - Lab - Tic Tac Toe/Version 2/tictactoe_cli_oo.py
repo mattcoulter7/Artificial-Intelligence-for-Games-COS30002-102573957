@@ -83,31 +83,36 @@ class TicTacToe(object):
     def get_human_move(self):
         '''Get the AI's next move '''
         
-        #return randrange(9)
-        return input('[0-8] >> ')
+        return randrange(9)
+        #return input('[0-8] >> ')
 
     def get_ai_move(self):
         '''Get the AI's next move '''
         avoidMoves = []
-        allMoves = [0,1,2,3,4,5,6,7,8]
-        goodMoves = []
-        with open('dataNew.txt') as f:
+        potMoves = [0,1,2,3,4,5,6,7,8]
+        with open('data.txt') as f:
             datamoves = f.readlines()
+       
         for i in datamoves:
-            if ('o' in i): #if winning outcome exists, play appropriate move
-                if (self.moves in i[0:len(self.moves)]):
-                    goodMoves.insert(-1,i[len(self.moves)])
-            elif ('tie' in i): #if tie exists, play appropriate move
-                if (self.moves in i[0:len(self.moves)]):
-                    goodMoves.insert(-1,i[len(self.moves)])
-            elif ('x' in i): #if a move leads to a loss, don't play it
-                if (self.moves in i[0:len(self.moves)]):
-                    avoidMoves.insert(-1,i[len(self.moves)])
-                for j in avoidMoves:
-                    if (j in allMoves):
-                        allMoves.remove(j)
-                goodMoves.insert(-1,allMoves[randrange(len(allMoves))])
-        return goodMoves[randrange(len(goodMoves))]
+            if (self.moves in i):
+                if ('o' in i): #take a win
+                    if (len(self.moves) < len(i)):
+                        if (i[len(self.moves) + 1] == 'o'):
+                            return i[len(self.moves)]
+                if ('x' in i): #avoid a loss
+                    if (len(self.moves) < len(i) + 1):
+                        if (i[len(self.moves) + 2] == 'x'):
+                            if (i[len(self.moves)] not in avoidMoves):
+                                avoidMoves.insert(-1,int(i[len(self.moves)]))
+
+        if (len(avoidMoves) > 0):
+            for x in avoidMoves:
+                if (x in potMoves):
+                    potMoves.remove(x)
+        if (len(potMoves) > 0):
+            return potMoves[randrange(len(potMoves))]
+        else:
+            return randrange(9)
         
     #===========================================================================
     # Standard trinity of game loop methods (functions)
@@ -179,8 +184,11 @@ class TicTacToe(object):
             print('%s is the WINNER!!!' % self.players[self.winner])
         print(self.HR)
         print('Game over. Goodbye')
-        f = open("test.txt", "a")
-        f.write(self.moves + self.winner + "\n")
+
+        with open('data.txt', "r+") as f:
+            datamoves = f.read().splitlines()
+            if (self.moves + self.winner not in datamoves):
+                f.write(self.moves + self.winner + "\n")
         f.close()
         
         
@@ -206,7 +214,7 @@ if __name__ == '__main__':
         # Some pretty messages for the result
         game.show_gameresult()
 
-        if(gameCount < 200000):
+        if(gameCount < 20000):
             game = TicTacToe()
             gameCount += 1
         else:
