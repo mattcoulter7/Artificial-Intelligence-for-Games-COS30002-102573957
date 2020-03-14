@@ -162,7 +162,7 @@ class TicTacToe(object):
     def get_ai_move(self):
         '''Get the AI's next move '''
         avoidMoves = []
-        potMoves = [0,1,2,3,4,5,6,7,8]
+        potMoves = []
         with open('data.txt') as f:
             datamoves = f.readlines()
        
@@ -285,7 +285,7 @@ if __name__ == '__main__':
         # Some pretty messages for the result
         game.show_gameresult()
 
-        if(gameCount < 1000):
+        if(gameCount < 200):
             game = TicTacToe()
             gameCount += 1
         else:
