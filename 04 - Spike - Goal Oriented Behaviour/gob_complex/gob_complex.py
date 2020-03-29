@@ -31,28 +31,29 @@ VERBOSE = True
 # Global goals with initial values
 goals = {
     'Money': 100, #goal is complete when = 0
-    'Energy': 100, #goal is complete when equal = 0
+    'Motivation': 100, #goal is complete when equal = 0
 }
 
 # Global (read-only) actions and effects
 actions = {
     # Money Focussed
-    'Sell unused belongings': { 'Money': -10, 'Energy': 5}, # chance is the probability of this action actually making money
-    'Get a part time job': { 'Money': -20, 'Energy': 30},
-    'Get a full time job': { 'Money': -40, 'Energy': 70},
-    'Apply for scholarship': { 'Money': -25, 'Energy': 0},
-    'Enter competition': { 'Money': -15, 'Energy': 40},
-    'Invest in stock market': { 'Money': -50, 'Energy': -5},
+    'Sell unused belongings': { 'Money': -10, 'Motivation': 5}, # chance is the probability of this action actually making money
+    'Get a part time job': { 'Money': -20, 'Motivation': 30},
+    'Get a full time job': { 'Money': -40, 'Motivation': 70},
+    'Apply for scholarship': { 'Money': -25, 'Motivation': 0},
+    'Enter competition': { 'Money': -15, 'Motivation': 40},
+    'Invest in stock market': { 'Money': -50, 'Motivation': -5},
 
-    # Energy Focussed
-    'Buy ice cream': { 'Money': 1, 'Energy': -5 },
-    'Go for a walk': { 'Money': 0, 'Energy': -12 },
-    'Relax': { 'Money': 0, 'Energy': -10 },
-    'Watch TV': { 'Money': 0, 'Energy': -15 },
-    'Go to the bar': { 'Money': 2, 'Energy': -20 },
-    'Go on holiday': { 'Money': 6, 'Energy': -80 }
+    # Motivation Focussed
+    'Buy ice cream': { 'Money': 1, 'Motivation': -5 },
+    'Go for a walk': { 'Money': 0, 'Motivation': -12 },
+    'Relax': { 'Money': 0, 'Motivation': -10 },
+    'Watch TV': { 'Money': 0, 'Motivation': -15 },
+    'Go to the bar': { 'Money': 2, 'Motivation': -20 },
+    'Go on holiday': { 'Money': 6, 'Motivation': -80 }
 }
 
+# Global (read-only) probability the AI wants/succeeds a particular action
 probability = {
     'Sell unused belongings': 0.6,
     'Get a part time job': 0.7,
@@ -105,7 +106,7 @@ def determine_canafford(action):
 
     canafford = True
     for g,v in goals.items():
-            if canafford and v + actions[action][g] > 200: # value here (500) is the maximum value for both goals => i.e. money and energy cannot exceed 200
+            if canafford and v + actions[action][g] > 200: # value here (500) is the maximum value for both goals => i.e. money and Motivation cannot exceed 200
                 canafford = False
     return canafford
 
@@ -127,18 +128,24 @@ def action_utility(action, goal):
                 return -actions[action][goal]/actions[action][othergoal]
     return 0
 
+
 def get_mostinsistent():
+    # Finds the goal that needs to be targetted
     best_goal = None
     for key, value in goals.items():
         if best_goal is None or value > goals[best_goal]:
             best_goal = key
     return best_goal
 
+
 def determine_cheapestfinisher(finishingoptions):
+    # Determines the most efficient option to reach zero on a goal
     best_action = None
+    best_diff = None
     for action, result in finishingoptions.items():
-        if best_action is None or result > best_action:
+        if best_action is None or result > best_diff:
             best_action = action
+            best_diff = result
     return best_action
 
 def choose_action():
@@ -173,9 +180,10 @@ def choose_action():
                 if utility > best_utility:
                     best_utility = utility
                     best_action = key
+                    ### If the action results in the goal being less than zero, it is added to a dictionary so the best option can later be calculated
                     if goals[best_goal] + actions[best_action][best_goal] < 0:
-                        potentialoptions[best_action] = goals[best_goal] + actions[best_action][best_goal]
-    emptdic = {}
+                        potentialoptions[best_action] = goals[best_goal] + actions[best_action][best_goal] # Way of insertiung into dictionary
+    emptdic = {} # empty dictionary used for testing if dictionary is empty
     if potentialoptions != emptdic:
         best_action = determine_cheapestfinisher(potentialoptions)
 
