@@ -42,7 +42,7 @@ actions = {
     'Get a full time job': { 'Money': -40, 'Motivation': 70},
     'Apply for scholarship': { 'Money': -25, 'Motivation': 0},
     'Enter competition': { 'Money': -15, 'Motivation': 40},
-    'Invest in stock market': { 'Money': -50, 'Motivation': -5},
+    'Invest in stock market': { 'Money': -50, 'Motivation': 5},
 
     # Motivation Focussed
     'Buy ice cream': { 'Money': 1, 'Motivation': -5 },
