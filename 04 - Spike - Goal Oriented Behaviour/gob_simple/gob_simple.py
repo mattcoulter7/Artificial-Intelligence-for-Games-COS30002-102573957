@@ -30,27 +30,27 @@ VERBOSE = True
 
 # Global goals with initial values
 goals = {
-    'Money': 50, #goal is complete when = 0
+    'Money': 100, #goal is complete when = 0
     'Energy': 100, #goal is complete when equal = 0
 }
 
 # Global (read-only) actions and effects
 actions = {
     # Money Focussed
-    'Sell unused belongings': { 'Money': -0.05, 'Energy': 5}, # chance is the probability of this action actually making money
-    'Get a part time job': { 'Money': -2, 'Energy': 30},
-    'Get a full time job': { 'Money': -40, 'Energy': 70},
-    'Apply for scholarship': { 'Money': -5, 'Energy': 5},
-    'Enter competition': { 'Money': -10, 'Energy': 40},
-    'Invest in stock market': { 'Money': -4, 'Energy': -5},
+    'Sell unused belongings': { 'Money': -0.05}, # chance is the probability of this action actually making money
+    'Get a part time job': { 'Money': -2},
+    'Get a full time job': { 'Money': -40},
+    'Apply for scholarship': { 'Money': -5},
+    'Enter competition': { 'Money': -10},
+    'Invest in stock market': { 'Money': -4},
 
     # Energy Focussed
-    'Buy ice cream': { 'Money': 1, 'Energy': -5 },
+    'Buy ice cream': { 'Energy': -5 },
     'Go for a walk': { 'Energy': -15 },
     'Relax': { 'Energy': -10 },
     'Watch TV': { 'Energy': -8 },
-    'Go to the bar': { 'Money': 2, 'Energy': -20 },
-    'Go on holiday': { 'Money': 8, 'Energy': 80 }
+    'Go to the bar': { 'Energy': -20 },
+    'Go on holiday': { 'Energy': -60 }
 }
 
 

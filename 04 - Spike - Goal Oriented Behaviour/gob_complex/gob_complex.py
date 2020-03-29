@@ -37,37 +37,38 @@ goals = {
 # Global (read-only) actions and effects
 actions = {
     # Money Focussed
-    'Sell unused belongings': { 'Money': -0.05}, # chance is the probability of this action actually making money
-    'Get a part time job': { 'Money': -2},
-    'Get a full time job': { 'Money': -40},
-    'Apply for scholarship': { 'Money': -5},
-    'Enter competition': { 'Money': -10},
-    'Invest in stock market': { 'Money': -4},
+    'Sell unused belongings': { 'Money': -10, 'Energy': 5}, # chance is the probability of this action actually making money
+    'Get a part time job': { 'Money': -20, 'Energy': 30},
+    'Get a full time job': { 'Money': -40, 'Energy': 70},
+    'Apply for scholarship': { 'Money': -25, 'Energy': 5},
+    'Enter competition': { 'Money': -15, 'Energy': 40},
+    'Invest in stock market': { 'Money': -50, 'Energy': -5},
 
     # Energy Focussed
-    'Buy ice cream': { 'Energy': -5 },
-    'Go for a walk': { 'Energy': -15 },
-    'Relax': { 'Energy': -10 },
-    'Watch TV': { 'Energy': -8 },
-    'Go to the bar': { 'Energy': -20 },
-    'Go on holiday': { 'Energy': -60 }
+    'Buy ice cream': { 'Money': 1, 'Energy': -5 },
+    'Go for a walk': { 'Money': 0, 'Energy': -15 },
+    'Relax': { 'Money': 0, 'Energy': -10 },
+    'Watch TV': { 'Money': 0, 'Energy': -8 },
+    'Go to the bar': { 'Money': 2, 'Energy': -20 },
+    'Go on holiday': { 'Money': 6, 'Energy': -80 }
 }
 
 probability = {
     'Sell unused belongings': 0.8,
-    'Get a part time job': 1,
+    'Get a part time job': 0.9,
     'Get a full time job': 0.6,
     'Apply for scholarship': 0.3,
     'Enter competition': 0.35,
     'Invest in stock market': 0.1,
-    'Buy ice cream': 1,
-    'Go for a walk': 1,
-    'Relax': 1,
-    'Watch TV': 1,
-    'Go to the bar': 1,
-    'Go on holiday': 1
+    'Buy ice cream': 0.5,
+    'Go for a walk': 0.5,
+    'Relax': 0.5,
+    'Watch TV': 0.5,
+    'Go to the bar': 0.5,
+    'Go on holiday': 0.5
 }
 
+import random
 
 def apply_action(action):
     '''Change all goal values using this action. An action can change multiple
@@ -77,34 +78,54 @@ def apply_action(action):
     for goal, change in actions[action].items():
         goals[goal] = max(goals[goal] + change, 0)
 
+def action_success(action):
+    '''returns true or false whether the action succeeded.
+    
+    each action has an assigned probability of success (Ln 56).
+    if a random number is above that, the action was a success so the 'money' goal 
+    will be affected.
+    '''
+    
+    attempt = random.uniform(0, 1) # A random number that represents the attempt
+    if attempt < probability[action]:
+        return True
+    return False
+
+def get_othergoal(current_goal):
+    for goal, value in goals.items():
+        if goal != current_goal:
+            return goal
+    return None
+
+def determine_canafford(action):
+    ''' returns a string of the goal that is not the best goal
+    used to calculate utility by considering the negative affect
+    ***ONLY WORKS FOR EXACTLY 2 GOALS
+    '''
+
+    canafford = True
+    for g,v in goals.items():
+            if canafford and v + actions[action][g] > 500: # value here (500) is the maximum value for both goals => i.e. money and energy cannot exceed 200
+                canafford = False
+    return canafford
 
 def action_utility(action, goal):
     '''Return the 'value' of using "action" to achieve "goal".
-
-    For example::
-        action_utility('get raw food', 'Eat')
-
-    returns a number representing the effect that getting raw food has on our
-    'Eat' goal. Larger (more positive) numbers mean the action is more
-    beneficial.
+    
+    Extension
+      - return a higher utility for actions that don't change our goal past zero
+      and/or
+      - take any other (positive or negative) effects of the action into account
+        (you will need to add some other effects to 'actions')
     '''
-    ### Simple version - the utility is the change to the specified goal
+    if action_success(action):
+        othergoal = get_othergoal(goal)
+        if determine_canafford(action):
+            return -actions[action][goal]/actions[action][othergoal]
+    return 0
 
-    if goal in actions[action]:
-        # Is the goal affected by the specified action?
-        return -actions[action][goal]
-    else:
-        # It isn't, so utility is zero.
-        return 0
-
-    ### Extension
-    ###
-    ###  - return a higher utility for actions that don't change our goal past zero
-    ###  and/or
-    ###  - take any other (positive or negative) effects of the action into account
-    ###    (you will need to add some other effects to 'actions')
-
-def get_mostinsistent(best_goal):
+def get_mostinsistent():
+    best_goal = None
     for key, value in goals.items():
         if best_goal is None or value > goals[best_goal]:
             best_goal = key
@@ -112,8 +133,7 @@ def get_mostinsistent(best_goal):
 
 def choose_action():
     # Find the most insistent goal:
-    best_goal = None
-    best_goal = get_mostinsistent(best_goal)
+    best_goal = get_mostinsistent()
 
     if VERBOSE: print('BEST_GOAL:', best_goal, goals[best_goal])
 
@@ -136,7 +156,6 @@ def choose_action():
 
             # Is this new action better than the current action?
             else:
-                pass
                 ### 1. use the "action_utility" function to find the utility value of this action
                 utility = action_utility(key,best_goal)
                 ### 2. If it's the best action to take (utility > best_utility), keep it! (utility and action)
@@ -188,4 +207,5 @@ if __name__ == '__main__':
     print_actions()
 
     run_until_all_goals_zero()
+
 
