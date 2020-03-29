@@ -54,18 +54,18 @@ actions = {
 }
 
 probability = {
-    'Sell unused belongings': 0.8,
-    'Get a part time job': 0.9,
-    'Get a full time job': 0.6,
-    'Apply for scholarship': 0.3,
-    'Enter competition': 0.35,
-    'Invest in stock market': 0.1,
-    'Buy ice cream': 0.5,
-    'Go for a walk': 0.5,
-    'Relax': 0.5,
+    'Sell unused belongings': 0.6,
+    'Get a part time job': 0.7,
+    'Get a full time job': 0.3,
+    'Apply for scholarship': 0.37,
+    'Enter competition': 0.3,
+    'Invest in stock market': 0.25,
+    'Buy ice cream': 0.75,
+    'Go for a walk': 0.75,
+    'Relax': 0.8,
     'Watch TV': 0.5,
-    'Go to the bar': 0.5,
-    'Go on holiday': 0.5
+    'Go to the bar': 0.3,
+    'Go on holiday': 0.4
 }
 
 import random
@@ -105,7 +105,7 @@ def determine_canafford(action):
 
     canafford = True
     for g,v in goals.items():
-            if canafford and v + actions[action][g] > 500: # value here (500) is the maximum value for both goals => i.e. money and energy cannot exceed 200
+            if canafford and v + actions[action][g] > 200: # value here (500) is the maximum value for both goals => i.e. money and energy cannot exceed 200
                 canafford = False
     return canafford
 
@@ -121,7 +121,10 @@ def action_utility(action, goal):
     if action_success(action):
         othergoal = get_othergoal(goal)
         if determine_canafford(action):
-            return -actions[action][goal]/actions[action][othergoal]
+            if actions[action][othergoal] == 0:
+                return -actions[action][goal]/1 # Necessary to avoid divide by zero error
+            else:
+                return -actions[action][goal]/actions[action][othergoal]
     return 0
 
 def get_mostinsistent():
