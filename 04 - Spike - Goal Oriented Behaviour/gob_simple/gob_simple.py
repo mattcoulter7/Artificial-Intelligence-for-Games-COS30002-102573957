@@ -31,26 +31,26 @@ VERBOSE = True
 # Global goals with initial values
 goals = {
     'Money': 100, #goal is complete when = 0
-    'Energy': 100, #goal is complete when equal = 0
+    'Motivation': 100, #goal is complete when equal = 0
 }
 
 # Global (read-only) actions and effects
 actions = {
     # Money Focussed
-    'Sell unused belongings': { 'Money': -0.05}, # chance is the probability of this action actually making money
-    'Get a part time job': { 'Money': -2},
+    'Sell unused belongings': { 'Money': -10}, # chance is the probability of this action actually making money
+    'Get a part time job': { 'Money': -20},
     'Get a full time job': { 'Money': -40},
-    'Apply for scholarship': { 'Money': -5},
-    'Enter competition': { 'Money': -10},
-    'Invest in stock market': { 'Money': -4},
+    'Apply for scholarship': { 'Money': -25},
+    'Enter competition': { 'Money': -15},
+    'Invest in stock market': { 'Money': -50},
 
-    # Energy Focussed
-    'Buy ice cream': { 'Energy': -5 },
-    'Go for a walk': { 'Energy': -15 },
-    'Relax': { 'Energy': -10 },
-    'Watch TV': { 'Energy': -8 },
-    'Go to the bar': { 'Energy': -20 },
-    'Go on holiday': { 'Energy': -60 }
+    # Motivation Focussed
+    'Buy ice cream': { 'Motivation': -5 },
+    'Go for a walk': { 'Motivation': -12 },
+    'Relax': { 'Motivation': -10 },
+    'Watch TV': { 'Motivation': -15 },
+    'Go to the bar': { 'Motivation': -20 },
+    'Go on holiday': { 'Motivation': -80 }
 }
 
 
