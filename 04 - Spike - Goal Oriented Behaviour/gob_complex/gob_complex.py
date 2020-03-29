@@ -40,15 +40,15 @@ actions = {
     'Sell unused belongings': { 'Money': -10, 'Energy': 5}, # chance is the probability of this action actually making money
     'Get a part time job': { 'Money': -20, 'Energy': 30},
     'Get a full time job': { 'Money': -40, 'Energy': 70},
-    'Apply for scholarship': { 'Money': -25, 'Energy': 5},
+    'Apply for scholarship': { 'Money': -25, 'Energy': 0},
     'Enter competition': { 'Money': -15, 'Energy': 40},
     'Invest in stock market': { 'Money': -50, 'Energy': -5},
 
     # Energy Focussed
     'Buy ice cream': { 'Money': 1, 'Energy': -5 },
-    'Go for a walk': { 'Money': 0, 'Energy': -15 },
+    'Go for a walk': { 'Money': 0, 'Energy': -12 },
     'Relax': { 'Money': 0, 'Energy': -10 },
-    'Watch TV': { 'Money': 0, 'Energy': -8 },
+    'Watch TV': { 'Money': 0, 'Energy': -15 },
     'Go to the bar': { 'Money': 2, 'Energy': -20 },
     'Go on holiday': { 'Money': 6, 'Energy': -80 }
 }
@@ -61,7 +61,7 @@ probability = {
     'Enter competition': 0.3,
     'Invest in stock market': 0.25,
     'Buy ice cream': 0.75,
-    'Go for a walk': 0.75,
+    'Go for a walk': 0.5,
     'Relax': 0.8,
     'Watch TV': 0.5,
     'Go to the bar': 0.3,
@@ -134,6 +134,13 @@ def get_mostinsistent():
             best_goal = key
     return best_goal
 
+def determine_cheapestfinisher(finishingoptions):
+    best_action = None
+    for action, result in finishingoptions.items():
+        if best_action is None or result > best_action:
+            best_action = action
+    return best_action
+
 def choose_action():
     # Find the most insistent goal:
     best_goal = get_mostinsistent()
@@ -143,6 +150,7 @@ def choose_action():
     # Find the best (highest utility) action to take.
     best_action = None
     best_utility = None
+    potentialoptions = dict()
     for key, value in actions.items():
         # Note, at this point:
         #  - "key" is the action as a string,
@@ -165,6 +173,11 @@ def choose_action():
                 if utility > best_utility:
                     best_utility = utility
                     best_action = key
+                    if goals[best_goal] + actions[best_action][best_goal] < 0:
+                        potentialoptions[best_action] = goals[best_goal] + actions[best_action][best_goal]
+    emptdic = {}
+    if potentialoptions != emptdic:
+        best_action = determine_cheapestfinisher(potentialoptions)
 
     # Return the "best action"
     return best_action
