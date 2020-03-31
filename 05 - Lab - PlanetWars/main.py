@@ -104,7 +104,7 @@ class PlanetWarsScreenAdapter(object):
 
     def draw(self):
         # draw background
-        #self.bk_sprite.draw()
+        self.bk_sprite.draw()
         # draw planets
         for k, p in self.planets.items():
             self.circle(p.pos, p.radius, color=p.color, filled=True)
@@ -114,7 +114,7 @@ class PlanetWarsScreenAdapter(object):
             p.label.draw()
         # draw fleets
         for k, f in self.fleets.items():
-            # self.circle(f.pos, f.radius, color=COLOR_NAMES['YELLOW'], filled=False)
+            self.circle(f.pos, f.radius, color=COLOR_NAMES['YELLOW'], filled=False)
             self.circle(f.pos, f.radius, color=f.color, filled=False)
             f.label.draw()
 
