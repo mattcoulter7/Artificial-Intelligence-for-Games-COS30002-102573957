@@ -149,3 +149,4 @@ class Player(object):
 
     def _enemy_fleets(self):
         return [(k, f) for k, f in self.fleets.items() if f.owner_id != self.id]
+

@@ -138,7 +138,7 @@ class PlanetWarsScreenAdapter(object):
     def sync_all(self, view_id=0, label_type='num_ships'):
         # todo: only need to update label values and owner colour details of planets
         # recache all planets/fleets
-        if view_id is 0:
+        if view_id == 0:
             planets = self.game.planets
             fleets = self.game.fleets
         else:
@@ -350,3 +350,4 @@ if __name__ == '__main__':
     window = PlanetWarsWindow(gamestate=gamestate, players=players, max_game_length=500)
     app.run()
     window.game.logger.flush()
+

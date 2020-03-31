@@ -68,3 +68,4 @@ class Logger(object):
     def error(self, message):
         ''' Use to log error details. '''
         self._append_message(self._errors, message)
+

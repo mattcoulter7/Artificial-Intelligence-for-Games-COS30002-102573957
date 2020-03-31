@@ -152,3 +152,4 @@ class Fleet(Entity):
         f = Fleet(self.id, self.owner_id, self.num_ships, self.src.copy(), self.dest.copy(), self.progress)
         f.x, f.y, f.turns_remaining = self.x, self.y, self.turns_remaining
         return f
+

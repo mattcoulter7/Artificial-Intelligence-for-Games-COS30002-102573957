@@ -2,9 +2,9 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>63449ff1-eea9-4908-aa3b-51352ee21d96</ProjectGuid>
+    <ProjectGuid>4dca01ae-4259-441e-bade-5ac65eca0327</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>planet_wars.py</StartupFile>
+    <StartupFile>main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -24,11 +24,19 @@
     <Compile Include="bots\Blanko.py" />
     <Compile Include="bots\OneMove.py" />
     <Compile Include="bots\__init__.py" />
-    <Compile Include="entities.py" />
-    <Compile Include="logger.py" />
+    <Compile Include="entities.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="logger.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="main.py" />
-    <Compile Include="planet_wars.py" />
-    <Compile Include="players.py" />
+    <Compile Include="planet_wars.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="players.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bots\" />
