@@ -37,6 +37,9 @@
     <Compile Include="players.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Rando.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bots\" />
