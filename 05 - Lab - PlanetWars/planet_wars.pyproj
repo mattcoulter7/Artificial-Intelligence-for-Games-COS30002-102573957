@@ -37,7 +37,7 @@
     <Compile Include="players.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Rando.py">
+    <Compile Include="bots\Rando.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
