@@ -206,7 +206,7 @@ class PlanetWarsWindow(window.Window):
         self.pen_color = (1, 0, 0, 1.)
         self.stroke = 1.0  # - thickness default
         self.qobj = gluNewQuadric()
-        # gluQuadricDrawStyle(self.qobj, GLU_FILL) #GLU_SILHOUETTE)
+        gluQuadricDrawStyle(self.qobj, GLU_FILL) #GLU_SILHOUETTE)
 
         # prep the fps display and some labels
         self.fps_display = pyglet.window.FPSDisplay(self)
@@ -346,7 +346,7 @@ class PlanetWarsWindow(window.Window):
 
 if __name__ == '__main__':
     gamestate = open('./maps/map5.txt').read()
-    players = ['Blanko', 'OneMove']
+    players = ['MyNewBot', 'OneMove']
     window = PlanetWarsWindow(gamestate=gamestate, players=players, max_game_length=500)
     app.run()
     window.game.logger.flush()

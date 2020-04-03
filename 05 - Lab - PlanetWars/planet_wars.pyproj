@@ -22,6 +22,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="bots\Blanko.py" />
+    <Compile Include="bots\MyNewBot.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="bots\OneMove.py" />
     <Compile Include="bots\__init__.py" />
     <Compile Include="entities.py">
