@@ -122,7 +122,7 @@ def setup_jugs():
 
 if __name__ == "__main__":
     ### 1 Basic testing of methods and operations
-    if True:
+    if False:
         JUG_CFG = [5,3]  # (Die Hard movie version)
         s = setup_jugs()
         print(s)
@@ -132,7 +132,7 @@ if __name__ == "__main__":
         assert s == (5, 0)
         s = fill(s, 1)
         print(s)
-        assert s == (5, 0)
+        assert s == (5, 3)
         print(s)
         # test empty
         s = empty(s, 0)
@@ -140,19 +140,19 @@ if __name__ == "__main__":
         assert s == (0, 3)
         s = empty(s, 1)
         print(s)
-        assert s == (0, 3)
+        assert s == (0, 0)
         # test pour / leftover actions
         s = fill(s, 0)
         assert s == (5, 0)
         s = pour(s, 0, 1)
         print(s)
-        assert s == (2, 5)
+        assert s == (2, 3)
         s = empty(s, 0)
         print(s)
         assert s == (0, 3)
         s = pour(s, 1, 0)
         print(s)
-        assert s == (5, 0)
+        assert s == (3, 0)
         s = fill(s, 1)
         print(s)
         assert s == (3, 3)
@@ -172,13 +172,13 @@ if __name__ == "__main__":
         ### 3 Sequence 1 of moves
         actions = [
             # tuples, string of method to call then arguments to call
-            ('fill',  (0,)),
-            ('pour',  (0, 1)),  # (5,0) poor 1 into 2
-            ('empty', (1,)),  # (2,3) empty 2
-            ('pour',  (0, 1)),  # (2,0) tranfer from 1 to 2
-            ('fill',  (0,)),  # (0,2) fill jug 1
-            # TODO: missing move - see header for sequence.
-            # result should be (4,0)
+            ('fill',  (0,)), # (5,0)
+            ('pour',  (0, 1)), # (2,3)
+            ('empty', (1,)), # (2,0)
+            ('pour',  (0, 1)), # (0,2)
+            ('fill',  (0,)), # (5,2)
+            ('pour',  (0,1)), # (4,3)
+            ('empty',  (1,)) # (4,0)
         ]
 
         # execute the sequence of actions
@@ -191,7 +191,7 @@ if __name__ == "__main__":
         print('Done')
 
     ### 4 Solve using sequence 2
-    if False:
+    if True:
         action_calls = {
             'fill': fill,
             'empty': empty,
@@ -201,13 +201,17 @@ if __name__ == "__main__":
         print('Doing sequence 2 ...')
         actions = [
             # tuples, string of method to call then arguments to call
-            ('fill',  [1]),     # fill jug 2 => (0,3)
-            ('pour',  [1, 0]),  # transfer 2 to jug 1 => (3,0)
-            ###TODO: complete the sequence
-            # result should be (4,0)
+            ('fill',  [1]),  # (0,3)
+            ('pour',  [1, 0]),  # (3,0)
+            ('fill',  [1]),  # (3,3)
+            ('pour',  [1, 0]),  # (5,1)
+            ('empty', [0]),  # (0,1)
+            ('pour',  [1, 0]),  # (1,0)
+            ('fill',  [1]),  # (1,3)
+            ('pour',  [1, 0]),  # (4,0)
         ]
         # run sequence of actions
-        JUG_CFG = [5,3]  # (Die Hard movie version)
+        JUG_CFG = [37,33]  # (Die Hard movie version)
         s = setup_jugs()
         for fn, args in actions:
             #print('Calling...', fn, 'with', args, 'on', s)
@@ -240,14 +244,11 @@ if __name__ == "__main__":
         # For the Die Hard 3 movie two-jug problem ...
         JUG_CFG = [5, 3]
         s = setup_jugs()
-        s_end = (4, 0)
-
-        ###TODO: use a list of valid end_states, not just one
-        #end_states = [(4,0)]
+        end_states = [(4, 0),(4, 1),(4, 2),(4, 3)]
 
         status = 'searching'
         count = 0
-        limit = 4000
+        limit = 400000
         history = []  # history of moves taken
 
         # Search loop
@@ -263,9 +264,11 @@ if __name__ == "__main__":
             print(new_s, end=' ')  # verbose
 
             # if move outcome state is valid (not None) keep it
-            if new_s:
+            # if new state is different to the previous state, keep it
+            if new_s and new_s != s:
+                s = new_s
                 history.append((fn, args))
-                if new_s == s_end:
+                if new_s in end_states:
                     status = 'Success'
 
             # count and stop test
@@ -275,4 +278,3 @@ if __name__ == "__main__":
 
         print()
         print('Result: %s (limit=%d, count=%d, history=%d)' % (status, limit, count, len(history)))
-
