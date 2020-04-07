@@ -1,0 +1,182 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>4dca01ae-4259-441e-bade-5ac65eca0327</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>main.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <Name>planet_wars</Name>
+    <RootNamespace>planet_wars</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="bots\Blanko.py" />
+    <Compile Include="bots\MyNewBot.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="bots\MyNewBotImproved.py" />
+    <Compile Include="bots\OneMove.py" />
+    <Compile Include="bots\__init__.py" />
+    <Compile Include="entities.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="logger.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="main.py" />
+    <Compile Include="planet_wars.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="players.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="bots\Rando.py">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bots\" />
+    <Folder Include="bots\__pycache__\" />
+    <Folder Include="images\" />
+    <Folder Include="logs\" />
+    <Folder Include="maps\" />
+    <Folder Include="__pycache__\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bots\.DS_Store" />
+    <Content Include="bots\__pycache__\Blanko.cpython-37.pyc" />
+    <Content Include="bots\__pycache__\OneMove.cpython-37.pyc" />
+    <Content Include="bots\__pycache__\__init__.cpython-37.pyc" />
+    <Content Include="images\.DS_Store" />
+    <Content Include="images\space.jpg" />
+    <Content Include="logs\.DS_Store" />
+    <Content Include="maps\map0.txt" />
+    <Content Include="maps\map1.txt" />
+    <Content Include="maps\map10.txt" />
+    <Content Include="maps\map100.txt" />
+    <Content Include="maps\map11.txt" />
+    <Content Include="maps\map12.txt" />
+    <Content Include="maps\map13.txt" />
+    <Content Include="maps\map14.txt" />
+    <Content Include="maps\map15.txt" />
+    <Content Include="maps\map16.txt" />
+    <Content Include="maps\map17.txt" />
+    <Content Include="maps\map18.txt" />
+    <Content Include="maps\map19.txt" />
+    <Content Include="maps\map2.txt" />
+    <Content Include="maps\map20.txt" />
+    <Content Include="maps\map21.txt" />
+    <Content Include="maps\map22.txt" />
+    <Content Include="maps\map23.txt" />
+    <Content Include="maps\map24.txt" />
+    <Content Include="maps\map25.txt" />
+    <Content Include="maps\map26.txt" />
+    <Content Include="maps\map27.txt" />
+    <Content Include="maps\map28.txt" />
+    <Content Include="maps\map29.txt" />
+    <Content Include="maps\map3.txt" />
+    <Content Include="maps\map30.txt" />
+    <Content Include="maps\map31.txt" />
+    <Content Include="maps\map32.txt" />
+    <Content Include="maps\map33.txt" />
+    <Content Include="maps\map34.txt" />
+    <Content Include="maps\map35.txt" />
+    <Content Include="maps\map36.txt" />
+    <Content Include="maps\map37.txt" />
+    <Content Include="maps\map38.txt" />
+    <Content Include="maps\map39.txt" />
+    <Content Include="maps\map4.txt" />
+    <Content Include="maps\map40.txt" />
+    <Content Include="maps\map41.txt" />
+    <Content Include="maps\map42.txt" />
+    <Content Include="maps\map43.txt" />
+    <Content Include="maps\map44.txt" />
+    <Content Include="maps\map45.txt" />
+    <Content Include="maps\map46.txt" />
+    <Content Include="maps\map47.txt" />
+    <Content Include="maps\map48.txt" />
+    <Content Include="maps\map49.txt" />
+    <Content Include="maps\map5.txt" />
+    <Content Include="maps\map50.txt" />
+    <Content Include="maps\map51.txt" />
+    <Content Include="maps\map52.txt" />
+    <Content Include="maps\map53.txt" />
+    <Content Include="maps\map54.txt" />
+    <Content Include="maps\map55.txt" />
+    <Content Include="maps\map56.txt" />
+    <Content Include="maps\map57.txt" />
+    <Content Include="maps\map58.txt" />
+    <Content Include="maps\map59.txt" />
+    <Content Include="maps\map6.txt" />
+    <Content Include="maps\map60.txt" />
+    <Content Include="maps\map61.txt" />
+    <Content Include="maps\map62.txt" />
+    <Content Include="maps\map63.txt" />
+    <Content Include="maps\map64.txt" />
+    <Content Include="maps\map65.txt" />
+    <Content Include="maps\map66.txt" />
+    <Content Include="maps\map67.txt" />
+    <Content Include="maps\map68.txt" />
+    <Content Include="maps\map69.txt" />
+    <Content Include="maps\map7.txt" />
+    <Content Include="maps\map70.txt" />
+    <Content Include="maps\map71.txt" />
+    <Content Include="maps\map72.txt" />
+    <Content Include="maps\map73.txt" />
+    <Content Include="maps\map74.txt" />
+    <Content Include="maps\map75.txt" />
+    <Content Include="maps\map76.txt" />
+    <Content Include="maps\map77.txt" />
+    <Content Include="maps\map78.txt" />
+    <Content Include="maps\map79.txt" />
+    <Content Include="maps\map8.txt" />
+    <Content Include="maps\map80.txt" />
+    <Content Include="maps\map81.txt" />
+    <Content Include="maps\map82.txt" />
+    <Content Include="maps\map83.txt" />
+    <Content Include="maps\map84.txt" />
+    <Content Include="maps\map85.txt" />
+    <Content Include="maps\map86.txt" />
+    <Content Include="maps\map87.txt" />
+    <Content Include="maps\map88.txt" />
+    <Content Include="maps\map89.txt" />
+    <Content Include="maps\map9.txt" />
+    <Content Include="maps\map90.txt" />
+    <Content Include="maps\map91.txt" />
+    <Content Include="maps\map92.txt" />
+    <Content Include="maps\map93.txt" />
+    <Content Include="maps\map94.txt" />
+    <Content Include="maps\map95.txt" />
+    <Content Include="maps\map96.txt" />
+    <Content Include="maps\map97.txt" />
+    <Content Include="maps\map98.txt" />
+    <Content Include="maps\map99.txt" />
+    <Content Include="__pycache__\entities.cpython-37.pyc" />
+    <Content Include="__pycache__\entities.cpython-38.pyc" />
+    <Content Include="__pycache__\logger.cpython-37.pyc" />
+    <Content Include="__pycache__\logger.cpython-38.pyc" />
+    <Content Include="__pycache__\planet_wars.cpython-37.pyc" />
+    <Content Include="__pycache__\players.cpython-37.pyc" />
+    <Content Include="__pycache__\players.cpython-38.pyc" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+  <!-- Uncomment the CoreCompile target to enable the Build command in
+       Visual Studio and specify your pre- and post-build commands in
+       the BeforeBuild and AfterBuild targets below. -->
+  <!--<Target Name="CoreCompile" />-->
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+</Project>
