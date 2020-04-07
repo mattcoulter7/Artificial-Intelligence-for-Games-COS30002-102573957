@@ -154,10 +154,13 @@ def solve_using_recursion(n):
     moves = []
     # This is the recursively called "move" function
     def move(n, src, dest, aux):
-        pass
+        if n>0:
+            move(n-1,src,aux,dest)
+            moves.append((src,dest))
+            move(n-1,aux,dest,src)
 
     # generate the recursive sequence stored in moves
-    print('Generating set of moves for %d (2^n - 1 = %d) disks using recusion ... ' % (n, 2**n -1))
+    print('Generating set of moves for %d (2^n - 1 = %d) disks using recursion ... ' % (n, 2**n -1))
     move(n, 0, 2, 1) # standard 3-pole configuration
     print('- moves (%d): %s' % (len(moves), moves) )
 
@@ -204,8 +207,13 @@ def attempt_using_random_moves(n, limit):
         elif count >= limit:
             status = 'Hit Limit. No solution.'
         else:
-            # Raw random sample
-            src, dest = sample([0,1,2],2)
+            # Raw random sample - but reject if it is a reversal
+            # - (no point going backwards all the time...)
+            _src, _dest = history[-1]
+            while True:
+                src,dest = sample([0,1,2],2)
+                if (src != _dest) or (dest != src):
+                    break
 
             # What is the new state using the random src and desk poles
             # - This might return None if move not valid (no src disk exists to move)
@@ -262,7 +270,6 @@ if __name__ == "__main__":
         print_poles_as_text(s3, n)
         print(is_valid_state(s3))
 
-
     ### 2 Perform a sequence of moves
     if True:
         # do a sequence of moves
@@ -270,7 +277,7 @@ if __name__ == "__main__":
         n = 3
         s = init_poles(n)
         print_poles_as_text(s, n)
-        ### 3. Complete the sequence of moves to solve the game
+    ### 3. Complete the sequence of moves to solve the game
         moves = [(0, 2), (0, 1), (2,1),(0,2),(1,0),(1,2),(0,2)]
         for src, dest in moves:
             print('> Moving from', src, 'to', dest)
@@ -279,7 +286,6 @@ if __name__ == "__main__":
             #print(is_valid_state(s))
             print_poles_as_state(s, test_valid=True)
         print('Done.')
-
 
     ### 4 Try to find the solution using random (but valid) guesses for each move
     if True:
