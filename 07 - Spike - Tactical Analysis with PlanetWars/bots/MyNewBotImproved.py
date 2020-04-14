@@ -13,19 +13,23 @@ class MyNewBotImproved(object):
                 # List of AI's planets that have ships to avoid divide by 0
                 haveShips = filter(lambda x: int(x.num_ships) > 0, gameinfo.my_planets.values())
 
+                # Enemy planet with least amount of ships
+                leastships = min(gameinfo.not_my_planets.values(),key = lambda p: p.num_ships)
+
                 # Always send from the planet with the highest value that is closest to the centre
-                src = min(haveShips, default=gameinfo.my_planets.values(), key=lambda p: gameinfo.planets[1].distance_to(p)/p.num_ships)
+                src = min(haveShips, key=lambda p: leastships.distance_to(p)/p.num_ships)
 
                 # Generates a new list containing any ships that our src would be table to cpature considering distance and groth rate
                 lessShips = filter(lambda x: int(x.num_ships+x.distance_to(src)*x.growth_rate) < int(src.num_ships), gameinfo.not_my_planets.values())
                 
+                # Calculates a default destination that is used for when less ships is null
+                defaultdest = max(gameinfo.not_my_planets.values(), key=lambda p: p.num_ships/p.distance_to(src))
+
                 # Chooses destination based off of the highest value that represents the ratio between distance and value is calculated
-                dest = max(lessShips, default=gameinfo.not_my_planets.values(), key=lambda p: p.num_ships/p.distance_to(src))
+                dest = max(lessShips, key=lambda p: p.num_ships/p.distance_to(src),default=defaultdest)
 
                 # launch new fleet if there's enough ships
                 # Sends fleet size calculated by distance away and growth rate to ensure it captures with just enough ships
                 if src.num_ships > 10 and dest is not None:
                     gameinfo.planet_order(src, dest, int(dest.num_ships+(dest.distance_to(src) + 1)*dest.growth_rate))
-
-                # print("Planet %s attacked Planet %s from a distance of %s with %s ships" % (src.id,dest.id,round(src.distance_to(dest)),round(src.num_ships*0.75)))
 

@@ -17,12 +17,13 @@ class MyNewBot(object):
                 # src.num_ships is multiplied by 0.75 as that is the size of the fleet that is being sent out
                 lessShips = filter(lambda x: x.num_ships < round(src.num_ships * 0.75), gameinfo.not_my_planets.values())
                 
+                # Calculates a default destination that is used for when less ships is null
+                defaultdest = max(gameinfo.not_my_planets.values(), key=lambda p: p.num_ships/p.distance_to(src))
+
                 # Chooses destination based off of the highest value that represents the ratio between distance and value is calculated
-                dest = max(lessShips, default=gameinfo.not_my_planets.values(), key=lambda p: p.num_ships/p.distance_to(src))
+                dest = max(lessShips, default=defaultdest, key=lambda p: p.num_ships/p.distance_to(src))
 
                 # launch new fleet if there's enough ships
                 if src.num_ships > 10:
                     gameinfo.planet_order(src, dest, int(src.num_ships * 0.75))
-
-                print("Planet %s attacked Planet %s from a distance of %s with %s ships" % (src.id,dest.id,round(src.distance_to(dest)),round(src.num_ships*0.75)))
 

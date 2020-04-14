@@ -130,6 +130,7 @@ class Player(object):
         '''
         fleetid = uuid.uuid4()
         self.orders.append(('planet', src_planet.id, fleetid, num_ships, dest.id))
+        print(str(src_planet.id) + str(dest.id) + str(num_ships))
         return fleetid
 
     def _my_planets(self):
