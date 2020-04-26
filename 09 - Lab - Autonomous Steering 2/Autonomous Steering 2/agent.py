@@ -38,6 +38,7 @@ class Agent(object):
         # keep a reference to the world object
         self.world = world
         self.mode = mode
+
         # where am i and where am i going? random start pos
         dir = radians(random()*360)
         self.pos = Vector2D(randrange(world.cx), randrange(world.cy))
@@ -56,22 +57,26 @@ class Agent(object):
             Point2D( 1.0,  0.0),
             Point2D(-1.0, -0.6)
         ]
+
         ### path to follow?
         self.path = Path()
         self.randomise_path()
-        self.waypoint_threshold = 50.0
+        self.waypoint_threshold = 40.0
 
-        ### wander details
-        # self.wander_?? ...
+        # NEW WANDER INFO
+        self.wander_target = Vector2D(1, 0)
+        self.wander_dist = 1.0 * scale
+        self.wander_radius = 1.0 * scale
+        self.wander_jitter = 10.0 * scale
+        self.bRadius = scale
 
-        # limits?
+        # Force and speed limiting code
         self.max_speed = 20.0 * scale
-        ## max_force ??
-
+        self.max_force = 500.0
         # debug draw info?
         self.show_info = False
 
-    def calculate(self):
+    def calculate(self,delta):
         # calculate the current steering force
         mode = self.mode
         if mode == 'seek':
@@ -99,10 +104,10 @@ class Agent(object):
         ''' update vehicle position and orientation '''
         # calculate and set self.force to be applied
         ## force = self.calculate()
-        force = self.calculate()  # <-- delta needed for wander
+        force = self.calculate(delta)
         ## limit force? <-- for wander
-        # ...
-        # determin the new accelteration
+        force.truncate(self.max_force)
+        # determine the new acceleration
         self.accel = force / self.mass  # not needed if mass = 1.0
         # new velocity
         self.vel += self.accel * delta
@@ -119,11 +124,6 @@ class Agent(object):
 
     def render(self, color=None):
         ''' Draw the triangle agent with color'''
-        # draw the path if it exists and the mode is follow
-        if self.mode == 'follow_path':
-            ## ...
-            pass
-
         # draw the ship
         egi.set_pen_color(name=self.color)
         pts = self.world.transform_points(self.vehicle_shape, self.pos,
@@ -131,10 +131,23 @@ class Agent(object):
         # draw it!
         egi.closed_shape(pts)
 
+        # draw the path if it exists and the mode is follow
+        if self.mode == 'follow_path':
+            self.path.render()
+
         # draw wander info?
         if self.mode == 'wander':
-            ## ...
-            pass
+            # calculate the center of the wander circle in front of the agent
+            wnd_pos = Vector2D(self.wander_dist, 0)
+            wld_pos = self.world.transform_point(wnd_pos, self.pos, self.heading, self.side)
+            # draw the wander circle
+            egi.green_pen()
+            egi.circle(wld_pos, self.wander_radius)
+            # draw the wander target (little circle on the big circle)
+            egi.red_pen()
+            wnd_pos = (self.wander_target + Vector2D(self.wander_dist, 0))
+            wld_pos = self.world.transform_point(wnd_pos, self.pos, self.heading, self.side)
+            egi.circle(wld_pos, 3)
 
         # add some handy debug drawing info lines - force and velocity
         if self.show_info:
@@ -200,9 +213,24 @@ class Agent(object):
         return Vector2D()
 
     def wander(self, delta):
-        ''' Random wandering using a projected jitter circle. '''
-        ## ...
-        return Vector2D()
+        ''' random wandering using a projected jitter circle '''
+        wt = self.wander_target
+        # this behaviour is dependent on the update rate, so this line must
+        # be included when using time independent framerate.
+        jitter_tts = self.wander_jitter * delta # this time slice
+        # first, add a small random vector to the target's position
+        wt += Vector2D(uniform(-1,1) * jitter_tts, uniform(-1,1) * jitter_tts)
+        # re-project this new vector back on to a unit circle
+        wt.normalise()
+        # increase the length of the vector to the same as the radius
+        # of the wander circle
+        wt *= self.wander_radius
+        # move the target into a position WanderDist in front of the agent
+        target = wt + Vector2D(self.wander_dist, 0)
+        # project the target into world space
+        wld_target = self.world.transform_point(target, self.pos, self.heading, self.side)
+        # and steer towards it
+        return self.seek(wld_target)
 
     def follow_path(self):
         if (self.path.is_finished()):

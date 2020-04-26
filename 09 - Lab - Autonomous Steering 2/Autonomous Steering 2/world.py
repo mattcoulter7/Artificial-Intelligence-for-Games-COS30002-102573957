@@ -30,8 +30,7 @@ class World(object):
     def render(self):
         for agent in self.agents:
             agent.render()
-            if agent.mode == 'follow_path':
-                agent.path.render()
+            
 
         if self.target:
             egi.red_pen()
@@ -73,3 +72,19 @@ class World(object):
         mat.transform_vector2d_list(wld_pts)
         # done
         return wld_pts
+
+    def transform_point(self, point, pos, forward, side):
+        ''' Transform the given single point, using the provided position,
+        and direction (forward and side unit vectors), to object world space. '''
+        # make a copy of the original point (so we don't trash it)
+        wld_pt = point.copy()
+        # create a transformation matrix to perform the operations
+        mat = Matrix33()
+        # rotate
+        mat.rotate_by_vectors_update(forward, side)
+        # and translate
+        mat.translate_update(pos.x, pos.y)
+        # now transform the point (in place)
+        mat.transform_vector2d(wld_pt)
+        # done
+        return wld_pt

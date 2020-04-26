@@ -6,7 +6,7 @@ For class use only. Do not publically share or post this code without permission
 
 '''
 
-from random import random, uniform, randrange
+from random import random, uniform
 from matrix33 import Matrix33
 from vector2d import Vector2D
 from graphics import egi
