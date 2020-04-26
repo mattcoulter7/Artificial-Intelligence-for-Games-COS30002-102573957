@@ -33,8 +33,6 @@ def on_key_press(symbol, modifiers):
     elif symbol == KEY.R:
         for agent in world.agents:
             agent.randomise_path()
-    elif symbol == KEY.P:
-        self.paused = True
 
     ## LAB 09 STEP 1: Reset all paths to new random ones
     # ...
