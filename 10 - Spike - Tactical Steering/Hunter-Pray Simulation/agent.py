@@ -48,9 +48,9 @@ class Agent(object):
         # calculate the current steering force
         mode = self.mode
         if mode == 'flee':
-            force = self.flee(self.world.target)
-        elif mode == 'pursuit':
-            force = self.pursuit(self.world.hunter)
+            force = self.flee(self.world.hunter.pos)
+        elif mode == 'seek':
+            force = self.seek(self.world.target.pos)
         else:
             force = Vector2D()
         self.force = force
@@ -141,29 +141,3 @@ class Agent(object):
             desired_vel = to_target * (speed / dist)
             return (desired_vel - self.vel)
         return Vector2D(0, 0) - self.vel
-
-    def pursuit(self, evader):
-        ''' this behaviour predicts where an agent will be in time T and seeks
-            towards that point to intercept it. '''
-        ## OPTIONAL EXTRA... pursuit (you'll need something to pursue!)
-        return Vector2D()
-
-    def wander(self, delta):
-        ''' random wandering using a projected jitter circle '''
-        wt = self.wander_target
-        # this behaviour is dependent on the update rate, so this line must
-        # be included when using time independent framerate.
-        jitter_tts = self.wander_jitter * delta # this time slice
-        # first, add a small random vector to the target's position
-        wt += Vector2D(uniform(-1,1) * jitter_tts, uniform(-1,1) * jitter_tts)
-        # re-project this new vector back on to a unit circle
-        wt.normalise()
-        # increase the length of the vector to the same as the radius
-        # of the wander circle
-        wt *= self.wander_radius
-        # move the target into a position WanderDist in front of the agent
-        target = wt + Vector2D(self.wander_dist, 0)
-        # project the target into world space
-        wld_target = self.world.transform_point(target, self.pos, self.heading, self.side)
-        # and steer towards it
-        return self.seek(wld_target)

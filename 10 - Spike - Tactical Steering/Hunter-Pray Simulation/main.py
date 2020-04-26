@@ -15,11 +15,7 @@ from pyglet.gl import *
 from vector2d import Vector2D
 from world import World
 from agent import Agent
-
-
-def on_mouse_press(x, y, button, modifiers):
-    if button == 1:  # left
-        world.target = Vector2D(x, y)
+from hiding_object import HideObject
 
 def on_key_press(symbol, modifiers):
     if symbol == KEY.P:
@@ -29,8 +25,6 @@ def on_key_press(symbol, modifiers):
     elif symbol == KEY.I:
         for agent in world.agents:
             agent.show_info = not agent.show_info
-
-
 
 def on_resize(cx, cy):
     world.cx = cx
@@ -43,20 +37,31 @@ if __name__ == '__main__':
     win = window.Window(width=500, height=500, vsync=True, resizable=True)
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
     # needed so that egi knows where to draw
     egi.InitWithPyglet(win)
+
     # prep the fps display
     fps_display = window.FPSDisplay(win)
+
     # register key and mouse event handlers
     win.push_handlers(on_key_press)
-    win.push_handlers(on_mouse_press)
     win.push_handlers(on_resize)
 
     # create a world for agents
     world = World(500, 500)
-    # add one agent
-    world.agents.append(Agent(world,'flee'))
-    world.agents.append(Agent(world,'pursuit'))
+
+    # add hunter and pray agents
+    world.target = Agent(world,'flee')
+    world.hunter = Agent(world,'seek')
+
+    world.agents.append(world.target)
+    world.agents.append(world.hunter)
+
+    # add world objects to hide behind
+    world.hiding_objects.append(HideObject(world))
+    world.hiding_objects.append(HideObject(world))
+
     # unpause the world ready for movement
     world.paused = False
 
