@@ -28,6 +28,7 @@ class Agent(object):
 
     # NOTE: Class Object (not *instance*) variables!
     DECELERATION_SPEEDS = {
+        'slower' : 0.5,
         'slow': 0.9,
         'normal': 1.4,
         'fast': 1.9
@@ -56,7 +57,9 @@ class Agent(object):
             Point2D(-1.0, -0.6)
         ]
         ### path to follow?
-        # self.path = ??
+        self.path = Path()
+        self.randomise_path()
+        self.waypoint_threshold = 50.0
 
         ### wander details
         # self.wander_?? ...
@@ -177,7 +180,7 @@ class Agent(object):
         decel_rate = self.DECELERATION_SPEEDS[speed]
         to_target = target_pos - self.pos
         dist = to_target.length()
-        if dist > 0:
+        if dist > self.waypoint_threshold:
             # calculate the speed required to reach the target given the
             # desired deceleration rate
             speed = dist / decel_rate
@@ -188,28 +191,33 @@ class Agent(object):
             # trouble of calculating its length for dist.
             desired_vel = to_target * (speed / dist)
             return (desired_vel - self.vel)
-        return Vector2D(0, 0)
+        return Vector2D(0, 0) - self.vel
 
     def pursuit(self, evader):
-        ''' this behaviour is similar to seek() but it attempts to arrive at
-            the target position with a zero velocity'''
-        decel_rate = self.DECELERATION_SPEEDS[speed]
-        to_target = target_pos - self.pos
-        dist = to_target.length()
-        if dist > 0:
-            # calculate the speed required to reach the target given the
-            # desired deceleration rate
-            speed = dist / decel_rate
-            # make sure the velocity does not exceed the max
-            speed = min(speed, self.max_speed)
-            # from here proceed just like Seek except we don't need to
-            # normalize the to_target vector because we have already gone to the
-            # trouble of calculating its length for dist.
-            desired_vel = to_target * (speed / dist)
-            return (desired_vel - self.vel)
-        return Vector2D(0, 0)
+        ''' this behaviour predicts where an agent will be in time T and seeks
+            towards that point to intercept it. '''
+        ## OPTIONAL EXTRA... pursuit (you'll need something to pursue!)
+        return Vector2D()
 
     def wander(self, delta):
         ''' Random wandering using a projected jitter circle. '''
         ## ...
         return Vector2D()
+
+    def follow_path(self):
+        if (self.path.is_finished()):
+            # Arrives at the final waypoint 
+            return self.arrive(self.path._pts[-1],'slower')
+        else:
+            # Goes to the current waypoint and increments on arrival
+            to_target = self.path.current_pt() - self.pos
+            dist = to_target.length()
+            if (dist < self.waypoint_threshold):
+                self.path.inc_current_pt()
+            return self.arrive(self.path.current_pt(),'slower')
+
+    def randomise_path(self):
+        cx = self.world.cx
+        cy = self.world.cy
+        margin = min(cx,cy) * 1/6
+        self.path.create_random_path(15, margin, margin, cx - margin, cy - margin)

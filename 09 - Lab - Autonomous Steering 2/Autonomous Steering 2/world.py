@@ -30,6 +30,8 @@ class World(object):
     def render(self):
         for agent in self.agents:
             agent.render()
+            if agent.mode == 'follow_path':
+                agent.path.render()
 
         if self.target:
             egi.red_pen()
@@ -39,6 +41,8 @@ class World(object):
             infotext = ', '.join(set(agent.mode for agent in self.agents))
             egi.white_pen()
             egi.text_at_pos(0, 0, infotext)
+
+        
 
     def wrap_around(self, pos):
         ''' Treat world as a toroidal space. Updates parameter object pos '''

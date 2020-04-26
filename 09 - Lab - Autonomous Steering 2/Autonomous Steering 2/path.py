@@ -6,10 +6,11 @@ For class use only. Do not publically share or post this code without permission
 
 '''
 
-from random import random, uniform
+from random import random, uniform, randrange
 from matrix33 import Matrix33
 from vector2d import Vector2D
 from graphics import egi
+import itertools
 
 from math import pi
 
@@ -118,4 +119,7 @@ class Path(object):
         egi.orange_pen()
         wp = self.current_pt()
         egi.circle(pos=wp, radius=5, slices=32)
+
+        
+
 
