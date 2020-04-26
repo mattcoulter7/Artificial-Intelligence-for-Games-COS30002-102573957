@@ -22,3 +22,7 @@
 08 - Lab - Autonomous Steering 1/Autonomous Steering 1/Autonomous Steering 1.pyproj
 08 - Lab - Autonomous Steering 1/Autonomous Steering 1/Autonomous Steering 1.sln
 08 - Lab - Autonomous Steering 1/Untitled Diagram.svg
+*.pyproj
+*.sln
+*.suo
+*.pyc
