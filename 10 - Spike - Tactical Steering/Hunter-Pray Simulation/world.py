@@ -19,7 +19,7 @@ class World(object):
         self.agents = []
         self.hiding_objects = []
         self.paused = True
-        self.show_info = True
+        self.show_info = False
 
     def update(self, delta):
         if not self.paused:

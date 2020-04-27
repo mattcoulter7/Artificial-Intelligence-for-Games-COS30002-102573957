@@ -23,12 +23,13 @@ def on_key_press(symbol, modifiers):
 
     # Toggle debug force line info on the agent
     elif symbol == KEY.I:
-        for agent in world.agents:
-            agent.show_info = not agent.show_info
+        world.show_info = not world.show_info
     elif symbol == KEY.A:
         world.agents.append(Agent(world,'hunter'))
     elif symbol == KEY.S:
         world.agents.append(Agent(world,'prey'))
+    elif symbol == KEY.D:
+        world.hiding_objects.append(HideObject(world))
 
 def on_resize(cx, cy):
     world.cx = cx

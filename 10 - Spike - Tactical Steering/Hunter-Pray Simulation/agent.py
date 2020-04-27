@@ -45,7 +45,7 @@ class Agent(object):
         ]
 
         # Visibility for other agents
-        self.visibility = 100
+        self.visibility = 300
 
 
         # NEW WANDER INFO
@@ -57,7 +57,7 @@ class Agent(object):
 
         # Force and speed limiting code
         self.max_speed = 20.0 * scale
-        self.max_force = 500.0
+        self.max_force = 1000.0
 
         # debug draw info?
         self.show_info = False
@@ -128,27 +128,20 @@ class Agent(object):
             egi.circle(wld_pos, 3)
 
         # add some handy debug drawing info lines - force and velocity
-        if self.show_info:
-            s = 0.5 # <-- scaling factor
-            # force
-            egi.red_pen()
-            egi.line_with_arrow(self.pos, self.pos + self.force * s, 5)
-            # velocity
-            egi.grey_pen()
-            egi.line_with_arrow(self.pos, self.pos + self.vel * s, 5)
-            # net (desired) change
-            egi.white_pen()
-            egi.line_with_arrow(self.pos+self.vel * s, self.pos+ (self.force+self.vel) * s, 5)
-            egi.line_with_arrow(self.pos, self.pos+ (self.force+self.vel) * s, 5)
+        if self.world.show_info:
+            
             # Visibility Radius
             if (self.mode == 'hunter'):
                 egi.blue_pen()
                 egi.circle(self.pos,self.visibility)
-                egi.aqua_pen()
-
+                
+            egi.aqua_pen()
+            # Draws all hiding spots from all hunters
             for obj in self.world.hiding_objects:
                 for hunter in self.world.hunters():
-                    egi.cross(obj.get_hiding_point(hunter.pos),10)
+                    hiding_pos = obj.get_hiding_point(hunter.pos)
+                    egi.line_by_pos(hunter.pos,hiding_pos)
+                    egi.cross(hiding_pos,10)
                     
 
     def speed(self):
@@ -207,7 +200,7 @@ class Agent(object):
             return (desired_vel + self.vel)
         # Approaches hiding spot for the closest hiding spot calculated in HideObject class
         hiding_spot = self.closest(self.world.hiding_objects).get_hiding_point(hunter_pos)
-        return self.arrive(hiding_spot,'fast')
+        return self.arrive(hiding_spot,'slow')
 
     def arrive(self, target_pos, speed):
         ''' this behaviour is similar to seek() but it attempts to arrive at
