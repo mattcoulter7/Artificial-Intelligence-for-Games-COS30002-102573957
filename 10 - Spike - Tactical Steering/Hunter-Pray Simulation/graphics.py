@@ -153,7 +153,7 @@ class EasyGraphics(object):
         glDrawArrays(gl_array_type, 0, len(pts))
         glPopClientAttrib()
 
-    def circle(self, pos, radius, filled=False, slices=0):
+    def circle(self, pos, radius, filled=True, slices=0):
         glPushMatrix()
         glTranslatef(pos.x, pos.y, 0.0)
         gluDisk(self.qobj, 0, radius, 32, 1)  # default style (filled? line?)

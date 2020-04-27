@@ -25,6 +25,10 @@ def on_key_press(symbol, modifiers):
     elif symbol == KEY.I:
         for agent in world.agents:
             agent.show_info = not agent.show_info
+    elif symbol == KEY.A:
+        world.agents.append(Agent(world,'hunter'))
+    elif symbol == KEY.S:
+        world.agents.append(Agent(world,'prey'))
 
 def on_resize(cx, cy):
     world.cx = cx
@@ -52,11 +56,8 @@ if __name__ == '__main__':
     world = World(500, 500)
 
     # add hunter and pray agents
-    world.target = Agent(world,'flee')
-    world.hunter = Agent(world,'seek')
-
-    world.agents.append(world.target)
-    world.agents.append(world.hunter)
+    world.agents.append(Agent(world,'hunter'))
+    world.agents.append(Agent(world,'prey'))
 
     # add world objects to hide behind
     world.hiding_objects.append(HideObject(world))
