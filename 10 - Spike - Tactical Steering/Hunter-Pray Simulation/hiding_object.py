@@ -13,7 +13,6 @@ class HideObject(object):
         self.pos = self.randomise_location()
 
     def render(self):
-
         egi.set_pen_color(name=self.color)
         egi.circle(self.pos,self.size)
 
@@ -33,7 +32,6 @@ class HideObject(object):
 
     def check_location_valid(self,pos):
         # Checks if a hiding spot already exists near a new hiding spot
-        valid = True
         for obj in self.world.hiding_objects:
             to_existing = obj.pos - pos
             dist = to_existing.length()

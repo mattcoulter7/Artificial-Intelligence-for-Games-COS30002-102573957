@@ -93,7 +93,7 @@ class World(object):
         return hunters
 
     def preys(self):
-        ''' Returns all of the hunters in agents '''
+        ''' Returns all of the prey in agents '''
         preys = []
         for agent in self.agents:
             if (agent.mode == 'prey'):

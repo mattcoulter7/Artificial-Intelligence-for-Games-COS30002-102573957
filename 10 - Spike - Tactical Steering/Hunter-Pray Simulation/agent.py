@@ -45,7 +45,7 @@ class Agent(object):
         ]
 
         # Visibility for other agents
-        self.visibility = 300
+        self.visibility = 200
 
 
         # NEW WANDER INFO
@@ -67,7 +67,6 @@ class Agent(object):
         mode = self.mode
         if mode == 'hunter':
             closest_pray = self.closest(self.world.preys())
-
             to_target = closest_pray.pos - self.pos
             dist = to_target.length()
             if dist <= self.visibility:
@@ -113,37 +112,27 @@ class Agent(object):
         # draw it!
         egi.closed_shape(pts)
 
-        # draw wander info?
-        if self.mode == 'hunter':
-            # calculate the center of the wander circle in front of the agent
-            wnd_pos = Vector2D(self.wander_dist, 0)
-            wld_pos = self.world.transform_point(wnd_pos, self.pos, self.heading, self.side)
-            # draw the wander circle
-            egi.green_pen()
-            egi.circle(wld_pos, self.wander_radius)
-            # draw the wander target (little circle on the big circle)
-            egi.red_pen()
-            wnd_pos = (self.wander_target + Vector2D(self.wander_dist, 0))
-            wld_pos = self.world.transform_point(wnd_pos, self.pos, self.heading, self.side)
-            egi.circle(wld_pos, 3)
 
         # add some handy debug drawing info lines - force and velocity
         if self.world.show_info:
-            
             # Visibility Radius
             if (self.mode == 'hunter'):
-                egi.blue_pen()
+                egi.red_pen()
                 egi.circle(self.pos,self.visibility)
                 
-            egi.aqua_pen()
-            # Draws all hiding spots from all hunters
-            for obj in self.world.hiding_objects:
-                for hunter in self.world.hunters():
-                    hiding_pos = obj.get_hiding_point(hunter.pos)
-                    egi.line_by_pos(hunter.pos,hiding_pos)
+                # Draws all hiding spots from all hunters
+                for obj in self.world.hiding_objects:
+                    hiding_pos = obj.get_hiding_point(self.pos)
+                    egi.line_by_pos(self.pos,hiding_pos)
                     egi.cross(hiding_pos,10)
-                    
 
+            if (self.mode == 'prey'):
+                egi.blue_pen()
+                # Draws all hiding spots from all preys
+                closest_hunter = self.closest(self.world.hunters())
+                hiding_pos = self.closest(self.world.hiding_objects).get_hiding_point(closest_hunter.pos)
+                egi.line_by_pos(self.pos,hiding_pos)
+            
     def speed(self):
         return self.vel.length()
 
@@ -193,7 +182,7 @@ class Agent(object):
         panic_distance = self.visibility
         ## add flee calculations (first)
         dist_to_hunter = hunter_pos.distance(self.pos)
-
+        # fly as fast as possible to escape hunter
         if dist_to_hunter <= panic_distance:
             # Goes quickly to get out of panic distance
             desired_vel = (hunter_pos + self.pos).normalise() * self.max_speed
