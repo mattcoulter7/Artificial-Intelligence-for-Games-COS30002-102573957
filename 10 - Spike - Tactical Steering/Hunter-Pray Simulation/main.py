@@ -25,9 +25,9 @@ def on_key_press(symbol, modifiers):
     elif symbol == KEY.I:
         world.show_info = not world.show_info
     elif symbol == KEY.A:
-        world.agents.append(Agent(world,'hunter'))
+        world.agents.append(Agent('hunter',world))
     elif symbol == KEY.S:
-        world.agents.append(Agent(world,'prey'))
+        world.agents.append(Agent('prey',world, 'MyNewBot'))
     elif symbol == KEY.D:
         world.hiding_objects.append(HideObject(world))
 
@@ -39,7 +39,7 @@ def on_resize(cx, cy):
 if __name__ == '__main__':
 
     # create a pyglet window and set glOptions
-    win = window.Window(width=500, height=500, vsync=True, resizable=True)
+    win = window.Window(width=1000, height=1000, vsync=True, resizable=True)
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
@@ -54,15 +54,15 @@ if __name__ == '__main__':
     win.push_handlers(on_resize)
 
     # create a world for agents
-    world = World(500, 500)
-
-    # add hunter and pray agents
-    world.agents.append(Agent(world,'hunter'))
-    world.agents.append(Agent(world,'prey'))
+    world = World(1000, 1000)
 
     # add world objects to hide behind
     world.hiding_objects.append(HideObject(world))
     world.hiding_objects.append(HideObject(world))
+
+    # add hunter and pray agents
+    world.agents.append(Agent('hunter',world))
+    world.agents.append(Agent('prey',world, 'MyNewBot'))
 
     # unpause the world ready for movement
     world.paused = False

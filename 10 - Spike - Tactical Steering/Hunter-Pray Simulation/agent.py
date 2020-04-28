@@ -20,7 +20,7 @@ class Agent(object):
         'normal': 1.4,
         'fast': 1.9
     }
-    def __init__(self, world=None, mode=None, scale=30.0, mass=1.0):
+    def __init__(self, mode, world=None,name = None, scale=30.0, mass=1.0):
         # keep a reference to the world object
         self.world = world
         self.mode = mode
@@ -47,7 +47,6 @@ class Agent(object):
         # Visibility for other agents
         self.visibility = 200
 
-
         # NEW WANDER INFO
         self.wander_target = Vector2D(1, 0)
         self.wander_dist = 1.0 * scale
@@ -58,6 +57,20 @@ class Agent(object):
         # Force and speed limiting code
         self.max_speed = 20.0 * scale
         self.max_force = 1000.0
+
+        if (name is not None):
+            self.name = name.replace('.py', '')  # accept both "Dumbo" or "Dumbo.py"
+            # Create a controller object based on the name
+            # - Look for a ./bots/BotName.py module (file) we need
+            mod = __import__('bots.' + name)  # ... the top level bots mod (dir)
+            mod = getattr(mod, name)       # ... then the bot mod (file)
+            cls = getattr(mod, name)      # ... the class (eg DumBo.py contains DumBo class)
+            self.controller = cls(self.world,self)
+
+            
+        
+        # HIDING VARIABLES
+        self.hiding_object = None
 
         # debug draw info?
         self.show_info = False
@@ -84,12 +97,15 @@ class Agent(object):
     def update(self, delta):
         ''' update vehicle position and orientation '''
         # calculate and set self.force to be applied
+        if (self.mode == 'prey'):
+            self.controller.calculate_hide()
         ## force = self.calculate()
         force = self.calculate(delta)
         ## limit force? <-- for wander
         force.truncate(self.max_force)
         # determine the new acceleration
         self.accel = force / self.mass  # not needed if mass = 1.0
+
         # new velocity
         self.vel += self.accel * delta
         # check for limits of new velocity
@@ -102,6 +118,8 @@ class Agent(object):
             self.side = self.heading.perp()
         # treat world as continuous space - wrap new position if needed
         self.world.wrap_around(self.pos)
+
+        
 
     def render(self, color=None):
         ''' Draw the triangle agent with color'''
@@ -122,15 +140,15 @@ class Agent(object):
                 
                 # Draws all hiding spots from all hunters
                 for obj in self.world.hiding_objects:
-                    hiding_pos = obj.get_hiding_point(self.pos)
+                    hiding_pos = obj.get_hiding_pos(self.pos)
                     egi.line_by_pos(self.pos,hiding_pos)
                     egi.cross(hiding_pos,10)
 
             if (self.mode == 'prey'):
                 egi.blue_pen()
                 # Draws all hiding spots from all preys
-                closest_hunter = self.closest(self.world.hunters())
-                hiding_pos = self.closest(self.world.hiding_objects).get_hiding_point(closest_hunter.pos)
+                closest_hunter = self.closest(self.world.hunters()).pos
+                hiding_pos = self.hiding_object.get_hiding_pos(closest_hunter)
                 egi.line_by_pos(self.pos,hiding_pos)
             
     def speed(self):
@@ -188,8 +206,7 @@ class Agent(object):
             desired_vel = (hunter_pos + self.pos).normalise() * self.max_speed
             return (desired_vel + self.vel)
         # Approaches hiding spot for the closest hiding spot calculated in HideObject class
-        hiding_spot = self.closest(self.world.hiding_objects).get_hiding_point(hunter_pos)
-        return self.arrive(hiding_spot,'slow')
+        return self.arrive(self.hiding_object.get_hiding_pos(hunter_pos),'slow')
 
     def arrive(self, target_pos, speed):
         ''' this behaviour is similar to seek() but it attempts to arrive at

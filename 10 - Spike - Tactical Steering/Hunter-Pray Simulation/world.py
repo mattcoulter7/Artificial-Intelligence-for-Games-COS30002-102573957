@@ -26,6 +26,9 @@ class World(object):
             for agent in self.agents:
                 agent.update(delta)
 
+            for obj in self.hiding_objects:
+                obj.update()
+
     def render(self):
         for agent in self.agents:
             agent.render()
