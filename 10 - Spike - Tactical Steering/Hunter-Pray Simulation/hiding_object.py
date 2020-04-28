@@ -21,10 +21,13 @@ class HideObject(object):
             if (prey.hiding_object is self):
                 self.agents.append(prey)
 
-
     def render(self):
         egi.set_pen_color(name=self.color)
         egi.circle(self.pos,self.size)
+        if (len(self.agents) > 0):
+            self.color = 'LIGHT_PINK'
+        else:
+            self.color = 'GREEN'
 
     def get_hiding_pos(self,hunter_pos):
         # Uses angle to calculate best spot behind the hiding object
@@ -46,7 +49,7 @@ class HideObject(object):
         for obj in self.world.hiding_objects:
             to_existing = obj.pos - pos
             dist = to_existing.length()
-            if (dist <= 2 * obj.size):
+            if (dist <= 2 * self.size):
                 return False
         return True
 

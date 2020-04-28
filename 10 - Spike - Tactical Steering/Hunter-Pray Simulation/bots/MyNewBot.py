@@ -4,12 +4,10 @@ from random import random, randrange, uniform
 from agent import Agent
 
 class MyNewBot(object):
-    def __init__(self,world = None,agent = None):
-        self.world = world
-        self.agent = agent
-
-    def calculate_hide(self):
-        # Create ratio between distance and size
-        closest_hunter_pos = self.agent.closest(self.world.hunters()).pos
-        hiding_object = min(self.world.hiding_objects,key = lambda h: ((h.pos - self.agent.pos).length())/h.size)
-        self.agent.hiding_object = hiding_object
+    def update(self,world):
+        for prey in world.preys():
+            # Create ratio between distance and size
+            closest_hunter_pos = prey.closest(world.hunters()).pos
+        
+            hiding_object = min(world.hiding_objects,key = lambda h: (h.pos - prey.pos).length()/h.size)
+            prey.hiding_object = hiding_object

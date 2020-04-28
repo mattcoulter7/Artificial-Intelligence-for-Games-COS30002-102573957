@@ -37,7 +37,9 @@ class Agent(object):
         self.mass = mass
 
         # data for drawing this agent
-        self.color = 'ORANGE'
+        if (self.mode == 'hunter'): self.color = 'RED'
+        elif (self.mode == 'prey'): self.color = 'BLUE'
+        
         self.vehicle_shape = [
             Point2D(-1.0,  0.6),
             Point2D( 1.0,  0.0),
@@ -56,18 +58,7 @@ class Agent(object):
 
         # Force and speed limiting code
         self.max_speed = 20.0 * scale
-        self.max_force = 1000.0
-
-        if (name is not None):
-            self.name = name.replace('.py', '')  # accept both "Dumbo" or "Dumbo.py"
-            # Create a controller object based on the name
-            # - Look for a ./bots/BotName.py module (file) we need
-            mod = __import__('bots.' + name)  # ... the top level bots mod (dir)
-            mod = getattr(mod, name)       # ... then the bot mod (file)
-            cls = getattr(mod, name)      # ... the class (eg DumBo.py contains DumBo class)
-            self.controller = cls(self.world,self)
-
-            
+        self.max_force = 1000.0  
         
         # HIDING VARIABLES
         self.hiding_object = None
@@ -97,8 +88,6 @@ class Agent(object):
     def update(self, delta):
         ''' update vehicle position and orientation '''
         # calculate and set self.force to be applied
-        if (self.mode == 'prey'):
-            self.controller.calculate_hide()
         ## force = self.calculate()
         force = self.calculate(delta)
         ## limit force? <-- for wander
@@ -119,8 +108,6 @@ class Agent(object):
         # treat world as continuous space - wrap new position if needed
         self.world.wrap_around(self.pos)
 
-        
-
     def render(self, color=None):
         ''' Draw the triangle agent with color'''
         # draw the ship
@@ -129,8 +116,6 @@ class Agent(object):
                                           self.heading, self.side, self.scale)
         # draw it!
         egi.closed_shape(pts)
-
-
         # add some handy debug drawing info lines - force and velocity
         if self.world.show_info:
             # Visibility Radius
@@ -143,7 +128,6 @@ class Agent(object):
                     hiding_pos = obj.get_hiding_pos(self.pos)
                     egi.line_by_pos(self.pos,hiding_pos)
                     egi.cross(hiding_pos,10)
-
             if (self.mode == 'prey'):
                 egi.blue_pen()
                 # Draws all hiding spots from all preys

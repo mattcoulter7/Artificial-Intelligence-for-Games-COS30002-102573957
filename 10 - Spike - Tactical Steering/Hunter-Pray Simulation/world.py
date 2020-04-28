@@ -13,7 +13,7 @@ from graphics import egi
 
 class World(object):
 
-    def __init__(self, cx, cy):
+    def __init__(self, cx, cy,bot):
         self.cx = cx
         self.cy = cy
         self.agents = []
@@ -21,13 +21,24 @@ class World(object):
         self.paused = True
         self.show_info = False
 
+        self.name = bot.replace('.py', '')  # accept both "Dumbo" or "Dumbo.py"
+        # Create a controller object based on the name
+        # - Look for a ./bots/BotName.py module (file) we need
+        mod = __import__('bots.' + bot)  # ... the top level bots mod (dir)
+        mod = getattr(mod, bot)       # ... then the bot mod (file)
+        cls = getattr(mod, bot)      # ... the class (eg DumBo.py contains DumBo class)
+        self.controller = cls()
+
     def update(self, delta):
         if not self.paused:
+            self.controller.update(self)
             for agent in self.agents:
                 agent.update(delta)
 
             for obj in self.hiding_objects:
                 obj.update()
+
+            
 
     def render(self):
         for agent in self.agents:

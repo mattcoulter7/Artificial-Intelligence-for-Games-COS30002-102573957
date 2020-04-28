@@ -27,7 +27,7 @@ def on_key_press(symbol, modifiers):
     elif symbol == KEY.A:
         world.agents.append(Agent('hunter',world))
     elif symbol == KEY.S:
-        world.agents.append(Agent('prey',world, 'MyNewBot'))
+        world.agents.append(Agent('prey',world))
     elif symbol == KEY.D:
         world.hiding_objects.append(HideObject(world))
 
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     win.push_handlers(on_resize)
 
     # create a world for agents
-    world = World(1000, 1000)
+    world = World(1000, 1000, 'MyNewBot')
 
     # add world objects to hide behind
     world.hiding_objects.append(HideObject(world))
@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
     # add hunter and pray agents
     world.agents.append(Agent('hunter',world))
-    world.agents.append(Agent('prey',world, 'MyNewBot'))
+    world.agents.append(Agent('prey',world))
 
     # unpause the world ready for movement
     world.paused = False
