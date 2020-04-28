@@ -31,6 +31,7 @@ class World(object):
 
     def update(self, delta):
         if not self.paused and self.preys():
+            # Updates the AI calculations
             self.controller.update(self)
             for agent in self.agents:
                 agent.update(delta)
@@ -38,19 +39,12 @@ class World(object):
             for obj in self.hiding_objects:
                 obj.update()
 
-            
-
     def render(self):
         for agent in self.agents:
             agent.render()
 
         for obj in self.hiding_objects:
             obj.render()
-
-        if self.show_info:
-            infotext = ', '.join(set(agent.mode for agent in self.agents))
-            egi.white_pen()
-            egi.text_at_pos(0, 0, infotext)
 
     def wrap_around(self, pos):
         ''' Treat world as a toroidal space. Updates parameter object pos '''

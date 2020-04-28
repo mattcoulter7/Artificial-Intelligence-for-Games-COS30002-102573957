@@ -16,6 +16,7 @@ class HideObject(object):
         self.agents = []
 
     def update(self):
+        # Updates the agents list with current agents hiding here
         self.agents.clear()
         for prey in self.world.preys():
             if (prey.hiding_object is self):
@@ -25,7 +26,7 @@ class HideObject(object):
         egi.set_pen_color(name=self.color)
         egi.circle(self.pos,self.size)
         if (len(self.agents) > 0):
-            self.color = 'LIGHT_PINK'
+            self.color = 'ORANGE'
         else:
             self.color = 'GREEN'
 
