@@ -106,6 +106,7 @@ class Agent(object):
             self.side = self.heading.perp()
         # treat world as continuous space - wrap new position if needed
         self.world.wrap_around(self.pos)
+        # Eats prey
         if (self.mode == 'prey' and self.intersect_hunter()):
             self.world.agents.remove(self)
 

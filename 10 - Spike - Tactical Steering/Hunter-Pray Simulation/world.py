@@ -30,12 +30,14 @@ class World(object):
         self.controller = cls()
 
     def update(self, delta):
+        # Game stops when paused or no prey left
         if not self.paused and self.preys():
             # Updates the AI calculations
             self.controller.update(self)
+            # Updates all agents
             for agent in self.agents:
                 agent.update(delta)
-
+            # Updates all all hiding positions, (checking for agents hiding at it)
             for obj in self.hiding_objects:
                 obj.update()
 
