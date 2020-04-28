@@ -26,9 +26,9 @@ class HideObject(object):
         egi.set_pen_color(name=self.color)
         egi.circle(self.pos,self.size)
         if (len(self.agents) > 0):
-            self.color = 'ORANGE'
-        else:
             self.color = 'GREEN'
+        else:
+            self.color = 'ORANGE'
 
     def get_hiding_pos(self,hunter_pos):
         # Uses angle to calculate best spot behind the hiding object

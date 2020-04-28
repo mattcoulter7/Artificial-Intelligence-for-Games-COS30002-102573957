@@ -213,10 +213,11 @@ class Agent(object):
         return Vector2D(0, 0) - self.vel
 
     def intersect_hunter(self):
+        # Detects collision between hunter and self
         for hunter in self.world.hunters():
             to_hunter = self.pos - hunter.pos
             dist = to_hunter.length()
-            if (dist < 20):
+            if (dist < 30):
                 return True
         return False
 
