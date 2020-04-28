@@ -30,7 +30,7 @@ class World(object):
         self.controller = cls()
 
     def update(self, delta):
-        if not self.paused:
+        if not self.paused and self.preys():
             self.controller.update(self)
             for agent in self.agents:
                 agent.update(delta)

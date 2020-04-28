@@ -71,8 +71,7 @@ class Agent(object):
         mode = self.mode
         if mode == 'hunter':
             closest_pray = self.closest(self.world.preys())
-            to_target = closest_pray.pos - self.pos
-            dist = to_target.length()
+            dist = (closest_pray.pos - self.pos).length()
             if dist <= self.visibility:
                 force = self.seek(closest_pray.pos)
             else:
@@ -107,6 +106,8 @@ class Agent(object):
             self.side = self.heading.perp()
         # treat world as continuous space - wrap new position if needed
         self.world.wrap_around(self.pos)
+        if (self.mode == 'prey' and self.intersect_hunter()):
+            self.world.agents.remove(self)
 
     def render(self, color=None):
         ''' Draw the triangle agent with color'''
@@ -210,6 +211,14 @@ class Agent(object):
             desired_vel = to_target * (speed / dist)
             return (desired_vel - self.vel)
         return Vector2D(0, 0) - self.vel
+
+    def intersect_hunter(self):
+        for hunter in self.world.hunters():
+            to_hunter = self.pos - hunter.pos
+            dist = to_hunter.length()
+            if (dist < 20):
+                return True
+        return False
 
     
 
