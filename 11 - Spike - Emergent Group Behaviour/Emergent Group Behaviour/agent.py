@@ -45,8 +45,8 @@ class Agent(object):
         self.bRadius = scale
 
         # Force and speed limiting variables
-        self.max_speed = 20.0 * scale
-        self.max_force = 500.0
+        self.max_speed = 5.0 * scale
+        self.max_force = 1500.0
 
         # Cohesion, separation and alignment steering behaviours
         self.cohesion = 150.0
@@ -57,7 +57,11 @@ class Agent(object):
         self.show_info = False
 
     def calculate(self,delta):
-        # calculate the current steering force
+        '''calculate the current steering force'''
+        # Update steering force to neighbours average force if they exist
+        neighbours = self.get_neighbours()
+        if (neighbours):
+            self.wander_target = self.neighbour_average(neighbours,'heading')
         force = self.wander(delta)
         return force
 
@@ -91,24 +95,7 @@ class Agent(object):
                                           self.heading, self.side, self.scale)
         # draw it!
         egi.closed_shape(pts)
-        # Render cohesion circle
-        egi.circle(self.pos,self.cohesion)
-        # Render seperation circle
-        egi.circle(self.pos,self.seperation)
-
-        # draw wander info?
-        if self.mode == 'wander':
-            # calculate the center of the wander circle in front of the agent
-            wnd_pos = Vector2D(self.wander_dist, 0)
-            wld_pos = self.world.transform_point(wnd_pos, self.pos, self.heading, self.side)
-            # draw the wander circle
-            egi.green_pen()
-            egi.circle(wld_pos, self.wander_radius)
-            # draw the wander target (little circle on the big circle)
-            egi.red_pen()
-            wnd_pos = (self.wander_target + Vector2D(self.wander_dist, 0))
-            wld_pos = self.world.transform_point(wnd_pos, self.pos, self.heading, self.side)
-            egi.circle(wld_pos, 3)
+        
 
         # add some handy debug drawing info lines - force and velocity
         if self.show_info:
@@ -123,9 +110,47 @@ class Agent(object):
             egi.white_pen()
             egi.line_with_arrow(self.pos+self.vel * s, self.pos+ (self.force+self.vel) * s, 5)
             egi.line_with_arrow(self.pos, self.pos+ (self.force+self.vel) * s, 5)
+            
+            # calculate the center of the wander circle in front of the agent
+            wnd_pos = Vector2D(self.wander_dist, 0)
+            wld_pos = self.world.transform_point(wnd_pos, self.pos, self.heading, self.side)
+            # draw the wander circle
+            egi.green_pen()
+            egi.circle(wld_pos, self.wander_radius)
+            # draw the wander target (little circle on the big circle)
+            egi.red_pen()
+            wnd_pos = (self.wander_target + Vector2D(self.wander_dist, 0))
+            wld_pos = self.world.transform_point(wnd_pos, self.pos, self.heading, self.side)
+            egi.circle(wld_pos, 3)
+            
+            # Render cohesion circle
+            egi.circle(self.pos,self.cohesion)
+            # Render seperation circle
+            egi.circle(self.pos,self.seperation)
+
+            neighbours = self.get_neighbours()
+            if neighbours:
+                egi.dot(pos = self.neighbour_average(neighbours,'pos'))
 
     def speed(self):
         return self.vel.length()
+
+    def get_neighbours(self):
+        neighbours = []
+        for agent in self.world.agents:
+            if (agent != self):
+                agent_to_self = self.pos-agent.pos
+                dist = agent_to_self.length()
+                if (dist < self.cohesion):
+                    neighbours.append(agent)
+        return neighbours
+    
+    def neighbour_average(self,neighbours,attr):
+        average = Vector2D(0,0)
+        for agent in neighbours:
+            average += getattr(agent,attr)
+        average /= len(neighbours)
+        return average
 
     #--------------------------------------------------------------------------
     def seek(self, target_pos):

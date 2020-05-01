@@ -19,11 +19,15 @@ from agent import Agent
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 1000
 
-def on_mouse_press(x, y, button, modifiers):
-    if button == 1:  # left
-        world.target = Vector2D(x, y)
+MODIFIERS = {
+    KEY.C: 'cohesion',
+    KEY.S: 'seperation'
+}
+
+CURRENT_MODIFIER = 'cohesion'
 
 def on_key_press(symbol, modifiers):
+    global CURRENT_MODIFIER
     if symbol == KEY.P:
         world.paused = not world.paused
     elif symbol == KEY.A:
@@ -31,14 +35,22 @@ def on_key_press(symbol, modifiers):
     elif symbol == KEY.I:
         for agent in world.agents:
             agent.show_info = not agent.show_info
+    elif symbol in MODIFIERS:
+        CURRENT_MODIFIER = MODIFIERS[symbol]
+    elif symbol == KEY.NUM_ADD:
+        for agent in world.agents:
+            #setattr(x, 'y', v) is equivalent to x.y = v
+            setattr(agent, CURRENT_MODIFIER, getattr(agent,CURRENT_MODIFIER) + 5.0)
+    elif symbol == KEY.NUM_SUBTRACT:
+        for agent in world.agents:
+            #setattr(x, 'y', v) is equivalent to x.y = v
+            setattr(agent, CURRENT_MODIFIER, getattr(agent,CURRENT_MODIFIER) - 5.0)
 
 def on_resize(cx, cy):
     world.cx = cx
     world.cy = cy
 
-
 if __name__ == '__main__':
-
     # create a pyglet window and set glOptions
     win = window.Window(width=SCREEN_WIDTH, height=SCREEN_HEIGHT, vsync=True, resizable=True)
     glEnable(GL_BLEND)
@@ -49,7 +61,6 @@ if __name__ == '__main__':
     fps_display = window.FPSDisplay(win)
     # register key and mouse event handlers
     win.push_handlers(on_key_press)
-    win.push_handlers(on_mouse_press)
     win.push_handlers(on_resize)
 
     # create a world for agents
