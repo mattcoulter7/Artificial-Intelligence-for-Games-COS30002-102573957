@@ -16,8 +16,6 @@ class World(object):
     def __init__(self, cx, cy):
         self.cx = cx
         self.cy = cy
-        self.target = Vector2D(cx / 2, cy / 2)
-        self.hunter = None
         self.agents = []
         self.paused = True
         self.show_info = True
@@ -31,17 +29,6 @@ class World(object):
         for agent in self.agents:
             agent.render()
             
-
-        if self.target:
-            egi.red_pen()
-            egi.cross(self.target, 10)
-
-        if self.show_info:
-            infotext = ', '.join(set(agent.mode for agent in self.agents))
-            egi.white_pen()
-            egi.text_at_pos(0, 0, infotext)
-
-        
 
     def wrap_around(self, pos):
         ''' Treat world as a toroidal space. Updates parameter object pos '''

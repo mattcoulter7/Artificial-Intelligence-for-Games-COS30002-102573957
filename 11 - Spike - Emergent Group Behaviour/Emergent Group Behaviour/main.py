@@ -21,7 +21,8 @@ SCREEN_HEIGHT = 1000
 
 MODIFIERS = {
     KEY.C: 'cohesion',
-    KEY.S: 'seperation'
+    KEY.S: 'separation',
+    KEY.A: 'alignment'
 }
 
 CURRENT_MODIFIER = 'cohesion'
@@ -30,21 +31,20 @@ def on_key_press(symbol, modifiers):
     global CURRENT_MODIFIER
     if symbol == KEY.P:
         world.paused = not world.paused
-    elif symbol == KEY.A:
+    elif symbol == KEY.O:
         world.agents.append(Agent(world))
     elif symbol == KEY.I:
-        for agent in world.agents:
-            agent.show_info = not agent.show_info
+        world.agents[0].show_info = not world.agents[0].show_info
     elif symbol in MODIFIERS:
         CURRENT_MODIFIER = MODIFIERS[symbol]
     elif symbol == KEY.NUM_ADD:
         for agent in world.agents:
-            #setattr(x, 'y', v) is equivalent to x.y = v
-            setattr(agent, CURRENT_MODIFIER, getattr(agent,CURRENT_MODIFIER) + 5.0)
+            attr = getattr(agent,CURRENT_MODIFIER)
+            setattr(agent, CURRENT_MODIFIER, attr + 20.0)
     elif symbol == KEY.NUM_SUBTRACT:
         for agent in world.agents:
-            #setattr(x, 'y', v) is equivalent to x.y = v
-            setattr(agent, CURRENT_MODIFIER, getattr(agent,CURRENT_MODIFIER) - 5.0)
+            attr = getattr(agent,CURRENT_MODIFIER)
+            setattr(agent, CURRENT_MODIFIER, attr - 20.0)
 
 def on_resize(cx, cy):
     world.cx = cx
@@ -66,7 +66,7 @@ if __name__ == '__main__':
     # create a world for agents
     world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
     # add x agents
-    for x in range(10):
+    for x in range(40):
         world.agents.append(Agent(world))
     # unpause the world ready for movement
     world.paused = False
