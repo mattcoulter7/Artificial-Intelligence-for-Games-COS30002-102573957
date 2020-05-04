@@ -14,8 +14,6 @@ class World(object):
     def __init__(self, cx, cy):
         self.cx = cx
         self.cy = cy
-        self.target = Vector2D(cx / 2, cy / 2)
-        self.hunter = None
         self.agents = []
         self.paused = True
         self.showinfo = True

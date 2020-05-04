@@ -1,36 +1,11 @@
-'''An agent with Seek, Flee, Arrive, Pursuit behaviours
-
-Created for COS30002 AI for Games, by Clinton Woodward <cwoodward@swin.edu.au>
-For class use only. Do not publically share or post this code without permission.
-
-'''
-
 from vector2d import Vector2D
 from vector2d import Point2D
 from graphics import egi, KEY
 from math import sin, cos, radians
 from random import random, randrange
 
-AGENT_MODES = {
-    KEY._1: 'seek',
-    KEY._2: 'arrive_slow',
-    KEY._3: 'arrive_normal',
-    KEY._4: 'arrive_fast',
-    KEY._5: 'flee',
-    KEY._6: 'pursuit'
-}
-
-
 class Agent(object):
-
-    # NOTE: Class Object (not *instance*) variables!
-    DECELERATION_SPEEDS = {
-        'slow': 0.9,
-        'normal': 1.4,
-        'fast': 1.9
-    }
-
-    def __init__(self, world=None, scale=30.0, mass=1.0, mode='seek'):
+    def __init__(self, world=None, mode = None, scale=30.0, mass=1.0):
         # keep a reference to the world object
         self.world = world
         self.mode = mode
@@ -42,9 +17,13 @@ class Agent(object):
         self.side = self.heading.perp()
         self.scale = Vector2D(scale, scale)  # easy scaling of agent size
         self.acceleration = Vector2D()  # current steering force
+        self.force = Vector2D()
         self.mass = mass
+        
         # limits?
-        self.max_speed = 2000.0
+        self.max_speed = 1000.0
+        self.max_force = 500.0
+
         # data for drawing this agent
         self.color = 'ORANGE'
         self.vehicle_shape = [
@@ -53,29 +32,23 @@ class Agent(object):
             Point2D(-1.0, -0.6)
         ]
 
-    def calculate(self):
+    def calculate(self,delta):
         # reset the steering force
         mode = self.mode
-        if mode == 'seek':
-            accel = self.seek(self.world.target)
-        elif mode == 'arrive_slow':
-            accel = self.arrive(self.world.target, 'slow')
-        elif mode == 'arrive_normal':
-            accel = self.arrive(self.world.target, 'normal')
-        elif mode == 'arrive_fast':
-            accel = self.arrive(self.world.target, 'fast')
-        elif mode == 'flee':
-            accel = self.flee(self.world.target)
-        elif mode == 'pursuit':
-            accel = self.pursuit(self.world.hunter)
+        force = None
+        if mode == 'attacking':
+            force = self.seek(self.pos)
         else:
-            accel = Vector2D()
-        self.acceleration = accel
-        return accel
+            force = Vector2D()
+        return force
 
     def update(self, delta):
         ''' update vehicle position and orientation '''
-        acceleration = self.calculate()
+        self.force = self.calculate(delta)
+        ## limit force
+        self.force.truncate(self.max_force)
+        # determine the new acceleration
+        self.accel = self.force / self.mass  # not needed if mass = 1.0
         # new velocity
         self.vel += acceleration * delta
         # check for limits of new velocity
@@ -108,41 +81,3 @@ class Agent(object):
         desired_vel = (target_pos - self.pos).normalise() * self.max_speed
         return (desired_vel - self.vel)
 
-    def flee(self, hunter_pos):
-        ''' move away from hunter position '''
-        ## add panic distance (second)
-        panic_distance = 100
-        ## add flee calculations (first)
-        dist_to_hunter = hunter_pos.distance(self.pos)
-
-        if dist_to_hunter <= panic_distance:
-            # Goes quickly to get out of panic distance
-            desired_vel = (hunter_pos + self.pos).normalise() * self.max_speed
-            return (desired_vel + self.vel)
-        # Approaches 0 velocity when not in panic distance
-        return (Vector2D(0, 0) - self.vel)
-
-    def arrive(self, target_pos, speed):
-        ''' this behaviour is similar to seek() but it attempts to arrive at
-            the target position with a zero velocity'''
-        decel_rate = self.DECELERATION_SPEEDS[speed]
-        to_target = target_pos - self.pos
-        dist = to_target.length()
-        if dist > 0:
-            # calculate the speed required to reach the target given the
-            # desired deceleration rate
-            speed = dist / decel_rate
-            # make sure the velocity does not exceed the max
-            speed = min(speed, self.max_speed)
-            # from here proceed just like Seek except we don't need to
-            # normalize the to_target vector because we have already gone to the
-            # trouble of calculating its length for dist.
-            desired_vel = to_target * (speed / dist)
-            return (desired_vel - self.vel)
-        return Vector2D(0, 0)
-
-    def pursuit(self, evader):
-        ''' this behaviour predicts where an agent will be in time T and seeks
-            towards that point to intercept it. '''
-## OPTIONAL EXTRA... pursuit (you'll need something to pursue!)
-        return Vector2D()
