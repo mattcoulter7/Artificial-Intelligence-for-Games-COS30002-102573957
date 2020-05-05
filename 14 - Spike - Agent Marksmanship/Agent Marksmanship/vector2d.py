@@ -1,6 +1,7 @@
 '''2D Vector with related methods
 
-Created for COS30002 AI for Games, by Clinton Woodward <cwoodward@swin.edu.au>
+Created for COS30002 AI for Games by Clinton Woodward <cwoodward@swin.edu.au>
+
 For class use only. Do not publically share or post this code without permission.
 
 Updated by Steve Dower
@@ -45,7 +46,7 @@ class Vector2D(object):
         y = self.y
         return sqrt(x*x + y*y)
 
-    def lengthSq(self):
+    def length_sq(self):
         ''' return the squared length (avoid sqrt()) '''
         x = self.x
         y = self.y
@@ -99,7 +100,7 @@ class Vector2D(object):
         dy = v2.y - self.y
         return sqrt(dx*dx + dy*dy)
 
-    def distanceSq(self, v2):
+    def distance_sq(self, v2):
         ''' the squared distance between self and v2 vector '''
         dx = v2.x - self.x
         dy = v2.y - self.y
@@ -114,7 +115,7 @@ class Vector2D(object):
         ''' return a new vector that is the reverse of self. '''
         return Vector2D(-self.x, -self.y)
 
-    def __neg__(self):  #
+    def __neg__(self):  # -
         ''' get_reverse(), but using - operator based instead. '''
         return Vector2D(-self.x, -self.y)
 
@@ -137,7 +138,7 @@ class Vector2D(object):
         self.y *= rhs
         return self
 
-    def __idiv__(self, rhs):  # /=
+    def __itruediv__(self, rhs):  # /=
         self.x /= rhs
         self.y /= rhs
         return self
@@ -156,12 +157,12 @@ class Vector2D(object):
 
     def __mul__(self, rhs):  # self * rhs (scalar)
         return Vector2D(self.x*rhs, self.y*rhs)
-    def __rmul__(self, lhs):  # lhs * self
+    def __rmul__(self, lhs):  # lhs (scalar) * self
         return Vector2D(self.x*lhs, self.y*lhs)
 
-    def __div__(self, rhs):  # self / rhs (scalar)
+    def __truediv__(self, rhs):  # self / rhs (scalar)
         return Vector2D(self.x/rhs, self.y/rhs)
-    def __rdiv__(self, lhs):  # lhs (scalar) / self
+    def __rtruediv__(self, lhs):  # lhs (scalar) / self
         return Vector2D(lhs/self.x, lhs/self.y)
 
     def __str__(self):

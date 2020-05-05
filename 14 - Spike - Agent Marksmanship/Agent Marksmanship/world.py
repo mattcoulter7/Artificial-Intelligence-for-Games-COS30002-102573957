@@ -22,19 +22,14 @@ class World(object):
         if not self.paused:
             for agent in self.agents:
                 agent.update(delta)
+                agent.weapon.update(delta)
 
     def render(self):
         for agent in self.agents:
             agent.render()
-
-        if self.target:
-            egi.green_pen()
-            egi.cross(self.target, 10)
-
-        if self.showinfo:
-            infotext = ', '.join(set(agent.mode for agent in self.agents))
-            egi.white_pen()
-            egi.text_at_pos(0, 0, infotext)
+            if agent.mode == 'attacking': agent.weapon.render()
+            for proj in agent.weapon.projectiles:
+                proj.render()
 
     def wrap_around(self, pos):
         ''' Treat world as a toroidal space. Updates parameter object pos '''

@@ -14,6 +14,10 @@ def on_key_press(symbol, modifiers):
         world.paused = not world.paused
     elif symbol == KEY.A:
         world.agents.append(Agent(world,'attacking'))
+    elif symbol == KEY.SPACE:
+        for agent in world.agents:
+            if agent.mode == 'attacking':
+                agent.weapon.shoot()
 
 
 def on_resize(cx, cy):
@@ -38,6 +42,7 @@ if __name__ == '__main__':
     world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
     # add one agent
     world.agents.append(Agent(world,'attacking'))
+    world.agents.append(Agent(world,'target'))
     # unpause the world ready for movement
     world.paused = False
 
