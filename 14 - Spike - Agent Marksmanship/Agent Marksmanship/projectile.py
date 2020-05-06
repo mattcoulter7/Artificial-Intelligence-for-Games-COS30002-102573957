@@ -31,6 +31,7 @@ class Projectile(object):
     #--------------------------------------------------------------------------
 
     def intersect_edge(self):
+        '''check if projectile goes out of the map'''
         if self.pos.x < 0:
             return True
         elif self.pos.x > self.world.cx:
@@ -42,6 +43,7 @@ class Projectile(object):
         return False
 
     def intersect_agent(self):
+        '''check if projectile hits another agent'''
         for agent in self.world.agents:
             if agent is not self.weapon.agent:
                 to_agent = agent.pos - self.pos
@@ -51,10 +53,12 @@ class Projectile(object):
         return False
 
     def recycle(self):
+        '''remove projectile from list and put it at the end of the queue for reuse'''
         self.weapon.projectiles.remove(self)
         self.weapon.projectiles_queue.put(self)
 
     def calculate(self):
+        '''prepare to be put back onto the screen'''
         self.max_speed = self.weapon.proj_speed
         self.pos = self.weapon.agent.pos.copy()
         self.vel = self.weapon.agent.vel.copy()

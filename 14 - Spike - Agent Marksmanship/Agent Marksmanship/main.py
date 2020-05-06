@@ -20,10 +20,6 @@ def on_key_press(symbol, modifiers):
     elif symbol == KEY.L:
         for agent in world.agents:
             agent.show_info = not agent.show_info
-    elif symbol == KEY.SPACE:
-        for agent in world.agents:
-            if agent.mode == 'attacking':
-                agent.weapon.shoot()
     elif symbol in PROJECTILE_SPEED:
         for agent in world.agents:
             agent.weapon.proj_speed = PROJECTILE_SPEED[symbol]

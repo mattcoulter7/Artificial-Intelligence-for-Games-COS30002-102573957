@@ -15,7 +15,6 @@ class World(object):
         self.cx = cx
         self.cy = cy
         self.agents = []
-        self.agents_queue = []
         self.paused = True
         self.showinfo = True
 
@@ -79,6 +78,7 @@ class World(object):
         return wld_pts
 
     def agents_of_type(self,type):
+        '''returns all agent of a given mode'''
         agents = []
         for agent in self.agents:
             if agent.mode == type:

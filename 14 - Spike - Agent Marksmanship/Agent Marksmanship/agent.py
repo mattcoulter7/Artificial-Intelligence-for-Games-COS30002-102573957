@@ -43,7 +43,6 @@ class Agent(object):
 
         # Aiming info
         self.look_ahead = None
-        self.closest_target = None
 
         # debug draw info?
         self.show_info = False
@@ -65,8 +64,11 @@ class Agent(object):
         return force
 
     def should_shoot(self):
+        '''uses distance, proj velocity and target agent velocity to predict which direction to shoot'''
         if self.world.agents_of_type('target'):
+            # Gets closest target to try and shoot
             closest_target = self.closest(self.world.agents_of_type('target'))
+            # Predicts where the 
             predicted_pos = closest_target.vel.copy()
             predicted_pos.normalise()
             to_target = closest_target.pos - self.pos
@@ -74,7 +76,6 @@ class Agent(object):
             self.look_ahead = dist / 1.5 * closest_target.speed() / self.weapon.proj_speed
             predicted_pos *= self.look_ahead
             to_predicted = closest_target.pos + predicted_pos - self.pos
-                
             angle = self.vel.angle_with(to_predicted) * 180 / pi
             if angle < self.weapon.accuracy and angle > -self.weapon.accuracy:
                 return True
@@ -180,6 +181,7 @@ class Agent(object):
         return (desired_vel - self.vel)
 
     def chase(self,target):
+        '''seeks the prdicted position of an agent'''
         predicted_pos = target.vel.copy()
         predicted_pos.normalise()
         predicted_pos *= self.look_ahead

@@ -2,22 +2,24 @@ from projectile import Projectile
 from point2d import Point2D
 from graphics import egi, KEY
 from queue import Queue
+from random import randrange
+from playsound import playsound
 
 PROJECTILE_SPEED = {
-    KEY.F: 1000.0, # fast
+    KEY.F: 2500.0, # fast
     KEY.S: 500.0 # slow
 }
 
 PROJECTILE_ACCURACY = {
     KEY.A: 0.5, # small margin of error for perfect shot
-    KEY.I: 10.0 # big margin of error for perfect shot
+    KEY.I: 20.0 # big margin of error for perfect shot
 }
 
 class Weapon(object):
     """description of class"""
     def __init__(self,agent = None,world = None):
         self.projectiles = []
-        self.projectiles_queue = Queue(maxsize = 1)
+        self.projectiles_queue = Queue(maxsize = 10)
         self.agent = agent
         self.world = world
         self.color = 'WHITE'
@@ -55,6 +57,8 @@ class Weapon(object):
             proj.calculate()
             # Put obj in list so it is updated
             self.projectiles.append(proj)
+        sound = randrange(0,7)
+        playsound('b%s.wav' % sound,block = False)
 
     def initialise_queue(self,queue):
         '''Fills up a queue to its max size'''
