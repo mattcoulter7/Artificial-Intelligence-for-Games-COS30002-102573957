@@ -17,7 +17,7 @@ class Weapon(object):
     """description of class"""
     def __init__(self,agent = None,world = None):
         self.projectiles = []
-        self.projectiles_queue = Queue(maxsize = 20)
+        self.projectiles_queue = Queue(maxsize = 1)
         self.agent = agent
         self.world = world
         self.color = 'WHITE'
@@ -52,7 +52,7 @@ class Weapon(object):
             # Get obj at front of queue
             proj = self.projectiles_queue.get()
             # Prepare for shooting
-            proj.prepare()
+            proj.calculate()
             # Put obj in list so it is updated
             self.projectiles.append(proj)
 

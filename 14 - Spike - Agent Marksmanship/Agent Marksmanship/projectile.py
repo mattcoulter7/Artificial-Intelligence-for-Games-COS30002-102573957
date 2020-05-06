@@ -46,7 +46,7 @@ class Projectile(object):
             if agent is not self.weapon.agent:
                 to_agent = agent.pos - self.pos
                 dist = to_agent.length()
-                if dist < 20:
+                if dist < 30:
                     return agent
         return False
 
@@ -54,7 +54,8 @@ class Projectile(object):
         self.weapon.projectiles.remove(self)
         self.weapon.projectiles_queue.put(self)
 
-    def prepare(self):
+    def calculate(self):
+        self.max_speed = self.weapon.proj_speed
         self.pos = self.weapon.agent.pos.copy()
         self.vel = self.weapon.agent.vel.copy()
-        self.max_speed = self.weapon.proj_speed
+        

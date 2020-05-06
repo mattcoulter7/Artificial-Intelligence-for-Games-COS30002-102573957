@@ -1,7 +1,6 @@
-from vector2d import Vector2D
-from vector2d import Point2D
+from vector2d import Vector2D,Point2D,Vector2DToPoint
 from graphics import egi, KEY
-from math import sin, cos, radians
+from math import sin, cos, radians, pi
 from random import random, randrange, uniform
 from weapon import Weapon
 
@@ -41,6 +40,11 @@ class Agent(object):
         # Force and speed limiting code
         self.max_speed = 20.0 * scale
         self.max_force = 500.0
+
+        # Aiming info
+        self.look_ahead = None
+        self.closest_target = None
+
         # debug draw info?
         self.show_info = False
 
@@ -51,7 +55,7 @@ class Agent(object):
         if mode == 'attacking':
             target = None
             if self.world.agents_of_type('target'):
-                force = self.seek(self.closest(self.world.agents_of_type('target')).pos)
+                force = self.chase(self.closest(self.world.agents_of_type('target')))
             else:
                 force = self.wander(delta)
         elif mode == 'target':
@@ -60,8 +64,28 @@ class Agent(object):
             force = Vector2D()
         return force
 
+    def should_shoot(self):
+        if self.world.agents_of_type('target'):
+            closest_target = self.closest(self.world.agents_of_type('target'))
+            predicted_pos = closest_target.vel.copy()
+            predicted_pos.normalise()
+            to_target = closest_target.pos - self.pos
+            dist = to_target.length()
+            self.look_ahead = dist / 1.5 * closest_target.speed() / self.weapon.proj_speed
+            predicted_pos *= self.look_ahead
+            to_predicted = closest_target.pos + predicted_pos - self.pos
+                
+            angle = self.vel.angle_with(to_predicted) * 180 / pi
+            if angle < 2 and angle > -2:
+                return True
+        return False
+
     def update(self, delta):
         ''' update vehicle position and orientation '''
+        # Attacking agents shoot according to weapon accuracy
+        if self.mode == 'attacking' and self.should_shoot():
+            self.weapon.shoot()
+
         # calculate and set self.force to be applied
         ## force = self.calculate()
         self.force = self.calculate(delta)
@@ -81,9 +105,11 @@ class Agent(object):
             self.side = self.heading.perp()
         # treat world as continuous space - wrap new position if needed
         self.world.wrap_around(self.pos)
+        
 
     def render(self, color=None):
         ''' Draw the triangle agent with color'''
+        middle = Vector2D(self.world.cx/2,self.world.cy/2)
         # draw the ship
         egi.set_pen_color(name=self.color)
         pts = self.world.transform_points(self.vehicle_shape, self.pos,
@@ -97,17 +123,38 @@ class Agent(object):
 
         # add some handy debug drawing info lines - force and velocity
         if self.show_info:
-            s = 0.5 # <-- scaling factor
-            # force
-            egi.red_pen()
-            egi.line_with_arrow(self.pos, self.pos + self.force * s, 5)
-            # velocity
-            egi.grey_pen()
-            egi.line_with_arrow(self.pos, self.pos + self.vel * s, 5)
-            # net (desired) change
-            egi.white_pen()
-            egi.line_with_arrow(self.pos+self.vel * s, self.pos+ (self.force+self.vel) * s, 5)
-            egi.line_with_arrow(self.pos, self.pos+ (self.force+self.vel) * s, 5)
+            if self.mode == 'attacking':
+                # Blue line for bullet path
+                egi.blue_pen()
+                shoot_path = self.vel.copy()
+                shoot_path.normalise()
+                shoot_path *= self.weapon.proj_speed
+                egi.line_with_arrow(self.pos,self.pos + shoot_path,5)
+                # egi.line_with_arrow(middle, middle + shoot_path,5)
+                
+                # Red line for predicted location of closest target
+                if self.world.agents_of_type('target'):
+                    # Necessary render from attacking agent because of look_ahead
+                    closest_target = self.closest(self.world.agents_of_type('target'))
+                    egi.red_pen()
+                    ahead_line = closest_target.vel.copy()
+                    ahead_line.normalise()
+                    ahead_line *= self.look_ahead
+                    egi.line_with_arrow(closest_target.pos,closest_target.pos + ahead_line,5)
+                    
+                    # Green line for line from attaking to predicted target location 
+                    egi.green_pen()
+                    predicted_pos = closest_target.vel.copy()
+                    predicted_pos.normalise()
+                    predicted_pos *= self.look_ahead
+                    to_predicted = closest_target.pos + predicted_pos - self.pos
+                    
+                    egi.line_with_arrow(self.pos,closest_target.pos + predicted_pos,5)
+                    # egi.line_with_arrow(middle, middle + to_predicted,5)
+
+                    angle = self.vel.angle_with(to_predicted) * 180 / pi
+                    print(angle)
+                    
 
     def speed(self):
         return self.vel.length()
@@ -131,6 +178,13 @@ class Agent(object):
         ''' move towards target position '''
         desired_vel = (target_pos - self.pos).normalise() * self.max_speed
         return (desired_vel - self.vel)
+
+    def chase(self,target):
+        predicted_pos = target.vel.copy()
+        predicted_pos.normalise()
+        predicted_pos *= self.look_ahead
+        target_pos = predicted_pos + target.pos
+        return self.seek(target_pos)
 
     def wander(self, delta):
         ''' random wandering using a projected jitter circle '''

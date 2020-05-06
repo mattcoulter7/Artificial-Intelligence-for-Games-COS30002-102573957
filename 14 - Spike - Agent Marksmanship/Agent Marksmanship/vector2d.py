@@ -7,7 +7,7 @@ For class use only. Do not publically share or post this code without permission
 Updated by Steve Dower
 '''
 
-from math import sqrt
+from math import sqrt,atan2
 from point2d import Point2D  # Not used here, but easy way to expose it
 
 MIN_FLOAT = 1e-300
@@ -16,12 +16,11 @@ MIN_FLOAT = 1e-300
 def is_equal(a, b):
     return abs(a-b) < 1e-12
 
-# Not needed, but fyi ...
-#def PointToVector2D(pt):
-#    return Vector2D(pt.x, pt.y)
-#
-#def Vector2DToPoint(v):
-#    return Point2D(v.x, v.y)
+def PointToVector2D(pt):
+    return Vector2D(pt.x, pt.y)
+
+def Vector2DToPoint(v):
+    return Point2D(v.x, v.y)
 
 
 class Vector2D(object):
@@ -114,6 +113,16 @@ class Vector2D(object):
     def get_reverse(self):
         ''' return a new vector that is the reverse of self. '''
         return Vector2D(-self.x, -self.y)
+
+    def angle_with(self,v2):
+        return atan2(v2.y, v2.x) - atan2(self.y, self.x)
+
+    def point_on(self, pt1, pt2):
+        m = self.y/self.x
+        c = pt1.y - pt1.x * m
+        if pt2.y == m * pt2.x + c:  
+            return True
+        return False 
 
     def __neg__(self):  # -
         ''' get_reverse(), but using - operator based instead. '''

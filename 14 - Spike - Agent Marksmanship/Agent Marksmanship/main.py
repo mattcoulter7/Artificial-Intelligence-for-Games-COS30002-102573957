@@ -15,6 +15,9 @@ def on_key_press(symbol, modifiers):
         world.paused = not world.paused
     elif symbol == KEY.O:
         world.agents.append(Agent(world,'target'))
+    elif symbol == KEY.L:
+        for agent in world.agents:
+            agent.show_info = not agent.show_info
     elif symbol == KEY.SPACE:
         for agent in world.agents:
             if agent.mode == 'attacking':
@@ -22,7 +25,6 @@ def on_key_press(symbol, modifiers):
     elif symbol in PROJECTILE_SPEED:
         for agent in world.agents:
             agent.weapon.proj_speed = PROJECTILE_SPEED[symbol]
-
     elif symbol in PROJECTILE_ACCURACY:
         for agent in world.agents:
             agent.weapon.accuracy = PROJECTILE_SPEED[PROJECTILE_ACCURACY]
