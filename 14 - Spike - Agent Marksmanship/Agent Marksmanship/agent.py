@@ -2,7 +2,7 @@ from vector2d import Vector2D
 from vector2d import Point2D
 from graphics import egi, KEY
 from math import sin, cos, radians
-from random import random, randrange
+from random import random, randrange, uniform
 from weapon import Weapon
 
 class Agent(object):
@@ -10,6 +10,7 @@ class Agent(object):
         # keep a reference to the world object
         self.world = world
         self.mode = mode
+        self.weapon = Weapon(self,world)
 
         # where am i and where am i going? random start pos
         dir = radians(random()*360)
@@ -30,22 +31,31 @@ class Agent(object):
             Point2D(-1.0, -0.6)
         ]
 
+        # NEW WANDER INFO
+        self.wander_target = Vector2D(1, 0)
+        self.wander_dist = 1.0 * scale
+        self.wander_radius = 1.0 * scale
+        self.wander_jitter = 10.0 * scale
+        self.bRadius = scale
+
         # Force and speed limiting code
         self.max_speed = 20.0 * scale
         self.max_force = 500.0
         # debug draw info?
         self.show_info = False
 
-        self.weapon = Weapon(self,world)
-
     def calculate(self,delta):
         # reset the steering force
         mode = self.mode
         force = None
         if mode == 'attacking':
-            force = Vector2D(0,0) - self.pos
+            target = None
+            if self.world.agents_of_type('target'):
+                force = self.seek(self.closest(self.world.agents_of_type('target')).pos)
+            else:
+                force = self.wander(delta)
         elif mode == 'target':
-            force = Vector2D(0,0) - self.pos
+            force = self.wander(delta)
         else:
             force = Vector2D()
         return force
@@ -102,9 +112,42 @@ class Agent(object):
     def speed(self):
         return self.vel.length()
 
+    def closest(self,objects):
+        # Returns the closest object to self from a given list of objects
+        dist_to_closest = None
+        closest = None
+        # Gets the closest object to hide behind
+        for obj in objects:
+            to_obj = obj.pos - self.pos
+            dist = to_obj.length()
+            if (closest is None or dist < dist_to_closest):
+                closest = obj
+                dist_to_closest = dist
+        return closest
+
     #--------------------------------------------------------------------------
 
     def seek(self, target_pos):
         ''' move towards target position '''
         desired_vel = (target_pos - self.pos).normalise() * self.max_speed
         return (desired_vel - self.vel)
+
+    def wander(self, delta):
+        ''' random wandering using a projected jitter circle '''
+        wt = self.wander_target
+        # this behaviour is dependent on the update rate, so this line must
+        # be included when using time independent framerate.
+        jitter_tts = self.wander_jitter * delta # this time slice
+        # first, add a small random vector to the target's position
+        wt += Vector2D(uniform(-1,1) * jitter_tts, uniform(-1,1) * jitter_tts)
+        # re-project this new vector back on to a unit circle
+        wt.normalise()
+        # increase the length of the vector to the same as the radius
+        # of the wander circle
+        wt *= self.wander_radius
+        # move the target into a position WanderDist in front of the agent
+        target = wt + Vector2D(self.wander_dist, 0)
+        # project the target into world space
+        wld_target = self.world.transform_point(target, self.pos, self.heading, self.side)
+        # and steer towards it
+        return self.seek(wld_target)

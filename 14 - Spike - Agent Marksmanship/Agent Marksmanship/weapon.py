@@ -1,11 +1,20 @@
 from projectile import Projectile
 from point2d import Point2D
-from graphics import egi
+from graphics import egi, KEY
 from queue import Queue
+
+PROJECTILE_SPEED = {
+    KEY.F: 1000.0, # slow
+    KEY.S: 750.0# fast
+}
+
+PROJECTILE_ACCURACY = {
+    KEY.A: '0.1', # small margin of error for perfect shot
+    KEY.I: '0.5' # big margin of error for perfect shot
+}
 
 class Weapon(object):
     """description of class"""
-
     def __init__(self,agent = None,world = None):
         self.projectiles = []
         self.projectiles_queue = Queue(maxsize = 20)
@@ -21,6 +30,9 @@ class Weapon(object):
             Point2D( 0.0, -0.5),
             Point2D( 0.0, 0.0)
         ]
+        self.proj_speed = 1000.0
+        self.accuracy = 1.0
+        self.initialise_queue(self.projectiles_queue)
 
     def update(self,delta):
         # Update position of all projectiles

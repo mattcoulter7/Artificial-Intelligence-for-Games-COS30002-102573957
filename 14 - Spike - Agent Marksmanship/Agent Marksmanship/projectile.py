@@ -8,7 +8,7 @@ class Projectile(object):
         self.weapon = weapon
         self.pos = Vector2D()
         self.vel = Vector2D()
-        self.max_speed = 1000.0
+        self.max_speed = None
 
     def update(self,delta):
         # check for limits of new velocity
@@ -57,3 +57,4 @@ class Projectile(object):
     def prepare(self):
         self.pos = self.weapon.agent.pos.copy()
         self.vel = self.weapon.agent.vel.copy()
+        self.max_speed = self.weapon.proj_speed
