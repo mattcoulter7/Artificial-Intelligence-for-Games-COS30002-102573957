@@ -76,7 +76,7 @@ class Agent(object):
             to_predicted = closest_target.pos + predicted_pos - self.pos
                 
             angle = self.vel.angle_with(to_predicted) * 180 / pi
-            if angle < 2 and angle > -2:
+            if angle < self.weapon.accuracy and angle > -self.weapon.accuracy:
                 return True
         return False
 

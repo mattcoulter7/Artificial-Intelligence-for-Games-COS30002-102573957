@@ -7,14 +7,16 @@ from world import World
 from agent import Agent
 from weapon import PROJECTILE_SPEED,PROJECTILE_ACCURACY
 
-SCREEN_WIDTH = 1000
+SCREEN_WIDTH = 1500
 SCREEN_HEIGHT = 1000
 
 def on_key_press(symbol, modifiers):
     if symbol == KEY.P:
         world.paused = not world.paused
-    elif symbol == KEY.O:
+    elif symbol == KEY.M:
         world.agents.append(Agent(world,'target'))
+    elif symbol == KEY.N:
+        world.agents.append(Agent(world,'attacking'))
     elif symbol == KEY.L:
         for agent in world.agents:
             agent.show_info = not agent.show_info
@@ -27,8 +29,7 @@ def on_key_press(symbol, modifiers):
             agent.weapon.proj_speed = PROJECTILE_SPEED[symbol]
     elif symbol in PROJECTILE_ACCURACY:
         for agent in world.agents:
-            agent.weapon.accuracy = PROJECTILE_SPEED[PROJECTILE_ACCURACY]
-        return
+            agent.weapon.accuracy = PROJECTILE_ACCURACY[symbol]
 
 def on_resize(cx, cy):
     world.cx = cx

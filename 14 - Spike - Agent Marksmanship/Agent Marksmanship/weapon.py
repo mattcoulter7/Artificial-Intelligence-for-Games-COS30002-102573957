@@ -4,13 +4,13 @@ from graphics import egi, KEY
 from queue import Queue
 
 PROJECTILE_SPEED = {
-    KEY.F: 1000.0, # slow
-    KEY.S: 750.0# fast
+    KEY.F: 1000.0, # fast
+    KEY.S: 500.0 # slow
 }
 
 PROJECTILE_ACCURACY = {
-    KEY.A: '0.1', # small margin of error for perfect shot
-    KEY.I: '0.5' # big margin of error for perfect shot
+    KEY.A: 0.5, # small margin of error for perfect shot
+    KEY.I: 10.0 # big margin of error for perfect shot
 }
 
 class Weapon(object):
@@ -31,7 +31,7 @@ class Weapon(object):
             Point2D( 0.0, 0.0)
         ]
         self.proj_speed = 1000.0
-        self.accuracy = 1.0
+        self.accuracy = 0.5
         self.initialise_queue(self.projectiles_queue)
 
     def update(self,delta):
