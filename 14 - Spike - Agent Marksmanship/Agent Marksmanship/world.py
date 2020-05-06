@@ -15,6 +15,7 @@ class World(object):
         self.cx = cx
         self.cy = cy
         self.agents = []
+        self.agents_queue = []
         self.paused = True
         self.showinfo = True
 

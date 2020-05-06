@@ -43,7 +43,7 @@ class Agent(object):
         mode = self.mode
         force = None
         if mode == 'attacking':
-            force = self.seek(self.pos)
+            force = Vector2D(0,0) - self.pos
         elif mode == 'target':
             force = Vector2D(0,0) - self.pos
         else:
