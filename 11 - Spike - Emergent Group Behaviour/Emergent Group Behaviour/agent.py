@@ -43,9 +43,9 @@ class Agent(object):
         self.max_force = 600.0
 
         # Cohesion, separation and alignment steering behaviours
-        self.cohesion = 200.0
-        self.separation = 80.0
-        self.alignment = 4000.0
+        self.cohesion = 400.0
+        self.separation = 100.0
+        self.alignment = 200.0
         self.neighbours = []
         self.closeby = []
 
@@ -193,27 +193,27 @@ class Agent(object):
         return closest
 
     #--------------------------------------------------------------------------
-    def seek(self, target_pos):
-        ''' move towards target position '''
-        desired_vel = (target_pos - self.pos).normalise() * self.max_speed
-        return (desired_vel - self.vel)
 
     def emerge(self):
         # Approaches the average heading
         ave_heading = self.neighbour_average('heading')
+        ave_heading.normalise()
         target = self.pos + self.alignment * ave_heading
-        return self.seek(target)
+        to_target = target - self.pos
+        return to_target
 
     def approach_centre(self):
         # Approaches the centre
         ave_position = self.neighbour_average('pos')
-        return self.seek(ave_position)
+        to_ave = ave_position - self.pos
+        return to_ave
 
     def seperate(self):
         # Moves away from nearby agent
         closest_agent_pos = self.closest(self.closeby).pos
         target = (2 * self.pos - closest_agent_pos)
-        return self.seek(target)
+        to_target = target - self.pos
+        return to_target
 
     def wander(self, delta):
         ''' random wandering using a projected jitter circle '''
