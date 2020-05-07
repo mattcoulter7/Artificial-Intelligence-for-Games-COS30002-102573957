@@ -193,6 +193,10 @@ class Agent(object):
         return closest
 
     #--------------------------------------------------------------------------
+    def seek(self, target_pos):
+        ''' move towards target position '''
+        desired_vel = (target_pos - self.pos).normalise() * self.max_speed
+        return (desired_vel - self.vel)
 
     def emerge(self):
         # Approaches the average heading
