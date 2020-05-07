@@ -103,18 +103,13 @@ class Agent(object):
 
     def render(self, color=None):
         ''' Draw the triangle agent with color'''
-        middle = Vector2D(self.world.cx/2,self.world.cy/2)
+        # middle = Vector2D(self.world.cx/2,self.world.cy/2)
         # draw the ship
         egi.set_pen_color(name=self.color)
         pts = self.world.transform_points(self.vehicle_shape, self.pos,
                                           self.heading, self.side, self.scale)
         # draw it!
         egi.closed_shape(pts)
-
-        # draw the path if it exists and the mode is follow
-        if self.mode == 'follow_path':
-            self.path.render()
-
         # add some handy debug drawing info lines - force and velocity
         if self.show_info:
             if self.mode == 'attacking':
