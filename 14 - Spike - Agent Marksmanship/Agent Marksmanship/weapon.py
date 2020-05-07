@@ -12,14 +12,14 @@ PROJECTILE_SPEED = {
 
 PROJECTILE_ACCURACY = {
     KEY.A: 0.5, # small margin of error for perfect shot
-    KEY.I: 20.0 # big margin of error for perfect shot
+    KEY.I: 180.0 # big margin of error for perfect shot
 }
 
 class Weapon(object):
     """description of class"""
     def __init__(self,agent = None,world = None):
         self.projectiles = []
-        self.projectiles_queue = Queue(maxsize = 10)
+        self.projectiles_queue = Queue(maxsize = 5)
         self.agent = agent
         self.world = world
         self.color = 'WHITE'

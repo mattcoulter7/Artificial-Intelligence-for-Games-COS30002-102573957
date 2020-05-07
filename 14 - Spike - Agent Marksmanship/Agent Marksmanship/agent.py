@@ -41,8 +41,6 @@ class Agent(object):
         self.max_speed = 20.0 * scale
         self.max_force = 500.0
 
-        # Aiming info
-        self.look_ahead = None
 
         # debug draw info?
         self.show_info = False
@@ -66,19 +64,15 @@ class Agent(object):
     def should_shoot(self):
         '''uses distance, proj velocity and target agent velocity to predict which direction to shoot'''
         if self.world.agents_of_type('target'):
-            # Gets closest target to try and shoot
-            closest_target = self.closest(self.world.agents_of_type('target'))
-            # Predicts where the 
-            predicted_pos = closest_target.vel.copy()
-            predicted_pos.normalise()
-            to_target = closest_target.pos - self.pos
-            dist = to_target.length()
-            self.look_ahead = dist / 1.5 * closest_target.speed() / self.weapon.proj_speed
-            predicted_pos *= self.look_ahead
-            to_predicted = closest_target.pos + predicted_pos - self.pos
-            angle = self.vel.angle_with(to_predicted) * 180 / pi
-            if angle < self.weapon.accuracy and angle > -self.weapon.accuracy:
-                return True
+            for agent in self.world.agents_of_type('target'):
+                # Predicts where the 
+                predicted_pos = agent.vel.copy()
+                predicted_pos.normalise()
+                predicted_pos *= self.get_look_ahead(agent)
+                to_predicted = agent.pos + predicted_pos - self.pos
+                angle = self.vel.angle_with(to_predicted) * 180 / pi
+                if angle < self.weapon.accuracy and angle > -self.weapon.accuracy:
+                    return True
         return False
 
     def update(self, delta):
@@ -106,7 +100,6 @@ class Agent(object):
             self.side = self.heading.perp()
         # treat world as continuous space - wrap new position if needed
         self.world.wrap_around(self.pos)
-        
 
     def render(self, color=None):
         ''' Draw the triangle agent with color'''
@@ -138,18 +131,14 @@ class Agent(object):
                     # Necessary render from attacking agent because of look_ahead
                     closest_target = self.closest(self.world.agents_of_type('target'))
                     egi.red_pen()
-                    ahead_line = closest_target.vel.copy()
-                    ahead_line.normalise()
-                    ahead_line *= self.look_ahead
-                    egi.line_with_arrow(closest_target.pos,closest_target.pos + ahead_line,5)
+                    predicted_pos = closest_target.vel.copy()
+                    predicted_pos.normalise()
+                    predicted_pos *= self.get_look_ahead(closest_target)
+                    egi.line_with_arrow(closest_target.pos,closest_target.pos + predicted_pos,5)
                     
                     # Green line for line from attaking to predicted target location 
                     egi.green_pen()
-                    predicted_pos = closest_target.vel.copy()
-                    predicted_pos.normalise()
-                    predicted_pos *= self.look_ahead
                     to_predicted = closest_target.pos + predicted_pos - self.pos
-                    
                     egi.line_with_arrow(self.pos,closest_target.pos + predicted_pos,5)
                     # egi.line_with_arrow(middle, middle + to_predicted,5)
 
@@ -173,6 +162,12 @@ class Agent(object):
                 dist_to_closest = dist
         return closest
 
+    def get_look_ahead(self,agent):
+        to_target = agent.pos - self.pos
+        dist = to_target.length()
+        look_ahead = dist * agent.speed() / self.weapon.proj_speed
+        return look_ahead
+
     #--------------------------------------------------------------------------
 
     def seek(self, target_pos):
@@ -184,7 +179,7 @@ class Agent(object):
         '''seeks the prdicted position of an agent'''
         predicted_pos = target.vel.copy()
         predicted_pos.normalise()
-        predicted_pos *= self.look_ahead
+        predicted_pos *= self.get_look_ahead(target)
         target_pos = predicted_pos + target.pos
         return self.seek(target_pos)
 

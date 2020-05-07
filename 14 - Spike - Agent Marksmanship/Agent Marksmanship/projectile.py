@@ -1,5 +1,6 @@
 from graphics import egi
 from vector2d import Vector2D
+from playsound import playsound
 
 class Projectile(object):
     """description of class"""
@@ -23,6 +24,7 @@ class Projectile(object):
         agent_hit = self.intersect_agent()
         if agent_hit:
             self.world.agents.remove(agent_hit)
+            playsound('crash.wav',block=False)
             self.recycle()
 
     def render(self):
