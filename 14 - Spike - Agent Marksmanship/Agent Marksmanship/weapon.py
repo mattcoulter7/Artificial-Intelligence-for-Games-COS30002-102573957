@@ -7,7 +7,7 @@ from playsound import playsound
 
 PROJECTILE_SPEED = {
     KEY.F: 2500.0, # fast
-    KEY.S: 500.0 # slow
+    KEY.S: 1000.0 # slow
 }
 
 PROJECTILE_ACCURACY = {
@@ -19,7 +19,7 @@ class Weapon(object):
     """description of class"""
     def __init__(self,agent = None,world = None):
         self.projectiles = []
-        self.projectiles_queue = Queue(maxsize = 5)
+        self.projectiles_queue = Queue(maxsize = 25)
         self.agent = agent
         self.world = world
         self.color = 'WHITE'
@@ -32,7 +32,7 @@ class Weapon(object):
             Point2D( 0.0, -0.5),
             Point2D( 0.0, 0.0)
         ]
-        self.proj_speed = 1000.0
+        self.proj_speed = 2500.0
         self.accuracy = 0.5
         self.initialise_queue(self.projectiles_queue)
 
