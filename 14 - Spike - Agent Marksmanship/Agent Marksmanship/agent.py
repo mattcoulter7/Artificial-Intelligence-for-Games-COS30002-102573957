@@ -138,7 +138,7 @@ class Agent(object):
                     # egi.line_with_arrow(middle, middle + to_predicted,5)
 
                     angle = self.vel.angle_with(to_predicted) * 180 / pi
-                    print(angle)
+                    #print(angle)
                     
 
     def speed(self):

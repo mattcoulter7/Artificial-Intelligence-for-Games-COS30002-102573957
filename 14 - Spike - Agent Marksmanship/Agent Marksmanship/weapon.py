@@ -19,7 +19,7 @@ class Weapon(object):
     """description of class"""
     def __init__(self,agent = None,world = None):
         self.projectiles = []
-        self.projectiles_queue = Queue(maxsize = 25)
+        self.projectiles_queue = Queue(maxsize = 1)
         self.agent = agent
         self.world = world
         self.color = 'WHITE'

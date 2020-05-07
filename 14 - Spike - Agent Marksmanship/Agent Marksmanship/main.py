@@ -49,7 +49,8 @@ if __name__ == '__main__':
     world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
     # add one agent
     world.agents.append(Agent(world,'attacking'))
-    world.agents.append(Agent(world,'target'))
+    for i in range(10):
+        world.agents.append(Agent(world,'target'))
     # unpause the world ready for movement
     world.paused = False
 
