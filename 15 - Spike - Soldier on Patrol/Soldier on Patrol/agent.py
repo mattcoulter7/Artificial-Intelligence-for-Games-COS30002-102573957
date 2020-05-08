@@ -32,7 +32,7 @@ class Agent(object):
         self.mass = mass
 
         # data for drawing this agent
-        self.color = 'ORANGE'
+        self.color = 'WHITE'
         self.vehicle_shape = [
             Point2D(-1.0,  0.6),
             Point2D( 1.0,  0.0),
@@ -64,7 +64,8 @@ class Agent(object):
 
     def update(self, delta):
         ''' update state '''
-        if self.world.enemies:
+        alive = list(filter(lambda e: e.alive == True, self.world.enemies))
+        if alive:
             self.mode = 'attack'
         else:
             self.mode = 'patrol'
@@ -146,5 +147,6 @@ class Agent(object):
         self.path.create_random_path(10, margin, margin, cx - margin, cy - margin,looped = True)
 
     def attack(self):
-        closest = min(self.world.enemies, key = lambda e: (e.pos - self.pos).length())
+        alive = list(filter(lambda e: e.alive, self.world.enemies))
+        closest = min(alive, key = lambda e: (e.pos - self.pos).length())
         return self.arrive(closest.pos)
