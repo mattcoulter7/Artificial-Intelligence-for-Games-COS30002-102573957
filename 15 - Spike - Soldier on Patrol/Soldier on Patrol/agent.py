@@ -61,6 +61,8 @@ class Agent(object):
             force = self.follow_path()
         elif mode == 'attack':
             force = self.attack()
+        elif mode == 'hide':
+            force = self.hide()
         else:
             force = Vector2D()
         self.force = force
@@ -99,7 +101,10 @@ class Agent(object):
         ''' check if state should be updated '''
         alive_enemies = list(filter(lambda e: e.alive == True, self.world.enemies))
         if alive_enemies:
-            self.mode = 'attack'
+            if self.weapon.reloading:
+                self.mode = 'hide'
+            else:
+                self.mode = 'attack'
         else:
             self.mode = 'patrol'
 
@@ -120,10 +125,21 @@ class Agent(object):
             if self.world.enemies:
                 alive = list(filter(lambda e: e.alive, self.world.enemies))
                 if alive:
-                    closest = min(alive, key = lambda e: (e.pos - self.pos).length())
-                    to_closest = closest.pos - self.pos
-                    to_closest -= self.heading.copy() * self.shooting_distance
-                    egi.line_with_arrow(self.pos,self.pos + to_closest,5)
+                    enemy = min(alive, key = lambda e: (e.pos - self.pos).length() * e.health)
+                    if self.weapon.reloading:
+                        dead = list(filter(lambda e: e.alive == False, self.world.enemies))
+                        closest = min(dead, key = lambda e: (e.pos - self.pos).length())
+                        # Uses angle to calculate best spot behind the hiding object
+                        position = enemy.pos - closest.pos
+                        position.normalise()
+                        hiding_point = closest.pos - closest.scale * 2 * position
+                        egi.line_with_arrow(self.pos,hiding_point,5)
+                    else:
+                        to_closest = enemy.pos - self.pos
+                        to_closest -= self.heading.copy() * self.shooting_distance
+                        egi.line_with_arrow(self.pos,self.pos + to_closest,5)
+                    
+
 
     def speed(self):
         return self.vel.length()
@@ -185,3 +201,14 @@ class Agent(object):
         to_closest = closest.pos - self.pos
         to_closest -= self.heading.copy() * self.shooting_distance
         return self.arrive(self.pos + to_closest)
+
+    def hide(self):
+        alive = list(filter(lambda e: e.alive, self.world.enemies))
+        enemy = min(alive, key = lambda e: (e.pos - self.pos).length() * e.health)
+        dead = list(filter(lambda e: e.alive == False, self.world.enemies))
+        closest = min(dead, key = lambda e: (e.pos - self.pos).length())
+        # Uses angle to calculate best spot behind the hiding object
+        position = enemy.pos - closest.pos
+        position.normalise()
+        hiding_point = closest.pos - closest.scale * 2 * position
+        return self.arrive(hiding_point)

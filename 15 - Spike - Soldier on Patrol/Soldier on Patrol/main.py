@@ -27,7 +27,7 @@ def on_key_press(symbol, modifiers):
         world.agents.append(Agent(world))
     elif symbol == KEY.R:
         for agent in world.agents:
-            agent.randomise_path()
+            agent.weapon.reloading = not agent.weapon.reloading
     elif symbol == KEY.I:
         for agent in world.agents:
             agent.show_info = not agent.show_info
