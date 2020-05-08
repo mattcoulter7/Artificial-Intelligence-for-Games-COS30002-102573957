@@ -8,16 +8,14 @@ class Enemy(object):
         self.world = world
         self.pos = Vector2D(randrange(world.cx), randrange(world.cy))
         self.health = 100
-        self.shape = {
-            Point2D(-1.0,0.0),
-            Point2D(0.0,0.0),
-            Point2D(1.0,0.0),
-        }
 
     def render(self):
-        for pt in self.shape:
-            egi.white_pen()
-            egi.circle(pt,20)
+        egi.red_pen()
+        egi.circle(self.pos,20)
+        egi.white_pen()
+        egi.circle(self.pos,15)
+        egi.red_pen()
+        egi.circle(self.pos,10)
 
     def update(self):
         # Removes health if agent is in proximity
@@ -26,4 +24,7 @@ class Enemy(object):
             dist = to_agent.length()
             if dist < 50:
                 self.health -= 1
+
+        if self.health == 0:
+            self.world.enemies.remove(self)
 

@@ -39,7 +39,7 @@ class Agent(object):
             Point2D(-1.0, -0.6)
         ]
 
-        ### path to follow?
+        # Path to follow
         self.path = Path(looped = True)
         self.randomise_path()
         self.waypoint_threshold = 100.0
@@ -48,19 +48,27 @@ class Agent(object):
         self.max_speed = 20.0 * scale
         self.max_force = 500.0
         # debug draw info?
-        self.show_info = False
+        self.show_info = True
 
     def calculate(self,delta):
         # calculate the current steering force
         mode = self.mode
         if mode == 'patrol':
             force = self.follow_path()
+        elif mode == 'attack':
+            force = self.attack()
         else:
             force = Vector2D()
         self.force = force
         return force
 
     def update(self, delta):
+        ''' update state '''
+        if self.world.enemies:
+            self.mode = 'attack'
+        else:
+            self.mode = 'patrol'
+        
         ''' update vehicle position and orientation '''
         # calculate and set self.force to be applied
         ## force = self.calculate()
@@ -92,8 +100,9 @@ class Agent(object):
         egi.closed_shape(pts)
 
         # draw the path if it exists and the mode is follow
-        if self.mode == 'patrol':
-            self.path.render()
+        if self.show_info:
+            if self.mode in ['patrol','attack']:
+                self.path.render()
 
     def speed(self):
         return self.vel.length()
@@ -103,7 +112,7 @@ class Agent(object):
     def arrive(self, target_pos):
         ''' this behaviour is similar to seek() but it attempts to arrive at
             the target position with a zero velocity'''
-        decel_rate = 0.5
+        decel_rate = 1
         to_target = target_pos - self.pos
         dist = to_target.length()
         # calculate the speed required to reach the target given the
@@ -113,8 +122,9 @@ class Agent(object):
         speed = min(speed, self.max_speed)
         # from here proceed just like Seek except we don't need to
         # normalize the to_target vector because we have already gone to the
+        to_target.normalise()
         # trouble of calculating its length for dist.
-        desired_vel = to_target * (speed / dist)
+        desired_vel = to_target * speed
         return (desired_vel - self.vel)
 
     def follow_path(self):
@@ -134,3 +144,7 @@ class Agent(object):
         cy = self.world.cy
         margin = min(cx,cy) * 1/6
         self.path.create_random_path(10, margin, margin, cx - margin, cy - margin,looped = True)
+
+    def attack(self):
+        closest = min(self.world.enemies, key = lambda e: (e.pos - self.pos).length())
+        return self.arrive(closest.pos)
