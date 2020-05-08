@@ -27,7 +27,7 @@ class World(object):
                 agent.update(delta)
 
             for enemy in self.enemies:
-                enemy.update()
+                enemy.update(delta)
 
     def render(self):
         for agent in self.agents:

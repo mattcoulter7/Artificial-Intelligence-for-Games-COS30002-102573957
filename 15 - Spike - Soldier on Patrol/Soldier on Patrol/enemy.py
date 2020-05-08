@@ -29,14 +29,10 @@ class Enemy(object):
         if not self.alive:
             egi.cross(self.pos,self.scale/2)
 
-    def update(self):
-        # Removes health if agent is in proximity
+    def update(self,delta):
         if self.alive:
-            for agent in self.world.agents:
-                to_agent = agent.pos - self.pos
-                dist = to_agent.length()
-                if dist < self.scale * 2 :
-                    self.health -= 1
+            if self.health <= 0:
+                self.alive = False
 
-        if self.health == 0:
-            self.alive = False
+    def get_shot(self):
+        self.health -= 20

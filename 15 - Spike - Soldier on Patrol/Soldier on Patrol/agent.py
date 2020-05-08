@@ -9,9 +9,10 @@ For class use only. Do not publically share or post this code without permission
 from vector2d import Vector2D
 from vector2d import Point2D
 from graphics import egi, KEY
-from math import sin, cos, radians
+from math import sin, cos, radians, pi
 from random import random, randrange, uniform
 from path import Path
+from weapon import Weapon
 
 class Agent(object):
 
@@ -19,6 +20,7 @@ class Agent(object):
         # keep a reference to the world object
         self.world = world
         self.mode = mode
+        self.weapon = Weapon(self,world)
 
         # where am i and where am i going? random start pos
         dir = radians(random()*360)
@@ -47,6 +49,8 @@ class Agent(object):
         # Force and speed limiting code
         self.max_speed = 20.0 * scale
         self.max_force = 500.0
+
+        self.shooting_distance = 250.0
         # debug draw info?
         self.show_info = True
 
@@ -63,13 +67,13 @@ class Agent(object):
         return force
 
     def update(self, delta):
-        ''' update state '''
-        alive = list(filter(lambda e: e.alive == True, self.world.enemies))
-        if alive:
-            self.mode = 'attack'
-        else:
-            self.mode = 'patrol'
-        
+        ''' Check if state needs to be updated '''
+        self.check_state()
+        self.weapon.update(delta)
+        # Shoot
+        if self.mode == 'attack' and self.should_shoot():
+            self.weapon.shoot()
+
         ''' update vehicle position and orientation '''
         # calculate and set self.force to be applied
         ## force = self.calculate()
@@ -91,6 +95,14 @@ class Agent(object):
         # treat world as continuous space - wrap new position if needed
         self.world.wrap_around(self.pos)
 
+    def check_state(self):
+        ''' check if state should be updated '''
+        alive_enemies = list(filter(lambda e: e.alive == True, self.world.enemies))
+        if alive_enemies:
+            self.mode = 'attack'
+        else:
+            self.mode = 'patrol'
+
     def render(self, color=None):
         ''' Draw the triangle agent with color'''
         # draw the ship
@@ -100,15 +112,36 @@ class Agent(object):
         # draw it!
         egi.closed_shape(pts)
 
+        if self.mode == 'attack': self.weapon.render()
+
         # draw the path if it exists and the mode is follow
         if self.show_info:
-            if self.mode in ['patrol','attack']:
-                self.path.render()
+            self.path.render()
+            if self.world.enemies:
+                alive = list(filter(lambda e: e.alive, self.world.enemies))
+                if alive:
+                    closest = min(alive, key = lambda e: (e.pos - self.pos).length())
+                    to_closest = closest.pos - self.pos
+                    to_closest -= self.heading.copy() * self.shooting_distance
+                    egi.line_with_arrow(self.pos,self.pos + to_closest,5)
 
     def speed(self):
         return self.vel.length()
 
+    def should_shoot(self):
+        '''uses distance, proj velocity and target agent velocity to predict which direction to shoot'''
+        for enemy in list(filter(lambda e: e.alive == True, self.world.enemies)):
+            to_enemy = enemy.pos - self.pos
+            angle = self.vel.angle_with(to_enemy) * 180 / pi
+            if angle < self.weapon.accuracy and angle > -self.weapon.accuracy:
+                return True
+        return False
+
     #--------------------------------------------------------------------------
+    def seek(self, target_pos):
+        ''' move towards target position '''
+        desired_vel = (target_pos - self.pos).normalise() * self.max_speed
+        return (desired_vel - self.vel)
 
     def arrive(self, target_pos):
         ''' this behaviour is similar to seek() but it attempts to arrive at
@@ -148,5 +181,7 @@ class Agent(object):
 
     def attack(self):
         alive = list(filter(lambda e: e.alive, self.world.enemies))
-        closest = min(alive, key = lambda e: (e.pos - self.pos).length())
-        return self.arrive(closest.pos)
+        closest = min(alive, key = lambda e: (e.pos - self.pos).length() * e.health)
+        to_closest = closest.pos - self.pos
+        to_closest -= self.heading.copy() * self.shooting_distance
+        return self.arrive(self.pos + to_closest)
