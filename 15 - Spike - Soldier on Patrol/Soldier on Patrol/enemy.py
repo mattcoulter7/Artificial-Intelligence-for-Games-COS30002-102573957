@@ -4,12 +4,13 @@ from random import randrange
 
 class Enemy(object):
     """description of class"""
-    def __init__(self,world = None,scale = 30.0):
+    def __init__(self,world = None,pos = None,scale = 30.0):
         self.world = world
-        self.pos = Vector2D(randrange(world.cx), randrange(world.cy))
+        if pos is not None: self.pos = pos
+        else: self.pos = Vector2D(randrange(world.cx), randrange(world.cy))
         self.scale = scale
         self.alive = True
-        self.max_health = 100
+        self.max_health = randrange(50,200)
         self.health = self.max_health
 
     def render(self):
@@ -34,5 +35,5 @@ class Enemy(object):
             if self.health <= 0:
                 self.alive = False
 
-    def get_shot(self):
-        self.health -= 20
+    def get_shot(self,damage):
+        self.health -= damage

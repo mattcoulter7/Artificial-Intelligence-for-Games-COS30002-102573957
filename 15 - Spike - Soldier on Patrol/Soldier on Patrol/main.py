@@ -34,6 +34,10 @@ def on_key_press(symbol, modifiers):
     elif symbol == KEY.SPACE:
         world.enemies.append(Enemy(world))
 
+def on_mouse_press(x, y, button, modifiers):
+    if button == 1:  # left
+        world.enemies.append(Enemy(world,pos = Vector2D(x,y)))
+
 def on_resize(cx, cy):
     world.cx = cx
     world.cy = cy
@@ -50,6 +54,7 @@ if __name__ == '__main__':
     # register key and mouse event handlers
     win.push_handlers(on_key_press)
     win.push_handlers(on_resize)
+    win.push_handlers(on_mouse_press)
 
     # create a world for agents
     world = World(SCREEN_WIDTH, SCREEN_HEIGHT)

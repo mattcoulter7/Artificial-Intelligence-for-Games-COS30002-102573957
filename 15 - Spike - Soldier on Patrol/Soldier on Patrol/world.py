@@ -9,6 +9,7 @@ For class use only. Do not publically share or post this code without permission
 from vector2d import Vector2D
 from matrix33 import Matrix33
 from graphics import egi
+from path import Path
 
 
 class World(object):
@@ -20,6 +21,11 @@ class World(object):
         self.enemies = []
         self.paused = True
         self.show_info = True
+
+        # Path for all agents
+        self.path = Path(looped = True)
+        self.randomise_path()
+
 
     def update(self, delta):
         if not self.paused:
@@ -86,3 +92,9 @@ class World(object):
         mat.transform_vector2d(wld_pt)
         # done
         return wld_pt
+
+    def randomise_path(self):
+        cx = self.cx
+        cy = self.cy
+        margin = min(cx,cy) * 1/6
+        self.path.create_random_path(10, margin, margin, cx - margin, cy - margin,looped = True)

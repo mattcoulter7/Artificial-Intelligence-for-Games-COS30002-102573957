@@ -1,11 +1,3 @@
-'''An agent with Seek, Flee, Arrive, Pursuit behaviours
-
-Created for COS30002 AI for Games by Clinton Woodward <cwoodward@swin.edu.au>
-
-For class use only. Do not publically share or post this code without permission.
-
-'''
-
 from vector2d import Vector2D
 from vector2d import Point2D
 from graphics import egi, KEY
@@ -42,21 +34,26 @@ class Agent(object):
         ]
 
         # Path to follow
-        self.path = Path(looped = True)
-        self.randomise_path()
+        self.path = world.path
         self.waypoint_threshold = 100.0
 
         # Force and speed limiting code
         self.max_speed = 20.0 * scale
         self.max_force = 500.0
 
+        # Shooting variables
         self.shooting_distance = 250.0
+
+        # Cohesion, separation and alignment steering behaviours
+        self.separation = 200.0
+
         # debug draw info?
         self.show_info = True
 
     def calculate(self,delta):
         # calculate the current steering force
         mode = self.mode
+        force = Vector2D(0,0)
         if mode == 'patrol':
             force = self.follow_path()
         elif mode == 'attack':
@@ -65,6 +62,7 @@ class Agent(object):
             force = self.hide()
         else:
             force = Vector2D()
+        force += self.separate()
         self.force = force
         return force
 
@@ -96,6 +94,7 @@ class Agent(object):
             self.side = self.heading.perp()
         # treat world as continuous space - wrap new position if needed
         self.world.wrap_around(self.pos)
+        
 
     def check_state(self):
         ''' check if state should be updated '''
@@ -122,24 +121,6 @@ class Agent(object):
         # draw the path if it exists and the mode is follow
         if self.show_info:
             self.path.render()
-            if self.world.enemies:
-                alive = list(filter(lambda e: e.alive, self.world.enemies))
-                if alive:
-                    enemy = min(alive, key = lambda e: (e.pos - self.pos).length() * e.health)
-                    if self.weapon.reloading:
-                        dead = list(filter(lambda e: e.alive == False, self.world.enemies))
-                        closest = min(dead, key = lambda e: (e.pos - self.pos).length())
-                        # Uses angle to calculate best spot behind the hiding object
-                        position = enemy.pos - closest.pos
-                        position.normalise()
-                        hiding_point = closest.pos - closest.scale * 2 * position
-                        egi.line_with_arrow(self.pos,hiding_point,5)
-                    else:
-                        to_closest = enemy.pos - self.pos
-                        to_closest -= self.heading.copy() * self.shooting_distance
-                        egi.line_with_arrow(self.pos,self.pos + to_closest,5)
-                    
-
 
     def speed(self):
         return self.vel.length()
@@ -149,7 +130,7 @@ class Agent(object):
         for enemy in list(filter(lambda e: e.alive == True, self.world.enemies)):
             to_enemy = enemy.pos - self.pos
             angle = self.vel.angle_with(to_enemy) * 180 / pi
-            if angle < self.weapon.accuracy and angle > -self.weapon.accuracy:
+            if -self.weapon.accuracy < angle < self.weapon.accuracy:
                 return True
         return False
 
@@ -189,26 +170,49 @@ class Agent(object):
                 self.path.inc_current_pt()
             return self.arrive(self.path.current_pt())
 
-    def randomise_path(self):
-        cx = self.world.cx
-        cy = self.world.cy
-        margin = min(cx,cy) * 1/6
-        self.path.create_random_path(10, margin, margin, cx - margin, cy - margin,looped = True)
-
     def attack(self):
         alive = list(filter(lambda e: e.alive, self.world.enemies))
         closest = min(alive, key = lambda e: (e.pos - self.pos).length() * e.health)
         to_closest = closest.pos - self.pos
         to_closest -= self.heading.copy() * self.shooting_distance
+
+        dead = list(filter(lambda e: not e.alive, self.world.enemies))
+        if dead:
+            closest_dead = min(dead, key = lambda e: (e.pos - self.pos).length())
+            to_closest_dead = closest_dead.pos - self.pos
+            dist = to_closest_dead.length()
+            angle = self.vel.angle_with(to_closest_dead)
+            ratio = dist/angle
+            if 0 < ratio < closest_dead.scale/2:
+                to_closest += self.vel.perp().get_reverse().normalise()
+            else:
+                to_closest += self.vel.perp().normalise()
+
         return self.arrive(self.pos + to_closest)
 
     def hide(self):
+        '''Goes to nearest dead body and hides behind it'''
         alive = list(filter(lambda e: e.alive, self.world.enemies))
         enemy = min(alive, key = lambda e: (e.pos - self.pos).length() * e.health)
         dead = list(filter(lambda e: e.alive == False, self.world.enemies))
-        closest = min(dead, key = lambda e: (e.pos - self.pos).length())
-        # Uses angle to calculate best spot behind the hiding object
-        position = enemy.pos - closest.pos
-        position.normalise()
-        hiding_point = closest.pos - closest.scale * 2 * position
-        return self.arrive(hiding_point)
+        if dead:
+            closest = min(dead, key = lambda e: (e.pos - self.pos).length())
+            # Uses angle to calculate best spot behind the hiding object
+            position = enemy.pos - closest.pos
+            position.normalise()
+            hiding_point = closest.pos - closest.scale * 2 * position
+            return self.arrive(hiding_point)
+        return Vector2D()
+
+    def separate(self):
+        # Moves away from nearby agent
+        closeby = list(filter(lambda a: a is not self and (a.pos - self.pos).length() < self.separation,self.world.agents))
+        if (closeby):
+            closest_agent_pos = min(closeby,key = lambda a: (a.pos - self.pos).length()).pos
+            target = (2 * self.pos - closest_agent_pos)
+            to_target = target - self.pos
+            length = to_target.copy().length()
+            to_target.normalise()
+            to_target *= self.separation - length
+            return to_target
+        return Vector2D()
