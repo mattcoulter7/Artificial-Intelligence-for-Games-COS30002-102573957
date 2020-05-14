@@ -1,11 +1,3 @@
-'''A 2d world that supports agents with steering behaviour
-
-Created for COS30002 AI for Games by Clinton Woodward <cwoodward@swin.edu.au>
-
-For class use only. Do not publically share or post this code without permission.
-
-'''
-
 from vector2d import Vector2D
 from matrix33 import Matrix33
 from graphics import egi
@@ -19,6 +11,7 @@ class World(object):
         self.cy = cy
         self.agents = []
         self.enemies = []
+        self.weapons = []
         self.paused = True
         self.show_info = True
 
@@ -41,6 +34,9 @@ class World(object):
 
         for enemy in self.enemies:
             enemy.render()
+
+        for weapon in self.weapons:
+            weapon.render()
 
         if self.show_info:
             infotext = ', '.join(set(agent.mode for agent in self.agents))

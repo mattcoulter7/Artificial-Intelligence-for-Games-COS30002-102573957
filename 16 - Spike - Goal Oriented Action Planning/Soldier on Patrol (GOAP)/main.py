@@ -16,6 +16,7 @@ from vector2d import Vector2D
 from world import World
 from agent import Agent
 from enemy import Enemy
+from weapon import Weapon
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 1000
@@ -33,6 +34,8 @@ def on_key_press(symbol, modifiers):
             agent.show_info = not agent.show_info
     elif symbol == KEY.SPACE:
         world.enemies.append(Enemy(world))
+    elif symbol == KEY.W:
+        world.weapons.append(Weapon(world))
 
 def on_mouse_press(x, y, button, modifiers):
     if button == 1:  # left

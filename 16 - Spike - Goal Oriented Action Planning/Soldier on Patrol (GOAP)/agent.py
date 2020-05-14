@@ -12,7 +12,7 @@ class Agent(object):
         # keep a reference to the world object
         self.world = world
         self.mode = mode
-        self.weapon = Weapon(self,world)
+        self.weapon = None
 
         # where am i and where am i going? random start pos
         dir = radians(random()*360)
@@ -41,9 +41,6 @@ class Agent(object):
         self.max_speed = 20.0 * scale
         self.max_force = 500.0
 
-        # Shooting variables
-        self.shooting_distance = 250.0
-
         # Cohesion, separation and alignment steering behaviours
         self.separation = 200.0
 
@@ -67,9 +64,13 @@ class Agent(object):
         return force
 
     def update(self, delta):
+        ''' Pickup weapon '''
+        self.pickup_weapon()
+        
         ''' Check if state needs to be updated '''
         self.check_state()
-        self.weapon.update(delta)
+        if self.weapon:
+            self.weapon.update(delta)
         # Shoot
         if self.mode == 'attack' and self.should_shoot():
             self.weapon.shoot()
@@ -99,7 +100,7 @@ class Agent(object):
     def check_state(self):
         ''' check if state should be updated '''
         alive_enemies = list(filter(lambda e: e.alive == True, self.world.enemies))
-        if alive_enemies:
+        if alive_enemies and self.weapon:
             if self.weapon.reloading:
                 self.mode = 'hide'
             else:
@@ -116,8 +117,6 @@ class Agent(object):
         # draw it!
         egi.closed_shape(pts)
 
-        if self.mode == 'attack': self.weapon.render()
-
         # draw the path if it exists and the mode is follow
         if self.show_info:
             self.path.render()
@@ -133,6 +132,16 @@ class Agent(object):
             if -self.weapon.accuracy < angle < self.weapon.accuracy:
                 return True
         return False
+    
+    def pickup_weapon(self):
+        # Picks up weapon from world if doesnt already have a weapon
+        if self.weapon is None:
+            for weapon in self.world.weapons:
+                to_weapon = weapon.pos - self.pos
+                dist = to_weapon.length() * 2
+                if dist < self.scale.length():
+                    weapon.agent = self
+                    self.weapon = weapon
 
     #--------------------------------------------------------------------------
     def seek(self, target_pos):
@@ -172,21 +181,15 @@ class Agent(object):
 
     def attack(self):
         alive = list(filter(lambda e: e.alive, self.world.enemies))
-        closest = min(alive, key = lambda e: (e.pos - self.pos).length() * e.health)
-        to_closest = closest.pos - self.pos
-        to_closest -= self.heading.copy() * self.shooting_distance
-
+        closest_alive = min(alive, key = lambda e: (e.pos - self.pos).length() * e.health)
         dead = list(filter(lambda e: not e.alive, self.world.enemies))
+        shooting_distance = 200
         if dead:
             closest_dead = min(dead, key = lambda e: (e.pos - self.pos).length())
-            to_closest_dead = closest_dead.pos - self.pos
-            dist = to_closest_dead.length()
-            angle = self.vel.angle_with(to_closest_dead)
-            ratio = dist/angle
-            if 0 < ratio < closest_dead.scale/2:
-                to_closest += self.vel.perp().get_reverse().normalise()
-            else:
-                to_closest += self.vel.perp().normalise()
+            shooting_distance = (closest_alive.pos - closest_dead.pos).length() / 2
+
+        to_closest = closest_alive.pos - self.pos
+        to_closest -= self.heading.copy() * shooting_distance
 
         return self.arrive(self.pos + to_closest)
 
