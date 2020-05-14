@@ -180,14 +180,16 @@ class Agent(object):
             return self.arrive(self.path.current_pt())
 
     def attack(self):
+        ''' Approaches agent nearby with least amount of health 
+            shooting distance is default 200 unless there is a dead enemynearby, then it will ensure it is infront of the dead enemy
+        '''
         alive = list(filter(lambda e: e.alive, self.world.enemies))
         closest_alive = min(alive, key = lambda e: (e.pos - self.pos).length() * e.health)
         dead = list(filter(lambda e: not e.alive, self.world.enemies))
-        shooting_distance = 200
+        shooting_distance = 400
         if dead:
             closest_dead = min(dead, key = lambda e: (e.pos - self.pos).length())
-            shooting_distance = (closest_alive.pos - closest_dead.pos).length() / 2
-
+            shooting_distance = (closest_alive.pos - closest_dead.pos).length() - 2 * closest_dead.scale
         to_closest = closest_alive.pos - self.pos
         to_closest -= self.heading.copy() * shooting_distance
 
