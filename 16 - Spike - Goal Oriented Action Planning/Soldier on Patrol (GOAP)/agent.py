@@ -53,15 +53,19 @@ class Agent(object):
         force = Vector2D(0,0)
         if mode == 'patrol':
             force = self.follow_path()
+            force += self.separate()
         elif mode == 'shoot':
             force = self.shoot()
         elif mode == 'hide':
             force = self.hide()
         elif mode == 'fight':
             force = self.fight()
+        elif mode == 'findweapon':
+            force = self.findweapon()
+        elif mode == 'findarmour':
+            force = self.findarmour()
         else:
             force = Vector2D()
-        force += self.separate()
         self.force = force
         return force
 
@@ -99,12 +103,29 @@ class Agent(object):
     def check_state(self):
         ''' check if state should be updated '''
         alive_enemies = list(filter(lambda e: e.alive == True, self.world.enemies))
-        if alive_enemies and self.weapon:
-            if self.weapon.reloading:
-                self.mode = 'fight'
-                self.mode = 'hide'
-            else:
+        dead_enemies = list(filter(lambda e: e.alive == False, self.world.enemies))
+        if alive_enemies:
+            closest_alive = min(alive_enemies, key = lambda e: (e.pos - self.pos).length())
+            to_closest_alive = (closest_alive.pos - self.pos).length()
+            if self.weapon:
                 self.mode = 'shoot'
+                if self.weapon.reloading:
+                    if dead_enemies:
+                        closest_dead = min(dead_enemies, key = lambda e: (e.pos - self.pos).length())
+                        to_closest_dead = (closest_dead.pos - self.pos).length()
+                        if to_closest_dead < to_closest_alive:
+                            self.mode = 'hide'
+                        else:
+                            self.mode = 'fight'
+            else:
+                if self.world.bodyarmour and not self.bodyarmour:
+                    self.mode = 'findarmour'
+                elif self.world.weapon:
+                    self.mode = 'findweapon'
+                elif dead_enemies:
+                    self.mode = 'hide'
+                else:
+                    self.mode = 'fight'
         else:
             self.mode = 'patrol'
 
@@ -185,22 +206,26 @@ class Agent(object):
             shooting distance is default 400 unless there is a dead enemynearby, then it will ensure it is infront of the dead enemy
         '''
         alive = list(filter(lambda e: e.alive, self.world.enemies))
-        closest_alive = min(alive, key = lambda e: (e.pos - self.pos).length() * e.health)
-        dead = list(filter(lambda e: not e.alive, self.world.enemies))
-        shooting_distance = 400
-        if dead:
-            closest_dead = min(dead, key = lambda e: (e.pos - closest_alive.pos).length())
-            shooting_distance = (closest_alive.pos - closest_dead.pos).length() - 2 * closest_dead.scale
-        to_closest = closest_alive.pos.copy()
-        to_closest -= self.heading.copy() * shooting_distance
-        return self.arrive(to_closest)
+        if alive:
+            closest_alive = min(alive, key = lambda e: (e.pos - self.pos).length() * e.health)
+            dead = list(filter(lambda e: not e.alive, self.world.enemies))
+            shooting_distance = 400
+            if dead:
+                closest_dead = min(dead, key = lambda e: (e.pos - closest_alive.pos).length())
+                shooting_distance = (closest_alive.pos - closest_dead.pos).length() - 2 * closest_dead.scale
+            to_closest = closest_alive.pos.copy()
+            to_closest -= self.heading.copy() * shooting_distance
+            return self.arrive(to_closest)
+        return Vector2D()
 
     def fight(self):
         ''' Approaches position of nearby enemy to fight'''
         alive = list(filter(lambda e: e.alive, self.world.enemies))
-        closest_alive = min(alive, key = lambda e: (e.pos - self.pos).length() * e.health)
-        to_closest = closest_alive.pos
-        return self.arrive(to_closest)
+        if alive:
+            closest_alive = min(alive, key = lambda e: (e.pos - self.pos).length() * e.health)
+            to_closest = closest_alive.pos
+            return self.arrive(to_closest)
+        return Vector2D()
         
     def hide(self):
         '''Goes to nearest dead body and hides behind it'''
@@ -228,3 +253,11 @@ class Agent(object):
             to_target *= self.separation - length
             return to_target
         return Vector2D()
+
+    def findweapon(self):
+        closest_weapon = min(self.world.weapon, key = lambda e: (e.pos - self.pos).length())
+        return self.arrive(closest_weapon.pos)
+
+    def findarmour(self):
+        closest_armour = min(self.world.bodyarmour, key = lambda e: (e.pos - self.pos).length())
+        return self.arrive(closest_armour.pos)
