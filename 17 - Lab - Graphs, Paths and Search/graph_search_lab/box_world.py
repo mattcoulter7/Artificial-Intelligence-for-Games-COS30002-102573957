@@ -344,24 +344,24 @@ class BoxWorld(object):
             # LEFT (i - 1)
             if (i%nx - 1) >= 0:
                 self._add_edge(i, i-1)
-#            # Diagonal connections
-#            # UP LEFT(i + nx - 1)
-#            j = i + nx
-#            if (j-1) < len(self.boxes) and (j%nx - 1) >= 0:
-#                self._add_edge(i, j-1, 1.4142) # sqrt(1+1)
-#            # UP RIGHT (i + nx + 1)
-#            j = i + nx
-#            if (j+1) < len(self.boxes) and (j%nx + 1) < nx:
-#                self._add_edge(i, j+1, 1.4142)
-#            # DOWN LEFT(i - nx - 1)
-#            j = i - nx
-#            if (j-1) >= 0 and (j%nx - 1) >= 0:
-#                print i, j, j%nx
-#                self._add_edge(i, j-1, 1.4142)
-#            # DOWN RIGHT (i - nx + 1)
-#            j = i - nx
-#            if (j+1) >= 0 and (j%nx +1) < nx:
-#                 self._add_edge(i, j+1, 1.4142)
+            # Diagonal connections
+            # UP LEFT(i + nx - 1)
+            j = i + nx
+            if (j-1) < len(self.boxes) and (j%nx - 1) >= 0:
+                self._add_edge(i, j-1, 1.4142) # sqrt(1+1)
+            # UP RIGHT (i + nx + 1)
+            j = i + nx
+            if (j+1) < len(self.boxes) and (j%nx + 1) < nx:
+                self._add_edge(i, j+1, 1.4142)
+            # DOWN LEFT(i - nx - 1)
+            j = i - nx
+            if (j-1) >= 0 and (j%nx - 1) >= 0:
+            #    print i, j, j%nx
+                self._add_edge(i, j-1, 1.4142)
+            # DOWN RIGHT (i - nx + 1)
+            j = i - nx
+            if (j+1) >= 0 and (j%nx +1) < nx:
+                 self._add_edge(i, j+1, 1.4142)
 
 
 
