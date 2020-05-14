@@ -17,6 +17,7 @@ from world import World
 from agent import Agent
 from enemy import Enemy
 from weapon import Weapon
+from bodyarmour import BodyArmour
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 1000
@@ -35,7 +36,9 @@ def on_key_press(symbol, modifiers):
     elif symbol == KEY.SPACE:
         world.enemies.append(Enemy(world))
     elif symbol == KEY.W:
-        world.weapons.append(Weapon(world))
+        world.weapon.append(Weapon(world))
+    elif symbol == KEY.B:
+        world.bodyarmour.append(BodyArmour(world))
 
 def on_mouse_press(x, y, button, modifiers):
     if button == 1:  # left

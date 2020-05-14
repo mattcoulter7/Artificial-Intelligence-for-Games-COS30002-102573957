@@ -18,7 +18,7 @@ class Projectile(object):
         
         enemy_hit = self.intersect_enemy()
         if enemy_hit:
-            enemy_hit.get_shot(self.damage)
+            enemy_hit.take_damage(self.damage)
             self.recycle()
         # check for limits of new velocity
         self.vel.normalise()

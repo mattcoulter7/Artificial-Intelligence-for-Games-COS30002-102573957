@@ -11,7 +11,8 @@ class World(object):
         self.cy = cy
         self.agents = []
         self.enemies = []
-        self.weapons = []
+        self.weapon = []
+        self.bodyarmour = []
         self.paused = True
         self.show_info = True
 
@@ -28,6 +29,12 @@ class World(object):
             for enemy in self.enemies:
                 enemy.update(delta)
 
+            for weapon in self.weapon:
+                weapon.update(delta)
+
+            for bodyarmour in self.bodyarmour:
+                bodyarmour.update(delta)
+
     def render(self):
         for agent in self.agents:
             agent.render()
@@ -35,8 +42,11 @@ class World(object):
         for enemy in self.enemies:
             enemy.render()
 
-        for weapon in self.weapons:
+        for weapon in self.weapon:
             weapon.render()
+
+        for bodyarmour in self.bodyarmour:
+            bodyarmour.render()
 
         if self.show_info:
             infotext = ', '.join(set(agent.mode for agent in self.agents))

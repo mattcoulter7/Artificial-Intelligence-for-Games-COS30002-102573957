@@ -13,7 +13,7 @@ class Agent(object):
         self.world = world
         self.mode = mode
         self.weapon = None
-
+        self.bodyarmour = None
         # where am i and where am i going? random start pos
         dir = radians(random()*360)
         self.pos = Vector2D(randrange(world.cx), randrange(world.cy))
@@ -53,10 +53,12 @@ class Agent(object):
         force = Vector2D(0,0)
         if mode == 'patrol':
             force = self.follow_path()
-        elif mode == 'attack':
-            force = self.attack()
+        elif mode == 'shoot':
+            force = self.shoot()
         elif mode == 'hide':
             force = self.hide()
+        elif mode == 'fight':
+            force = self.fight()
         else:
             force = Vector2D()
         force += self.separate()
@@ -65,14 +67,12 @@ class Agent(object):
 
     def update(self, delta):
         ''' Pickup weapon '''
-        self.pickup_weapon()
-        
+        self.pickup_object('weapon')
+        self.pickup_object('bodyarmour')
         ''' Check if state needs to be updated '''
         self.check_state()
-        if self.weapon:
-            self.weapon.update(delta)
         # Shoot
-        if self.mode == 'attack' and self.should_shoot():
+        if self.mode == 'shoot' and self.should_shoot():
             self.weapon.shoot()
 
         ''' update vehicle position and orientation '''
@@ -95,16 +95,16 @@ class Agent(object):
             self.side = self.heading.perp()
         # treat world as continuous space - wrap new position if needed
         self.world.wrap_around(self.pos)
-        
 
     def check_state(self):
         ''' check if state should be updated '''
         alive_enemies = list(filter(lambda e: e.alive == True, self.world.enemies))
         if alive_enemies and self.weapon:
             if self.weapon.reloading:
+                self.mode = 'fight'
                 self.mode = 'hide'
             else:
-                self.mode = 'attack'
+                self.mode = 'shoot'
         else:
             self.mode = 'patrol'
 
@@ -133,15 +133,15 @@ class Agent(object):
                 return True
         return False
     
-    def pickup_weapon(self):
+    def pickup_object(self,object):
         # Picks up weapon from world if doesnt already have a weapon
-        if self.weapon is None:
-            for weapon in self.world.weapons:
-                to_weapon = weapon.pos - self.pos
-                dist = to_weapon.length() * 2
-                if dist < self.scale.length():
-                    weapon.agent = self
-                    self.weapon = weapon
+        if getattr(self, object) is None:
+            for obj in getattr(self.world, object):
+                to_obj = obj.pos - self.pos
+                dist = to_obj.length()
+                if dist < self.scale.length() * 2:
+                    obj.agent = self
+                    setattr(self,object,obj)
 
     #--------------------------------------------------------------------------
     def seek(self, target_pos):
@@ -179,22 +179,29 @@ class Agent(object):
                 self.path.inc_current_pt()
             return self.arrive(self.path.current_pt())
 
-    def attack(self):
-        ''' Approaches agent nearby with least amount of health 
-            shooting distance is default 200 unless there is a dead enemynearby, then it will ensure it is infront of the dead enemy
+    def shoot(self):
+        ''' 
+            Approaches enemy nearby with least amount of health 
+            shooting distance is default 400 unless there is a dead enemynearby, then it will ensure it is infront of the dead enemy
         '''
         alive = list(filter(lambda e: e.alive, self.world.enemies))
         closest_alive = min(alive, key = lambda e: (e.pos - self.pos).length() * e.health)
         dead = list(filter(lambda e: not e.alive, self.world.enemies))
         shooting_distance = 400
         if dead:
-            closest_dead = min(dead, key = lambda e: (e.pos - self.pos).length())
+            closest_dead = min(dead, key = lambda e: (e.pos - closest_alive.pos).length())
             shooting_distance = (closest_alive.pos - closest_dead.pos).length() - 2 * closest_dead.scale
-        to_closest = closest_alive.pos - self.pos
+        to_closest = closest_alive.pos.copy()
         to_closest -= self.heading.copy() * shooting_distance
+        return self.arrive(to_closest)
 
-        return self.arrive(self.pos + to_closest)
-
+    def fight(self):
+        ''' Approaches position of nearby enemy to fight'''
+        alive = list(filter(lambda e: e.alive, self.world.enemies))
+        closest_alive = min(alive, key = lambda e: (e.pos - self.pos).length() * e.health)
+        to_closest = closest_alive.pos
+        return self.arrive(to_closest)
+        
     def hide(self):
         '''Goes to nearest dead body and hides behind it'''
         alive = list(filter(lambda e: e.alive, self.world.enemies))

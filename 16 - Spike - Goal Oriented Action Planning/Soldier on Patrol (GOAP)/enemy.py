@@ -35,5 +35,15 @@ class Enemy(object):
             if self.health <= 0:
                 self.alive = False
 
-    def get_shot(self,damage):
+        self.agent_fighting()
+
+    def take_damage(self,damage):
         self.health -= damage
+
+    def agent_fighting(self):
+        ''' Takes damage if agent is in close vicinty fighting self '''
+        for agent in self.world.agents:
+            to_agent = self.pos - agent.pos
+            dist = to_agent.length()
+            if dist < 2 * agent.scale.length():
+                self.take_damage(0.5)
