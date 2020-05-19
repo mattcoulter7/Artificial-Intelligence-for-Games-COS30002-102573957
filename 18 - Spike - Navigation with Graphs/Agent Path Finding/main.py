@@ -16,7 +16,7 @@ from pyglet import window, clock
 from pyglet.window import key
 from pyglet.gl import *
 from pyglet.text import Label
-
+from agent import Agent
 from box_world import BoxWorld, search_modes, cfg
 
 class BoxWorldWindow(pyglet.window.Window):
@@ -174,8 +174,6 @@ class BoxWorldWindow(pyglet.window.Window):
         for key, label in list(self.labels.items()):
             label.draw()
 
-
-
 #==============================================================================
 
 if __name__ == '__main__':
@@ -186,4 +184,9 @@ if __name__ == '__main__':
         filename = "map1.txt"
     window = BoxWorldWindow(filename)
     pyglet.app.run()
+
+    window.world.agents.append(Agent(self.world))
+    while not win.has_exit:
+        delta = clock.tick()
+        window.world.update(delta)
 

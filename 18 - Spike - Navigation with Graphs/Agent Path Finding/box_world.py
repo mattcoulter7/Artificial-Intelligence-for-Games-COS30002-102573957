@@ -203,6 +203,7 @@ class BoxWorld(object):
     '''A world made up of boxes. '''
 
     def __init__(self, nx, ny, cx, cy):
+        self.agents = []
         self.boxes = [None]*nx*ny
         self.nx, self.ny = nx, ny # number of box (squares)
         for i in range(len(self.boxes)):
@@ -227,11 +228,15 @@ class BoxWorld(object):
         return self.boxes[idx] if idx < len(self.boxes) else None
 
     def update(self, delta):
-        pass
+        for agent in self.world.agents:
+            agent.update(delta)
 
     def draw(self):
         for box in self.boxes:
             box.draw()
+
+        for agent in self.agents:
+            agent.render()
 
         if cfg['EDGES_ON']:
             egi.set_pen_color(name='LIGHT_BLUE')
