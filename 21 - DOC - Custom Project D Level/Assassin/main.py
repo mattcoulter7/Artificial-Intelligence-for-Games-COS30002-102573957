@@ -1,13 +1,3 @@
-'''Autonomous Agent Movement: Paths and Wandering
-
-Created for COS30002 AI for Games by Clinton Woodward <cwoodward@swin.edu.au>
-
-For class use only. Do not publically share or post this code without permission.
-
-This code is essentially the same as the base for the previous steering lab
-but with additional code to support this lab.
-
-'''
 from graphics import egi, KEY
 from pyglet import window, clock
 from pyglet.gl import *
@@ -25,24 +15,10 @@ def on_mouse_press(x, y, button, modifiers):
 def on_key_press(symbol, modifiers):
     if symbol == KEY.P:
         world.paused = not world.paused
-    elif symbol == KEY.A:
-        world.agents.append(Agent(world))
-    elif symbol == KEY.R:
-        for agent in world.agents:
-            agent.weapon.reloading = not agent.weapon.reloading
-    elif symbol == KEY.I:
-        for agent in world.agents:
-            agent.show_info = not agent.show_info
-    elif symbol == KEY.SPACE:
-        world.enemies.append(Enemy(world))
-    elif symbol == KEY.W:
-        world.weapon.append(Weapon(world))
-    elif symbol == KEY.B:
-        world.bodyarmour.append(BodyArmour(world))
 
 def on_mouse_press(x, y, button, modifiers):
     if button == 1:  # left
-        world.enemies.append(Enemy(world,pos = Vector2D(x,y)))
+        world.target = world.get_grid(x,y)
 
 def on_resize(cx, cy):
     world.cx = cx
@@ -61,11 +37,8 @@ if __name__ == '__main__':
     win.push_handlers(on_key_press)
     win.push_handlers(on_resize)
     win.push_handlers(on_mouse_press)
-
     # create a world for agents
     world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
-    # add one agent
-    world.agents.append(Agent(world))
     # unpause the world ready for movement
     world.paused = False
 

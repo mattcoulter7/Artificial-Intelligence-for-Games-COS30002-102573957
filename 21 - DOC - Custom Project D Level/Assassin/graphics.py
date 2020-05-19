@@ -1,18 +1,3 @@
-'''A simple proceedural style graphics drawing wrapper.
-
-Created for COS30002 AI for Games by Clinton Woodward <cwoodward@swin.edu.au>
-
-For class use only. Do not publically share or post this code without permission.
-
-This module creates a simple object named "egi", which is an instance of the
-EasyGraphics interface, as well as making the pyglet key codes avaiable as
-KEY.
-
-Note: This has not been designed for performance! In particular, excessive
-text drawing will be very expensive. If you need better performance, you
-should implement opengl code for yourself.
-
-'''
 from pyglet.gl import *
 from pyglet import text, window
 # from math import cos, sin, pi
@@ -37,7 +22,6 @@ COLOR_NAMES = {
     'LIGHT_GREY': (0.8, 0.8, 0.8, 1),
     'LIGHT_PINK': (1.0, 0.9, 0.9, 1)
 }
-
 
 class EasyGraphics(object):
 
