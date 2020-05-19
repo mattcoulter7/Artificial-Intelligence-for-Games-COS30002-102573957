@@ -3,7 +3,6 @@ from point2d import Point2D
 from random import randrange
 
 class Block(object):
-
     def __init__(self, world):
         self.world = world
         self.size = world.grid_size

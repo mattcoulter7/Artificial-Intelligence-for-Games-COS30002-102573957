@@ -109,9 +109,7 @@ class Assassin(object):
 
     def intersect_pos(self,pos):
         ''' Returns true if assassin intersects a particular position'''
-        to_pos = pos - self.pos
-        dist = to_pos.length()
-        return dist < self.scale.length() / 4
+        return self.world.get_node(pos) == self.world.get_node(self.pos)
 
     def astar(self, maze, start, end):
         """Returns a list of tuples as a path from the given start to the given end in the given maze"""
@@ -199,11 +197,12 @@ class Assassin(object):
         maze = self.world.grid
         start = self.world.get_node(self.pos)
         end = self.world.get_node(self.world.target)
-        pts = self.astar(maze,start,end)
-        if pts:
+
+        if self.world.node_available(end):
+            pts = self.astar(maze,start,end)
             for pt in pts:
-                pt.x = pt.x *125.0 + 62.5
-                pt.y = pt.y *125.0 + 62.5
+                pt.x = pt.x * self.world.grid_size + self.world.grid_size/2
+                pt.y = pt.y * self.world.grid_size + self.world.grid_size/2
             self.path.set_pts(pts)
 
 

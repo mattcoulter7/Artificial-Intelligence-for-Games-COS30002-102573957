@@ -11,33 +11,28 @@ class World(object):
         # sizing
         self.cx = cx
         self.cy = cy
+        self.scale = 100
         # Game objects
         self.assassin = Assassin(self)
-        self.enemies = []
+        self.guards = []
         self.blocks = []
         self.target = None
         # Game info
         self.paused = True
         self.show_info = True
         # Grid
-        rows = 10
-        columns = 10
-        self.grid = [[0 for x in range(rows)] for y in range(columns)]
-        self.grid_size = 125.0
+        self.grid_size = cx/cy * self.scale
+        self.grid_count = round(cx / self.grid_size)
+        self.grid = [[0 for x in range(self.grid_count)] for y in range(self.grid_count)]
+        
 
     def update(self, delta):
         self.assassin.update(delta)
+        
+        for guard in self.guards:
+            guard.update(delta)
 
     def render(self):
-        self.assassin.render()
-
-        if self.target:
-            egi.red_pen()
-            egi.cross(self.target,self.grid_size/4)
-
-        for block in self.blocks:
-            block.render()
-
         grid = self.grid_size
         egi.aqua_pen()
         for i in range(len(self.grid)):
@@ -49,6 +44,18 @@ class World(object):
                 pt3 = Point2D(pt1.x,pt1.y + grid)
                 egi.line_by_pos(pt1,pt2)
                 egi.line_by_pos(pt1,pt3)
+
+        for block in self.blocks:
+            block.render()
+
+        if self.target:
+            egi.red_pen()
+            egi.cross(self.target,self.grid_size/4)
+
+        self.assassin.render()
+
+        for guard in self.guards:
+            guard.render()
     
     def get_node(self,pt):
         ''' Returns the node of a given coordinate '''
@@ -70,6 +77,14 @@ class World(object):
     def get_pos(self,pt,type):
         ''' Returns the position of a node, fitted to the square '''
         return self.fit_pos(pt*self.grid_size,type)
+
+    def node_available(self,node):
+        ''' returns true if node is 0 '''
+        return not self.grid[node.x][node.y]
+
+    def update_grid(self,node):
+        ''' O becomes 1, 1 becomes 0'''
+        self.grid[node.x][node.y] = (self.grid[node.x][node.y] - 1) % 2
 
     def transform_points(self, points, pos, forward, side, scale):
         ''' Transform the given list of points, using the provided position,

@@ -6,15 +6,20 @@ from vector2d import Vector2D
 from world import World
 from block import Block
 from point2d import Point2D
+from guard import Guard
 
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 1000
+display = pyglet.canvas.Display()
+screen = display.get_default_screen()
+SCREEN_WIDTH = screen.width
+SCREEN_HEIGHT = screen.height
 
 def on_key_press(symbol, modifiers):
     if symbol == KEY.P:
         world.paused = not world.paused
     elif symbol == KEY.A:
         world.blocks.append(Block(world))
+    elif symbol == KEY.S:
+        world.guards.append(Guard(world))
 
 def on_mouse_press(x, y, button, modifiers):
     if button == 1:  # left
