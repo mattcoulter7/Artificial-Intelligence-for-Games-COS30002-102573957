@@ -4,21 +4,21 @@ from pyglet.gl import *
 
 from vector2d import Vector2D
 from world import World
+from block import Block
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 1000
 
-def on_mouse_press(x, y, button, modifiers):
-    if button == 1:  # left
-        return
-
 def on_key_press(symbol, modifiers):
     if symbol == KEY.P:
         world.paused = not world.paused
+    elif symbol == KEY.A:
+        world.blocks.append(Block(world))
 
 def on_mouse_press(x, y, button, modifiers):
     if button == 1:  # left
-        world.target = world.get_grid(x,y)
+        world.target = world.get_grid(x,y,'center')
+        world.assassin.update_path()
 
 def on_resize(cx, cy):
     world.cx = cx

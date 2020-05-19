@@ -3,6 +3,8 @@ from vector2d import Point2D
 from graphics import egi, KEY
 from math import sin, cos, radians, pi
 from random import random, randrange, uniform
+from path import Path
+from node import Node
 
 class Assassin(object):
 
@@ -17,9 +19,9 @@ class Assassin(object):
         self.vel = Vector2D()
         self.heading = Vector2D(sin(dir), cos(dir))
         self.side = self.heading.perp()
-        self.scale = Vector2D(scale, scale)  # easy scaling of agent size
+        self.scale = Vector2D(scale, scale)  # easy scaling of Assassin size
 
-        # data for drawing this agent
+        # data for drawing this Assassin
         self.color = 'WHITE'
         self.vehicle_shape = [
             Point2D(-1.0,  0.6),
@@ -27,8 +29,11 @@ class Assassin(object):
             Point2D(-1.0, -0.6)
         ]
 
-        # Force and speed limiting code
+        # speed limiting code
         self.max_speed = 20.0 * scale
+
+        # Path
+        self.path = Path()
 
         # debug draw info?
         self.show_info = True
@@ -38,11 +43,12 @@ class Assassin(object):
         mode = self.mode
         vel = Vector2D(0,0)
         if self.mode == 'follow_path':
-            vel = self.seek(self.world.target)
+            vel = self.follow_path()
         return vel
 
     def update(self, delta):
         ''' update vehicle position and orientation '''
+        # update mode if necessary
         self.update_mode()
 
         # new velocity
@@ -51,6 +57,7 @@ class Assassin(object):
         self.vel.truncate(self.max_speed)
         # update position
         self.pos += self.vel * delta
+
         # update heading is non-zero velocity (moving)
         if self.vel.length_sq() > 0.00000001:
             self.heading = self.vel.get_normalised()
@@ -62,13 +69,13 @@ class Assassin(object):
 
     def update_mode(self):
         ''' Updates state according to different variables '''
-        if self.world.target:
+        if self.path._pts:
             self.mode = 'follow_path'
         else:
             self.mode = None
 
     def render(self, color=None):
-        ''' Draw the triangle agent with color'''
+        ''' Draw the triangle Assassin with color'''
         # draw the ship
         egi.set_pen_color(name=self.color)
         pts = self.world.transform_points(self.vehicle_shape, self.pos,
@@ -76,17 +83,125 @@ class Assassin(object):
         # draw it!
         egi.closed_shape(pts)
 
+        if self.path._pts:
+            self.path.render()
+
     def speed(self):
         return self.vel.length()
 
     #--------------------------------------------------------------------------
+
     def seek(self, target_pos):
         ''' move towards target position '''
         desired_vel = (target_pos - self.pos).normalise() * self.max_speed
         return (desired_vel - self.vel)
+
+    def follow_path(self):
+        if (self.path.is_finished()):
+            # Arrives at the final waypoint 
+            self.path.clear()
+        else:
+            # Goes to the current waypoint and increments on arrival
+            to_target = self.path.current_pt() - self.pos
+            dist = to_target.length()
+            if (dist < self.waypoint_threshold):
+                self.path.inc_current_pt()
+            return self.seek(self.path.current_pt())
 
     def intersect_pos(self,pos):
         ''' Returns true if assassin intersects a particular position'''
         to_pos = pos - self.pos
         dist = to_pos.length()
         return dist < self.scale.length() / 4
+
+    def astar(self, maze, start, end):
+        """Returns a list of tuples as a path from the given start to the given end in the given maze"""
+
+        # Create start and end node
+        start_node = Node(None, start)
+        start_node.g = start_node.h = start_node.f = 0
+        end_node = Node(None, end)
+        end_node.g = end_node.h = end_node.f = 0
+
+        # Initialize both open and closed list
+        open_list = []
+        closed_list = []
+
+        # Add the start node
+        open_list.append(start_node)
+
+        # Loop until you find the end
+        while len(open_list) > 0:
+
+            # Get the current node
+            current_node = open_list[0]
+            current_index = 0
+            for index, item in enumerate(open_list):
+                if item.f < current_node.f:
+                    current_node = item
+                    current_index = index
+
+            # Pop current off open list, add to closed list
+            open_list.pop(current_index)
+            closed_list.append(current_node)
+
+            # Found the goal
+            if current_node == end_node:
+                path = []
+                current = current_node
+                while current is not None:
+                    path.append(current.position)
+                    current = current.parent
+                return path[::-1] # Return reversed path
+
+            # Generate children
+            children = []
+            for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # Adjacent squares
+
+                # Get node position
+                node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
+
+                # Make sure within range
+                if node_position[0] > (len(maze) - 1) or node_position[0] < 0 or node_position[1] > (len(maze[len(maze)-1]) -1) or node_position[1] < 0:
+                    continue
+
+                # Make sure walkable terrain
+                if maze[node_position[0]][node_position[1]] != 0:
+                    continue
+
+                # Create new node
+                new_node = Node(current_node, node_position)
+
+                # Append
+                children.append(new_node)
+
+            # Loop through children
+            for child in children:
+
+                # Child is on the closed list
+                for closed_child in closed_list:
+                    if child == closed_child:
+                        continue
+
+                # Create the f, g, and h values
+                child.g = current_node.g + 1
+                child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2)
+                child.f = child.g + child.h
+
+                # Child is already in the open list
+                for open_node in open_list:
+                    if child == open_node and child.g > open_node.g:
+                        continue
+
+                # Add the child to the open list
+                open_list.append(child)
+
+    def update_path(self):
+        maze = self.world.grid
+        start = self.world.get_grid(self.pos.x,self.pos.y,'id')
+        end = self.world.get_grid(self.world.target.x,self.world.target.y,'id')
+        self.path.set_pts(self.astar(maze,start,end))
+
+
+
+
