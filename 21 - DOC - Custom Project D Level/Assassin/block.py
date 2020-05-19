@@ -7,11 +7,10 @@ class Block(object):
     def __init__(self, world):
         self.world = world
         self.size = world.grid_size
-        x = randrange(0,world.cx)
-        y = randrange(0,world.cy)
-        gridid = self.world.get_grid(x,y,'id')
-        self.pos = self.world.get_grid(x,y,'corner')
-        self.world.grid[gridid.x][gridid.y] = 1
+        pt = Point2D(randrange(0,world.cx),randrange(0,world.cy))
+        node = self.world.get_node(pt)
+        self.pos = self.world.fit_pos(pt,'corner')
+        self.world.grid[node.x][node.y] = 1
         self.shape = [
             Point2D(self.pos.x,self.pos.y),
             Point2D(self.pos.x + self.size,self.pos.y),

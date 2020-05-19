@@ -23,7 +23,7 @@ class World(object):
         rows = 10
         columns = 10
         self.grid = [[0 for x in range(rows)] for y in range(columns)]
-        self.grid_size = 125
+        self.grid_size = 125.0
 
     def update(self, delta):
         self.assassin.update(delta)
@@ -50,16 +50,26 @@ class World(object):
                 egi.line_by_pos(pt1,pt2)
                 egi.line_by_pos(pt1,pt3)
     
-    def get_grid(self,x,y,type):
+    def get_node(self,pt):
+        ''' Returns the node of a given coordinate '''
         for i in range(len(self.grid)):
             for j in range(len(self.grid[i])):
-                if floor(x/self.grid_size) == i and floor(y/self.grid_size) == j:
-                    if type == 'id':
-                        return Vector2D(i,j)
-                    elif type == 'center':
+                if floor(pt.x/self.grid_size) == i and floor(pt.y/self.grid_size) == j:
+                    return Vector2D(i,j)
+
+    def fit_pos(self,pt,type):
+        ''' Takes a coord and fits it to a given place in a square '''
+        for i in range(len(self.grid)):
+            for j in range(len(self.grid[i])):
+                if floor(pt.x/self.grid_size) == i and floor(pt.y/self.grid_size) == j:
+                    if type == 'center':
                         return Vector2D(i*self.grid_size + self.grid_size/2,j*self.grid_size + self.grid_size/2)
                     elif type == 'corner':
                         return Vector2D(i*self.grid_size,j*self.grid_size)
+
+    def get_pos(self,pt,type):
+        ''' Returns the position of a node, fitted to the square '''
+        return self.fit_pos(pt*self.grid_size,type)
 
     def transform_points(self, points, pos, forward, side, scale):
         ''' Transform the given list of points, using the provided position,

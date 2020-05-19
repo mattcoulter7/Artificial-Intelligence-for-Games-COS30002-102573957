@@ -5,6 +5,7 @@ from pyglet.gl import *
 from vector2d import Vector2D
 from world import World
 from block import Block
+from point2d import Point2D
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 1000
@@ -17,7 +18,8 @@ def on_key_press(symbol, modifiers):
 
 def on_mouse_press(x, y, button, modifiers):
     if button == 1:  # left
-        world.target = world.get_grid(x,y,'center')
+        pt = Point2D(x,y)
+        world.target = world.fit_pos(pt,'center')
         world.assassin.update_path()
 
 def on_resize(cx, cy):

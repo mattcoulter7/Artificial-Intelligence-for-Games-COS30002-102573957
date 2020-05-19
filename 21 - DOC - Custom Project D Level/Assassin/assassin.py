@@ -66,6 +66,7 @@ class Assassin(object):
         if self.world.target:
             if self.intersect_pos(self.world.target):
                 self.world.target = None
+                self.path.clear()
 
     def update_mode(self):
         ''' Updates state according to different variables '''
@@ -94,17 +95,15 @@ class Assassin(object):
     def seek(self, target_pos):
         ''' move towards target position '''
         desired_vel = (target_pos - self.pos).normalise() * self.max_speed
-        return (desired_vel - self.vel)
+        return desired_vel
 
     def follow_path(self):
         if (self.path.is_finished()):
             # Arrives at the final waypoint 
-            self.path.clear()
+            return self.seek(self.path._pts[-1])
         else:
             # Goes to the current waypoint and increments on arrival
-            to_target = self.path.current_pt() - self.pos
-            dist = to_target.length()
-            if (dist < self.waypoint_threshold):
+            if self.intersect_pos(self.path.current_pt()):
                 self.path.inc_current_pt()
             return self.seek(self.path.current_pt())
 
@@ -156,17 +155,17 @@ class Assassin(object):
 
             # Generate children
             children = []
-            for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # Adjacent squares
+            for new_position in [Vector2D(0, -1), Vector2D(0, 1), Vector2D(-1, 0), Vector2D(1, 0), Vector2D(-1, -1), Vector2D(-1, 1), Vector2D(1, -1), Vector2D(1, 1)]: # Adjacent squares
 
                 # Get node position
-                node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
+                node_position = Vector2D(current_node.position.x + new_position.x, current_node.position.y + new_position.y)
 
                 # Make sure within range
-                if node_position[0] > (len(maze) - 1) or node_position[0] < 0 or node_position[1] > (len(maze[len(maze)-1]) -1) or node_position[1] < 0:
+                if node_position.x > (len(maze) - 1) or node_position.x < 0 or node_position.y > (len(maze[len(maze)-1]) -1) or node_position.y < 0:
                     continue
 
                 # Make sure walkable terrain
-                if maze[node_position[0]][node_position[1]] != 0:
+                if maze[node_position.x][node_position.y] != 0:
                     continue
 
                 # Create new node
@@ -185,7 +184,7 @@ class Assassin(object):
 
                 # Create the f, g, and h values
                 child.g = current_node.g + 1
-                child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2)
+                child.h = ((child.position.x - end_node.position.x) ** 2) + ((child.position.y - end_node.position.y) ** 2)
                 child.f = child.g + child.h
 
                 # Child is already in the open list
@@ -198,9 +197,14 @@ class Assassin(object):
 
     def update_path(self):
         maze = self.world.grid
-        start = self.world.get_grid(self.pos.x,self.pos.y,'id')
-        end = self.world.get_grid(self.world.target.x,self.world.target.y,'id')
-        self.path.set_pts(self.astar(maze,start,end))
+        start = self.world.get_node(self.pos)
+        end = self.world.get_node(self.world.target)
+        pts = self.astar(maze,start,end)
+        if pts:
+            for pt in pts:
+                pt.x = pt.x *125.0 + 62.5
+                pt.y = pt.y *125.0 + 62.5
+            self.path.set_pts(pts)
 
 
 
