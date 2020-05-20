@@ -84,8 +84,8 @@ class Assassin(object):
         # draw it!
         egi.closed_shape(pts)
 
-        if self.path._pts:
-            self.path.render()
+        #if self.path._pts:
+            #self.path.render()
 
     def speed(self):
         return self.vel.length()
@@ -153,10 +153,10 @@ class Assassin(object):
 
             # Generate children
             children = []
-            for new_position in [Vector2D(0, -1), Vector2D(0, 1), Vector2D(-1, 0), Vector2D(1, 0), Vector2D(-1, -1), Vector2D(-1, 1), Vector2D(1, -1), Vector2D(1, 1)]: # Adjacent squares
+            for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # Adjacent squares
 
                 # Get node position
-                node_position = Vector2D(current_node.position.x + new_position.x, current_node.position.y + new_position.y)
+                node_position = Vector2D(current_node.position.x + new_position[0], current_node.position.y + new_position[1])
 
                 # Make sure within range
                 if node_position.x > (len(maze) - 1) or node_position.x < 0 or node_position.y > (len(maze[len(maze)-1]) -1) or node_position.y < 0:

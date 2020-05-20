@@ -1,0 +1,11 @@
+guard wander function
+guard shooting
+guard visibility
+assassin stabbing
+assassin tracking guard
+putting grid into new class
+screen display
+importing graphics
+Assassin AI
+Menus
+read maps from file

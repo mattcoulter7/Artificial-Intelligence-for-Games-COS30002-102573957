@@ -84,8 +84,8 @@ class Guard(object):
         adjacent_nodes = []
         for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # Adjacent squares
                 adjacent_nodes.append(Vector2D(current_node.x + new_position[0], current_node.y + new_position[1]))
-        # adjacent_nodes = filter(lambda n: self.world.node_available(n),list(adjacent_nodes))
-        next_node = adjacent_nodes[randrange(0,len(adjacent_nodes) - 2)]
+        adjacent_nodes = list(filter(lambda n: self.world.node_exists(n) and self.world.node_available(n),adjacent_nodes))
+        next_node = adjacent_nodes[randrange(0,len(adjacent_nodes))]
         return self.seek(self.world.get_pos(next_node,'center'))
 
     def intersect_pos(self,pos):

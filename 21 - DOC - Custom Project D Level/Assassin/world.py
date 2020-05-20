@@ -82,6 +82,9 @@ class World(object):
         ''' returns true if node is 0 '''
         return not self.grid[node.x][node.y]
 
+    def node_exists(self,pt):
+        return pt.x in range(0,self.grid_count) and pt.y in range(0,self.grid_count)
+
     def update_grid(self,node):
         ''' O becomes 1, 1 becomes 0'''
         self.grid[node.x][node.y] = (self.grid[node.x][node.y] - 1) % 2
