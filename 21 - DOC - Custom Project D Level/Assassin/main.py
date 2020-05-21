@@ -7,6 +7,7 @@ from world import World
 from block import Block
 from point2d import Point2D
 from assassin import Assassin
+from guard import Guard
 
 display = pyglet.canvas.Display()
 screen = display.get_default_screen()
@@ -20,6 +21,8 @@ def on_key_press(symbol, modifiers):
         world.blocks.append(Block(world))
     elif symbol == KEY.S:
         world.assassins.append(Assassin(world))
+    elif symbol == KEY.D:
+        world.guards.append(Guard(world))
 
 def on_mouse_press(x, y, button, modifiers):
     if button == 1:  # left

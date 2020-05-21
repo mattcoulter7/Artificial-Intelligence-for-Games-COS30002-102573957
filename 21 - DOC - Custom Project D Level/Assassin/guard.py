@@ -31,9 +31,10 @@ class Guard(object):
         # speed limiting code
         self.max_speed = 5.0 * scale
 
-        #nodes
-        self.previous_node = None
+        # nodes
         self.path = Path()
+        self.path.add_way_pt(world.graph.fit_pos(self.pos,'center'))
+        self.path.inc_current_pt()
 
         # debug draw info?
         self.show_info = True
@@ -88,34 +89,33 @@ class Guard(object):
 
     def intersect_pos(self,pos):
         ''' Returns true if assassin intersects a particular position'''
-        return self.world.get_node(pos) == self.world.get_node(self.pos)
-
-    def node_changed(self,previous_node):
-        current_node = self.world.get_node(self.pos)
-        return current_node is not previous_node
+        return self.world.graph.get_node(pos) == self.world.graph.get_node(self.pos)
 
     def follow_path(self):
         # Goes to the current waypoint and increments on arrival
-        if not self.path._pts:
-            self.update_path()
         if self.intersect_pos(self.path.current_pt()):
             self.update_path()
             self.path.inc_current_pt()
         return self.seek(self.path.current_pt())
 
     def update_path(self):
-        current_node = self.world.get_node(self.pos)
         new_node = Vector2D()
-        if self.path.previous_point() is not None:
-            previous_node = self.world.get_node(self.path.previous_point())
-            direction = previous_node - current_node
-            if self.world.node_exists(current_node - direction):
-                new_node = current_node - direction
-        else:
+        current_node = self.world.graph.get_node(self.pos)
+        # Establish a direction
+        if len(self.path._pts) < 2:
             adjacent_nodes = []
             for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # Adjacent squares
                     adjacent_nodes.append(Vector2D(current_node.x + new_position[0], current_node.y + new_position[1]))
-            adjacent_nodes = list(filter(lambda n: self.world.node_exists(n) and self.world.node_available(n),adjacent_nodes))
+            adjacent_nodes = list(filter(lambda n: self.world.graph.node_exists(n) and self.world.graph.node_available(n),adjacent_nodes))
             new_node = adjacent_nodes[randrange(0,len(adjacent_nodes))]
-        new_pos = self.world.get_pos(new_node,'center')
+        else:
+            previous_node = self.world.graph.get_node(self.path.previous_pt())
+            direction = current_node - previous_node
+            if self.world.graph.node_exists(current_node + direction) and self.world.graph.node_available(current_node + direction):
+                # Continue Straight
+                new_node = current_node + direction
+            else:
+                # Turn right or left
+                new_node = Vector2D(current_node.x + direction.y, current_node.y + direction.x)
+        new_pos = self.world.graph.get_pos(new_node,'center')
         self.path.add_way_pt(new_pos)

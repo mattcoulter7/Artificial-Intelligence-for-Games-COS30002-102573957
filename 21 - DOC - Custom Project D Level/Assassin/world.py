@@ -14,17 +14,22 @@ class World(object):
         self.cy = cy
         # Game objects
         self.assassins = []
+        self.guards = []
         self.blocks = []
         self.target = None
         # Game info
-        self.paused = True
+        self.paused = False
         self.show_info = True
         self.graph = Graph(self)
         
 
     def update(self, delta):
-        for assassin in self.assassins:
-            assassin.update(delta)
+        if not self.paused:
+            for assassin in self.assassins:
+                assassin.update(delta)
+
+            for guard in self.guards:
+                guard.update(delta)
 
     def render(self):
         self.graph.render()
@@ -38,6 +43,9 @@ class World(object):
 
         for assassin in self.assassins:
             assassin.render()
+            
+        for guard in self.guards:
+            guard.render()
 
     def transform_points(self, points, pos, forward, side, scale):
         ''' Transform the given list of points, using the provided position,

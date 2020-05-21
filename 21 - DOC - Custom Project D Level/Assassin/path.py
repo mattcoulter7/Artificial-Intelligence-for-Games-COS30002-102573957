@@ -45,6 +45,14 @@ class Path(object):
             index. '''
         return self._pts[self._cur_pt_idx]
 
+    def previous_pt(self):
+        ''' Return the way point of the path indicated by the previous point
+            index. '''
+        if self._cur_pt_idx > 0:
+            return self._pts[self._cur_pt_idx - 1]
+        else:
+            return self.current_pt()
+
     def inc_current_pt(self):
         ''' Update the current point to the next in the path list.
             Resets to the first point if looped is True. '''

@@ -56,7 +56,7 @@ class Graph(object):
 
     def node_exists(self,pt):
         ''' returns true if a node is valid '''
-        return pt.x in range(0,self.grid_count) and pt.y in range(0,self.grid_count)
+        return pt.x in range(0,self.height) and pt.y in range(0,self.width)
 
     def update_grid(self,node):
         ''' 0 becomes 1 '''
