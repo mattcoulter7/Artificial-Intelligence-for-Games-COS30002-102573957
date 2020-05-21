@@ -116,6 +116,20 @@ class Guard(object):
                 new_node = current_node + direction
             else:
                 # Turn right or left
-                new_node = Vector2D(current_node.x + direction.y, current_node.y + direction.x)
+                choices = {
+                    'left' : Vector2D(current_node.x - direction.y, current_node.y + direction.x),
+                    'right' : Vector2D(current_node.x + direction.y, current_node.y - direction.x),
+                    'backward' : Vector2D(current_node.x + direction.y, current_node.y + direction.x)
+                }
+                if not self.valid(choices['right']):
+                    choices.remove('right')
+                elif not self.valid(choices['left']):
+                    choices.remove('left')
+                elif not self.valid(choices['backward']):
+                    choices.remove('backward')
+                new_node = choices[randrange(0,len(choices))]
         new_pos = self.world.graph.get_pos(new_node,'center')
         self.path.add_way_pt(new_pos)
+
+    def valid(self,pt):
+        return (self.world.graph.node_exists(pt) and self.world.graph.node_available(pt))
