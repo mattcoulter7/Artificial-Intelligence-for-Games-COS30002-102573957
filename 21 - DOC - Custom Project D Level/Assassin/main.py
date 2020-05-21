@@ -6,7 +6,7 @@ from vector2d import Vector2D
 from world import World
 from block import Block
 from point2d import Point2D
-from guard import Guard
+from assassin import Assassin
 
 display = pyglet.canvas.Display()
 screen = display.get_default_screen()
@@ -19,13 +19,14 @@ def on_key_press(symbol, modifiers):
     elif symbol == KEY.A:
         world.blocks.append(Block(world))
     elif symbol == KEY.S:
-        world.guards.append(Guard(world))
+        world.assassins.append(Assassin(world))
 
 def on_mouse_press(x, y, button, modifiers):
     if button == 1:  # left
         pt = Point2D(x,y)
-        world.target = world.fit_pos(pt,'center')
-        world.assassin.update_path()
+        world.target = world.graph.fit_pos(pt,'center')
+        for assassin in world.assassins:
+            assassin.update_path()
 
 def on_resize(cx, cy):
     world.cx = cx

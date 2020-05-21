@@ -5,11 +5,10 @@ from random import randrange
 class Block(object):
     def __init__(self, world):
         self.world = world
-        self.size = world.grid_size
-        pt = Point2D(randrange(0,world.cx),randrange(0,world.cy))
-        node = self.world.get_node(pt)
-        self.pos = self.world.fit_pos(pt,'corner')
-        self.world.grid[node.x][node.y] = 1
+        self.size = world.graph.grid_size
+        node = self.world.graph.rand_node()
+        self.pos = self.world.graph.get_pos(node,'corner')
+        self.world.graph.update_grid(node)
         self.shape = [
             Point2D(self.pos.x,self.pos.y),
             Point2D(self.pos.x + self.size,self.pos.y),
