@@ -6,7 +6,7 @@ from math import sin, cos, radians, pi
 from random import random, randrange, uniform
 from path import Path
 from node import Node
-from search_functions import astar
+from search_functions import astar,smooth
 
 class Assassin(object):
 
@@ -32,7 +32,7 @@ class Assassin(object):
         ]
 
         # speed limiting code
-        self.max_speed = 20.0 * scale
+        self.max_speed = 10.0 * scale
 
         # Path
         self.path = Path()
@@ -40,8 +40,11 @@ class Assassin(object):
         # debug draw info?
         self.show_info = True
 
-        self.image = pyglet.image.load('resources/assassin.png')
-        self.sprite = pyglet.sprite.Sprite(self.image, x=self.pos.x, y=self.pos.y)
+        self.char = pyglet.image.load('resources/assassin.png')
+        self.still = pyglet.sprite.Sprite(self.char, x=self.pos.x, y=self.pos.y)
+
+        self.ani = pyglet.resource.animation('resources/walking.gif')
+        self.walking = pyglet.sprite.Sprite(img=self.ani)
 
     def calculate(self):
         # calculate the current steering force
@@ -81,8 +84,12 @@ class Assassin(object):
 
     def render(self, color=None):
         ''' Draw the triangle Assassin with color'''
-        self.sprite.update(x=self.pos.x,y=self.pos.y,rotation=self.heading.angle('deg') + 90)
-        self.sprite.draw()
+        if self.mode == 'follow_path':
+            self.walking.update(x=self.pos.x+self.char.width/2,y=self.pos.y+self.char.height/2,rotation=self.heading.angle('deg') + 90)
+            self.walking.draw()
+        elif self.mode == None:
+            self.still.update(x=self.pos.x+self.char.width/2,y=self.pos.y+self.char.height/2,rotation=self.heading.angle('deg') + 90)
+            self.still.draw()
         # Path
         if self.path._pts:
             self.path.render()
@@ -109,7 +116,7 @@ class Assassin(object):
 
     def intersect_pos(self,pos):
         ''' Returns true if assassin intersects a particular position'''
-        return self.world.graph.get_node(pos) == self.world.graph.get_node(self.pos)
+        return self.world.graph.get_node(self.pos) == self.world.graph.get_node(pos)
 
     def update_path(self):
         ''' Reassigns the points of path to head towards new destination'''
@@ -117,8 +124,12 @@ class Assassin(object):
         start = self.world.graph.get_node(self.pos)
         end = self.world.graph.get_node(self.world.target)
 
+        # Can't travel into blocks
         if self.world.graph.node_available(end):
+            # Calculate points
             pts = astar(maze,start,end)
+            pts = smooth(pts)
+            # Convert points into coordinates
             for pt in pts:
                 pt.x = pt.x * self.world.graph.grid_size + self.world.graph.grid_size/2
                 pt.y = pt.y * self.world.graph.grid_size + self.world.graph.grid_size/2

@@ -1,5 +1,6 @@
 from vector2d import Vector2D
 from node import Node
+from math import *
 
 def astar(maze, start, end):
     """Returns a list of tuples as a path from the given start to the given end in the given maze"""
@@ -43,7 +44,7 @@ def astar(maze, start, end):
 
         # Generate children
         children = []
-        for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # Adjacent squares
+        for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0)]: # Adjacent squares
 
             # Get node position
             node_position = Vector2D(current_node.position.x + new_position[0], current_node.position.y + new_position[1])
@@ -82,5 +83,33 @@ def astar(maze, start, end):
 
             # Add the child to the open list
             open_list.append(child)
+
+# Smooth code referenced from https://github.com/htx1219/Python/blob/master/373/path%20smoothing.py, https://www.youtube.com/watch?v=v0-OUApP_5Q
+def smooth(path, weight_data = 0.5, weight_smooth = 0.1, tolerance = 0.00001):
+
+    newpath = []
+    # Make a deep copy of path into newpath
+    for i in range(len(path)):
+        newpath.append(Vector2D(path[i].x,path[i].y))
+
+    #### ENTER CODE BELOW THIS LINE ###
+    change = 1
+    while change > tolerance:
+        change = 0
+        #First and last points stay the same
+        for i in range(1,len(path)-1):
+            # Updates x value
+            ori = newpath[i].x
+            newpath[i].x = newpath[i].x + weight_data*(path[i].x-newpath[i].x)
+            newpath[i].x = newpath[i].x + weight_smooth*(newpath[i+1].x+newpath[i-1].x-2*newpath[i].x)
+            change += abs(ori - newpath[i].x)
+            # Updates y value
+            ori = newpath[i].y
+            newpath[i].y = newpath[i].y + weight_data*(path[i].y-newpath[i].y)
+            newpath[i].y = newpath[i].y + weight_smooth*(newpath[i+1].y+newpath[i-1].y-2*newpath[i].y)
+            change += abs(ori - newpath[i].y)
+    
+    return newpath # Leave this line for the grader!
+
 
 
