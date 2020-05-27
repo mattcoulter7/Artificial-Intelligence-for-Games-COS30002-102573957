@@ -9,19 +9,13 @@ from point2d import Point2D
 from assassin import Assassin
 from guard import Guard
 
-display = pyglet.canvas.Display()
-screen = display.get_default_screen()
-SCREEN_WIDTH = screen.width
-SCREEN_HEIGHT = screen.height
+SCREEN_WIDTH = 720
+SCREEN_HEIGHT = 720
 
 def on_key_press(symbol, modifiers):
     if symbol == KEY.P:
         world.paused = not world.paused
     elif symbol == KEY.A:
-        world.blocks.append(Block(world,0))
-    elif symbol == KEY.S:
-        world.assassins.append(Assassin(world))
-    elif symbol == KEY.D:
         world.guards.append(Guard(world))
 
 def on_mouse_press(x, y, button, modifiers):
@@ -37,7 +31,7 @@ def on_resize(cx, cy):
 
 if __name__ == '__main__':
     # create a pyglet window and set glOptions
-    win = window.Window(width=SCREEN_WIDTH, height=SCREEN_HEIGHT, vsync=True, resizable=True)
+    win = window.Window(width=SCREEN_WIDTH, height=SCREEN_HEIGHT, vsync=True, resizable=False)
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     # needed so that egi knows where to draw
@@ -49,7 +43,9 @@ if __name__ == '__main__':
     win.push_handlers(on_resize)
     win.push_handlers(on_mouse_press)
     # create a world for agents
-    world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
+    map = 'maps/map10.csv'
+    world = World(SCREEN_WIDTH, SCREEN_HEIGHT,map)
+    world.assassins.append(Assassin(world))
     # unpause the world ready for movement
     world.paused = False
 

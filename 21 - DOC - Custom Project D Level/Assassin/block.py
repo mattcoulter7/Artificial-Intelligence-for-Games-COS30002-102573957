@@ -4,20 +4,14 @@ from random import randrange
 import pyglet
 
 class Block(object):
-    def __init__(self, world,type):
+    def __init__(self,world,type,node):
+        self.type = type - 1
         self.world = world
         self.size = world.graph.grid_size
-        node = self.world.graph.rand_node()
         self.pos = self.world.graph.get_pos(node,'corner')
-        self.world.graph.update_grid(node)
-        self.shape = [
-            Point2D(self.pos.x,self.pos.y),
-            Point2D(self.pos.x + self.size,self.pos.y),
-            Point2D(self.pos.x + self.size,self.pos.y + self.size),
-            Point2D(self.pos.x,self.pos.y + self.size)
-        ]
+
         images = ['brown_block.png','grey_block.png','purple_block.png']
-        self.image = pyglet.image.load('resources/' + images[type])
+        self.image = pyglet.image.load('resources/' + images[self.type])
         self.sprite = pyglet.sprite.Sprite(self.image, x=self.pos.x, y=self.pos.y)
 
     def render(self):

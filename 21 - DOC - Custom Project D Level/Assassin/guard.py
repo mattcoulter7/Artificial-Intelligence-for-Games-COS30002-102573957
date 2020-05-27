@@ -4,6 +4,7 @@ from graphics import egi, KEY
 from math import sin, cos, radians, pi
 from random import random, randrange, uniform
 from path import Path
+from search_functions import astar,smooth
 
 class Guard(object):
 
@@ -33,8 +34,7 @@ class Guard(object):
 
         # nodes
         self.path = Path()
-        self.path.add_way_pt(world.graph.fit_pos(self.pos,'center'))
-        self.path.inc_current_pt()
+        self.generate_random_path()
 
         # debug draw info?
         self.show_info = True
@@ -94,42 +94,19 @@ class Guard(object):
     def follow_path(self):
         # Goes to the current waypoint and increments on arrival
         if self.intersect_pos(self.path.current_pt()):
-            self.update_path()
             self.path.inc_current_pt()
+        elif self.path.is_finished():
+            self.generate_random_path()
         return self.seek(self.path.current_pt())
 
-    def update_path(self):
-        new_node = Vector2D()
-        current_node = self.world.graph.get_node(self.pos)
-        # Establish a direction
-        if len(self.path._pts) < 2:
-            adjacent_nodes = []
-            for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # Adjacent squares
-                    adjacent_nodes.append(Vector2D(current_node.x + new_position[0], current_node.y + new_position[1]))
-            adjacent_nodes = list(filter(lambda n: self.world.graph.node_exists(n) and self.world.graph.node_available(n),adjacent_nodes))
-            new_node = adjacent_nodes[randrange(0,len(adjacent_nodes))]
-        else:
-            previous_node = self.world.graph.get_node(self.path.previous_pt())
-            direction = current_node - previous_node
-            if self.world.graph.node_exists(current_node + direction) and self.world.graph.node_available(current_node + direction):
-                # Continue Straight
-                new_node = current_node + direction
-            else:
-                # Turn right or left
-                choices = {
-                    'left' : Vector2D(current_node.x - direction.y, current_node.y + direction.x),
-                    'right' : Vector2D(current_node.x + direction.y, current_node.y - direction.x),
-                    'backward' : Vector2D(current_node.x + direction.y, current_node.y + direction.x)
-                }
-                if not self.valid(choices['right']):
-                    choices.remove('right')
-                elif not self.valid(choices['left']):
-                    choices.remove('left')
-                elif not self.valid(choices['backward']):
-                    choices.remove('backward')
-                new_node = choices[randrange(0,len(choices))]
-        new_pos = self.world.graph.get_pos(new_node,'center')
-        self.path.add_way_pt(new_pos)
+    def generate_random_path(self):
+        rand_node = self.world.graph.rand_node()
+        pts = astar(self.world.graph.grid,self.world.graph.get_node(self.pos),rand_node)
+        pts = smooth(pts)
+        for pt in pts:
+            pt.x = pt.x * self.world.graph.grid_size + self.world.graph.grid_size/2
+            pt.y = pt.y * self.world.graph.grid_size + self.world.graph.grid_size/2
+        self.path.set_pts(pts)
 
     def valid(self,pt):
         return (self.world.graph.node_exists(pt) and self.world.graph.node_available(pt))

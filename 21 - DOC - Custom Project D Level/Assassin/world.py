@@ -5,10 +5,11 @@ from assassin import Assassin
 from point2d import Point2D
 from math import floor
 from graph import Graph
+from block import Block
 
 class World(object):
 
-    def __init__(self, cx, cy):
+    def __init__(self, cx, cy,map):
         # sizing
         self.cx = cx
         self.cy = cy
@@ -20,10 +21,14 @@ class World(object):
         # Game info
         self.paused = False
         self.show_info = True
-        self.graph = Graph(self)
-        
+        # Read map from file
+        self.map = open(map, "r")
+        self.map_name = self.map.readline()
+        self.graph = Graph(self,int(self.map.readline()),int(self.map.readline()))
+        self.read_file()
 
     def update(self, delta):
+        ''' Updates all of the world objects'''
         if not self.paused:
             for assassin in self.assassins:
                 assassin.update(delta)
@@ -32,6 +37,7 @@ class World(object):
                 guard.update(delta)
 
     def render(self):
+        ''' Renders all ofthe world objects'''
         self.graph.render()
 
         for block in self.blocks:
@@ -80,3 +86,19 @@ class World(object):
         mat.transform_vector2d(wld_pt)
         # done
         return wld_pt
+
+    def read_file(self):
+        # Loop until end of file
+        with self.map as openfileobject:
+            for line in openfileobject:
+                # Get coordinate and type from line
+                point = line.split(',')
+                x = int(point[0])
+                y = int(point[1])
+                type = int(point[2])
+                # Update the grid
+                self.graph.grid[x][y] = type
+                # Add blocks on non zero points
+                if type != 0:
+                    self.blocks.append(Block(self,type,Vector2D(x,y)))
+        self.map.close()

@@ -7,14 +7,13 @@ import pyglet
 
 class Graph(object):
     """description of class"""
-    def __init__(self,world):
+    def __init__(self,world,height,width):
         self.world = world
         # Grid
-        self.scale = 60
-        self.grid_size = world.cx/world.cy * self.scale
-        self.height = round(world.cx / self.grid_size)
-        self.width = round(world.cy / self.grid_size)
-        self.grid = [[0 for x in range(self.width)] for y in range(self.height)]
+        self.grid_size = 80
+        self.height = height
+        self.width = width
+        self.grid = [[0 for x in range(self.height)] for y in range(self.width)]
         self.image = pyglet.image.load('resources/grey_tile.png')
         self.sprites = self.init_sprites()
 
@@ -24,6 +23,7 @@ class Graph(object):
             sprite.draw()
 
     def init_sprites(self):
+        '''Generates a list of all of the ground sprites'''
         sprites = []
         grid=self.grid_size
         for i in range(len(self.grid)):
@@ -59,7 +59,7 @@ class Graph(object):
 
     def node_available(self,node):
         ''' returns true if node is 0 '''
-        return not self.grid[node.x][node.y]
+        return 0 < node.x < len(self.grid) and 0 < node.y < len(self.grid[node.x])
 
     def node_exists(self,pt):
         ''' returns true if a node is valid '''
@@ -71,6 +71,9 @@ class Graph(object):
 
     def rand_node(self):
         ''' returns an random node that is still available '''
-        return Point2D(randrange(0,self.height),randrange(0,self.width))
+        node = Point2D(randrange(0,self.height),randrange(0,self.width))
+        if self.node_available(node):
+            return node
+        return self.rand_node
 
 

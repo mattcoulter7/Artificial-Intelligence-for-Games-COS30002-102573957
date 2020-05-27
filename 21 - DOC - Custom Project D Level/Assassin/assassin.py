@@ -23,14 +23,6 @@ class Assassin(object):
         self.side = self.heading.perp()
         self.scale = Vector2D(scale, scale)  # easy scaling of Assassin size
 
-        # data for drawing this Assassin
-        self.color = 'WHITE'
-        self.vehicle_shape = [
-            Point2D(-1.0,  0.6),
-            Point2D( 1.0,  0.0),
-            Point2D(-1.0, -0.6)
-        ]
-
         # speed limiting code
         self.max_speed = 10.0 * scale
 
