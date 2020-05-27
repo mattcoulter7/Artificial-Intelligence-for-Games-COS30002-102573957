@@ -1,3 +1,4 @@
+import pyglet
 from vector2d import Vector2D
 from vector2d import Point2D
 from graphics import egi, KEY
@@ -39,6 +40,9 @@ class Assassin(object):
         # debug draw info?
         self.show_info = True
 
+        self.image = pyglet.image.load('resources/assassin.png')
+        self.sprite = pyglet.sprite.Sprite(self.image, x=self.pos.x, y=self.pos.y)
+
     def calculate(self):
         # calculate the current steering force
         mode = self.mode
@@ -77,13 +81,9 @@ class Assassin(object):
 
     def render(self, color=None):
         ''' Draw the triangle Assassin with color'''
-        # draw the ship
-        egi.set_pen_color(name=self.color)
-        pts = self.world.transform_points(self.vehicle_shape, self.pos,
-                                          self.heading, self.side, self.scale)
-        # draw it!
-        egi.closed_shape(pts)
-
+        self.sprite.update(x=self.pos.x,y=self.pos.y,rotation=self.heading.angle('deg') + 90)
+        self.sprite.draw()
+        # Path
         if self.path._pts:
             self.path.render()
 

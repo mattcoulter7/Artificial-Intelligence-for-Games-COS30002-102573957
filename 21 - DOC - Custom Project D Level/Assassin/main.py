@@ -18,7 +18,7 @@ def on_key_press(symbol, modifiers):
     if symbol == KEY.P:
         world.paused = not world.paused
     elif symbol == KEY.A:
-        world.blocks.append(Block(world))
+        world.blocks.append(Block(world,0))
     elif symbol == KEY.S:
         world.assassins.append(Assassin(world))
     elif symbol == KEY.D:

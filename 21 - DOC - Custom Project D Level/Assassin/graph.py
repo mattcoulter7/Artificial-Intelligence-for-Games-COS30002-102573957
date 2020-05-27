@@ -3,6 +3,7 @@ from point2d import Point2D
 from vector2d import Vector2D
 from math import floor
 from random import randrange
+import pyglet
 
 class Graph(object):
     """description of class"""
@@ -14,20 +15,26 @@ class Graph(object):
         self.height = round(world.cx / self.grid_size)
         self.width = round(world.cy / self.grid_size)
         self.grid = [[0 for x in range(self.width)] for y in range(self.height)]
+        self.image = pyglet.image.load('resources/grey_tile.png')
+        self.sprites = self.init_sprites()
 
     def render(self):
         ''' Draws the grid to the screen'''
-        grid = self.grid_size
-        egi.white_pen()
+        for sprite in self.sprites:
+            sprite.draw()
+
+    def init_sprites(self):
+        sprites = []
+        grid=self.grid_size
         for i in range(len(self.grid)):
             for j in range(len(self.grid[i])):
-                x = i*grid
-                y = j*grid
-                pt1 = Point2D(i*grid,j*grid)
-                pt2 = Point2D(pt1.x + grid,pt1.y)
-                pt3 = Point2D(pt1.x,pt1.y + grid)
-                egi.line_by_pos(pt1,pt2)
-                egi.line_by_pos(pt1,pt3)
+                if self.grid[i][j] == 0:
+                    x = i*grid
+                    y = j*grid
+                    sprite = pyglet.sprite.Sprite(self.image,x,y)
+                    sprite.update(scale=grid/self.image.width)
+                    sprites.append(sprite)
+        return sprites
 
     def get_node(self,pt):
         ''' Returns the node of a given coordinate '''

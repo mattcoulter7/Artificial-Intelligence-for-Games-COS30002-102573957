@@ -7,7 +7,7 @@ For class use only. Do not publically share or post this code without permission
 Updated by Steve Dower
 '''
 
-from math import sqrt,atan2
+from math import sqrt,atan2,pi
 from point2d import Point2D  # Not used here, but easy way to expose it
 
 MIN_FLOAT = 1e-300
@@ -114,8 +114,15 @@ class Vector2D(object):
         ''' return a new vector that is the reverse of self. '''
         return Vector2D(-self.x, -self.y)
 
-    def angle_with(self,v2):
-        return atan2(v2.y, v2.x) - atan2(self.y, self.x)
+    def angle(self,type):
+        return self.angle_with(Vector2D(0,0),type)
+
+    def angle_with(self,v2,type):
+        angle = atan2(v2.y, v2.x) - atan2(self.y, self.x)
+        if type.lower() in ['rad','radian','radians']:
+            return angle
+        elif type.lower() in ['deg','degree','degrees']:
+            return angle * 180/pi
 
     def point_on(self, pt1, pt2):
         m = self.y/self.x
