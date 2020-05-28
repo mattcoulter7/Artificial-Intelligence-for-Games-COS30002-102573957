@@ -1,11 +1,3 @@
-'''Path container to support easy path following by Agents
-
-Created for COS30002 AI for Games by Clinton Woodward <cwoodward@swin.edu.au>
-
-For class use only. Do not publically share or post this code without permission.
-
-'''
-
 from random import random, uniform
 from matrix33 import Matrix33
 from vector2d import Vector2D

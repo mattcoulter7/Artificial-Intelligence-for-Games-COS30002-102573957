@@ -22,8 +22,7 @@ def on_mouse_press(x, y, button, modifiers):
     if button == 1:  # left
         pt = Point2D(x,y)
         world.target = world.graph.fit_pos(pt,'center')
-        for assassin in world.assassins:
-            assassin.update_path()
+        world.assassin.update_path()
 
 def on_resize(cx, cy):
     world.cx = cx
@@ -45,7 +44,7 @@ if __name__ == '__main__':
     # create a world for agents
     map = 'maps/map10.csv'
     world = World(SCREEN_WIDTH, SCREEN_HEIGHT,map)
-    world.assassins.append(Assassin(world))
+    world.assassin = Assassin(world)
     # unpause the world ready for movement
     world.paused = False
 

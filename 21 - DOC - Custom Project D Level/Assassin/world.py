@@ -14,7 +14,7 @@ class World(object):
         self.cx = cx
         self.cy = cy
         # Game objects
-        self.assassins = []
+        self.assassin = None
         self.guards = []
         self.blocks = []
         self.target = None
@@ -30,8 +30,7 @@ class World(object):
     def update(self, delta):
         ''' Updates all of the world objects'''
         if not self.paused:
-            for assassin in self.assassins:
-                assassin.update(delta)
+            self.assassin.update(delta)
 
             for guard in self.guards:
                 guard.update(delta)
@@ -40,18 +39,17 @@ class World(object):
         ''' Renders all ofthe world objects'''
         self.graph.render()
 
-        for block in self.blocks:
-            block.render()
-
         if self.target:
             egi.red_pen()
             egi.cross(self.target,self.graph.grid_size/4)
 
-        for assassin in self.assassins:
-            assassin.render()
+        self.assassin.render()
             
         for guard in self.guards:
             guard.render()
+
+        for block in self.blocks:
+            block.render()
 
     def transform_points(self, points, pos, forward, side, scale):
         ''' Transform the given list of points, using the provided position,

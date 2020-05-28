@@ -17,7 +17,7 @@ class Assassin(object):
 
         # where am i and where am i going? random start pos
         dir = radians(random()*360)
-        self.pos = Vector2D(randrange(world.cx), randrange(world.cy))
+        self.pos = world.graph.get_pos(world.graph.rand_node(),'corner')
         self.vel = Vector2D()
         self.heading = Vector2D(sin(dir), cos(dir))
         self.side = self.heading.perp()
@@ -32,10 +32,10 @@ class Assassin(object):
         # debug draw info?
         self.show_info = True
 
+        # Sprites
         self.char = pyglet.image.load('resources/assassin.png')
         self.still = pyglet.sprite.Sprite(self.char, x=self.pos.x, y=self.pos.y)
-
-        self.ani = pyglet.resource.animation('resources/walking.gif')
+        self.ani = pyglet.resource.animation('resources/assassin_walk.gif')
         self.walking = pyglet.sprite.Sprite(img=self.ani)
 
     def calculate(self):
@@ -75,7 +75,7 @@ class Assassin(object):
             self.mode = None
 
     def render(self, color=None):
-        ''' Draw the triangle Assassin with color'''
+        ''' Draw the Assassin'''
         if self.mode == 'follow_path':
             self.walking.update(x=self.pos.x+self.char.width/2,y=self.pos.y+self.char.height/2,rotation=self.heading.angle('deg') + 90)
             self.walking.draw()

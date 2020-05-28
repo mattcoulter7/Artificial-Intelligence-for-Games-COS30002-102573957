@@ -1,3 +1,4 @@
+import pyglet
 from vector2d import Vector2D
 from vector2d import Point2D
 from graphics import egi, KEY
@@ -8,26 +9,18 @@ from search_functions import astar,smooth
 
 class Guard(object):
 
-    def __init__(self, world=None, scale=30.0, mode='Wander'):
+    def __init__(self, world=None, scale=30.0, mode=None):
         # keep a reference to the world object
         self.world = world
         self.mode = mode
 
         # where am i and where am i going? random start pos
         dir = radians(random()*360)
-        self.pos = Vector2D(randrange(world.cx), randrange(world.cy))
+        self.pos = world.graph.get_pos(Vector2D(3,3),'corner')
         self.vel = Vector2D()
         self.heading = Vector2D(sin(dir), cos(dir))
         self.side = self.heading.perp()
         self.scale = Vector2D(scale, scale)  # easy scaling of Assassin size
-
-        # data for drawing this Assassin
-        self.color = 'RED'
-        self.vehicle_shape = [
-            Point2D(-1.0,  0.6),
-            Point2D( 1.0,  0.0),
-            Point2D(-1.0, -0.6)
-        ]
 
         # speed limiting code
         self.max_speed = 5.0 * scale
@@ -38,6 +31,12 @@ class Guard(object):
 
         # debug draw info?
         self.show_info = True
+
+        # Sprites
+        self.char = pyglet.image.load('resources/guard.png')
+        self.still = pyglet.sprite.Sprite(self.char, x=self.pos.x, y=self.pos.y)
+        self.ani = pyglet.resource.animation('resources/guard_walk.gif')
+        self.walking = pyglet.sprite.Sprite(img=self.ani)
 
     def calculate(self):
         # calculate the current steering force
@@ -66,17 +65,20 @@ class Guard(object):
 
     def update_mode(self):
         ''' Updates state according to different variables '''
-        self.mode = 'wander'
+        if self.path._pts:
+            self.mode = 'follow_path'
+        else:
+            self.mode = None
 
     def render(self, color=None):
-        ''' Draw the triangle Assassin with color'''
-        # draw the ship
-        egi.set_pen_color(name=self.color)
-        pts = self.world.transform_points(self.vehicle_shape, self.pos,
-                                          self.heading, self.side, self.scale)
-        # draw it!
-        egi.closed_shape(pts)
-
+        ''' Draw the Guard'''
+        if self.mode == 'follow_path':
+            self.walking.update(x=self.pos.x+self.char.width/2,y=self.pos.y+self.char.height/2,rotation=self.heading.angle('deg') + 90)
+            self.walking.draw()
+        elif self.mode == None:
+            self.still.update(x=self.pos.x+self.char.width/2,y=self.pos.y+self.char.height/2,rotation=self.heading.angle('deg') + 90)
+            self.still.draw()
+        # Path
         if self.path._pts:
             self.path.render()
 
@@ -107,6 +109,3 @@ class Guard(object):
             pt.x = pt.x * self.world.graph.grid_size + self.world.graph.grid_size/2
             pt.y = pt.y * self.world.graph.grid_size + self.world.graph.grid_size/2
         self.path.set_pts(pts)
-
-    def valid(self,pt):
-        return (self.world.graph.node_exists(pt) and self.world.graph.node_available(pt))
