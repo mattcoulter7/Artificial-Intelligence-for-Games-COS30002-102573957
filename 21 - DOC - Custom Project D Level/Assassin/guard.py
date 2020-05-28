@@ -9,14 +9,14 @@ from search_functions import astar,smooth
 
 class Guard(object):
 
-    def __init__(self, world=None, scale=30.0, mode=None):
+    def __init__(self, world=None, scale=30.0, mode='wander'):
         # keep a reference to the world object
         self.world = world
         self.mode = mode
 
         # where am i and where am i going? random start pos
         dir = radians(random()*360)
-        self.pos = world.graph.get_pos(Vector2D(3,3),'corner')
+        self.pos = world.graph.get_pos(world.graph.rand_node(),'corner')
         self.vel = Vector2D()
         self.heading = Vector2D(sin(dir), cos(dir))
         self.side = self.heading.perp()
@@ -66,14 +66,14 @@ class Guard(object):
     def update_mode(self):
         ''' Updates state according to different variables '''
         if self.path._pts:
-            self.mode = 'follow_path'
+            self.mode = 'wander'
         else:
             self.mode = None
 
     def render(self, color=None):
         ''' Draw the Guard'''
-        if self.mode == 'follow_path':
-            self.walking.update(x=self.pos.x+self.char.width/2,y=self.pos.y+self.char.height/2,rotation=self.heading.angle('deg') + 90)
+        if self.mode == 'wander':
+            self.walking.update(x=self.pos.x,y=self.pos.y,rotation=self.heading.angle('deg') + 90)
             self.walking.draw()
         elif self.mode == None:
             self.still.update(x=self.pos.x+self.char.width/2,y=self.pos.y+self.char.height/2,rotation=self.heading.angle('deg') + 90)

@@ -24,3 +24,12 @@ importing graphics
 Assassin AI
 Menus
 read maps from file
+
+
+
+
+
+
+clicking on unavailable node causes crash
+assassin doesn't always walk on the path
+adding a guard in sometimes causes crash

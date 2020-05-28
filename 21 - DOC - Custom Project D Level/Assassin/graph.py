@@ -59,21 +59,17 @@ class Graph(object):
 
     def node_available(self,node):
         ''' returns true if node is 0 '''
-        return 0 < node.x < len(self.grid) and 0 < node.y < len(self.grid[node.x])
+        return self.grid[node.x][node.y] == 0
 
     def node_exists(self,pt):
         ''' returns true if a node is valid '''
         return pt.x in range(0,self.height) and pt.y in range(0,self.width)
 
-    def update_grid(self,node):
-        ''' 0 becomes 1 '''
-        self.grid[node.x][node.y] = 1
-
     def rand_node(self):
         ''' returns an random node that is still available '''
-        node = Point2D(randrange(0,self.height),randrange(0,self.width))
+        node = Vector2D(randrange(0,self.height),randrange(0,self.width))
         if self.node_available(node):
             return node
-        return self.rand_node
+        return self.rand_node()
 
 
