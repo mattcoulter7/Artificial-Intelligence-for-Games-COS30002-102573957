@@ -38,11 +38,16 @@ class Assassin(object):
         self.ani = pyglet.resource.animation('resources/assassin_walk.gif')
         self.walking = pyglet.sprite.Sprite(img=self.ani)
 
+        # Chasing
+        self.guard = None
+
     def calculate(self):
         # calculate the current steering force
-        mode = self.mode
         vel = Vector2D(0,0)
-        if self.mode == 'follow_path':
+        if self.path._pts:
+            if self.mode == 'chase':
+                self.chase(self.guard)
+                self.update_path()
             vel = self.follow_path()
         return vel
 
@@ -67,24 +72,28 @@ class Assassin(object):
             if self.intersect_pos(self.world.target):
                 self.path.clear()
 
+        if self.mode == 'chase':
+            self.kill_guard()
+
     def update_mode(self):
         ''' Updates state according to different variables '''
-        if self.path._pts:
-            self.mode = 'follow_path'
+        if self.guard:
+            self.mode = 'chase'
         else:
             self.mode = None
 
-    def render(self, color=None):
+    def render(self):
         ''' Draw the Assassin'''
-        if self.mode == 'follow_path':
-            self.walking.update(x=self.pos.x+self.char.width/2,y=self.pos.y+self.char.height/2,rotation=self.heading.angle('deg') + 90)
-            self.walking.draw()
-        elif self.mode == None:
-            self.still.update(x=self.pos.x+self.char.width/2,y=self.pos.y+self.char.height/2,rotation=self.heading.angle('deg') + 90)
-            self.still.draw()
-        # Path
         if self.path._pts:
+            # Walking animation
+            self.walking.update(x=self.pos.x+self.char.width/2,y=self.pos.y+self.char.height/2,rotation=self.heading.angle('deg') + 90,scale=self.world.graph.grid_size/self.char.height)
+            self.walking.draw()
+            # Path
             self.path.render()
+        else:
+            # Still
+            self.still.update(x=self.pos.x+self.char.width/2,y=self.pos.y+self.char.height/2,rotation=self.heading.angle('deg') + 90,scale=self.world.graph.grid_size/self.char.height)
+            self.still.draw()
 
     def speed(self):
         return self.vel.length()
@@ -106,6 +115,9 @@ class Assassin(object):
                 self.path.inc_current_pt()
             return self.seek(self.path.current_pt())
 
+    def chase(self,guard):
+        self.world.target = guard.path.current_pt()
+
     def intersect_pos(self,pos):
         ''' Returns true if assassin intersects a particular position'''
         return self.world.graph.get_node(self.pos) == self.world.graph.get_node(pos)
@@ -126,6 +138,11 @@ class Assassin(object):
                 pt.x = pt.x * self.world.graph.grid_size + self.world.graph.grid_size/2
                 pt.y = pt.y * self.world.graph.grid_size + self.world.graph.grid_size/2
             self.path.set_pts(pts)
+
+    def kill_guard(self):
+        if self.intersect_pos(self.guard.pos):
+            self.world.guards.remove(self.guard)
+            self.guard = None
 
 
 

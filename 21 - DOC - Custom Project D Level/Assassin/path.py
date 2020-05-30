@@ -84,11 +84,6 @@ class Path(object):
             points.'''
         return self._pts
 
-    def previous_point(self):
-        if self._cur_pt_idx > 0:
-            return self._pts[self._cur_pt_idx - 1]
-        return None
-
     def render(self):
         ''' Draw the path, open or closed, using the current pen colour. '''
         # draw base line

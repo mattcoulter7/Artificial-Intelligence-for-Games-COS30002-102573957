@@ -73,10 +73,10 @@ class Guard(object):
     def render(self, color=None):
         ''' Draw the Guard'''
         if self.mode == 'wander':
-            self.walking.update(x=self.pos.x,y=self.pos.y,rotation=self.heading.angle('deg') + 90)
+            self.walking.update(x=self.pos.x+self.char.width/2,y=self.pos.y+self.char.height/2,rotation=self.heading.angle('deg') + 90,scale=self.world.graph.grid_size/self.char.height)
             self.walking.draw()
         elif self.mode == None:
-            self.still.update(x=self.pos.x+self.char.width/2,y=self.pos.y+self.char.height/2,rotation=self.heading.angle('deg') + 90)
+            self.still.update(x=self.pos.x+self.char.width/2,y=self.pos.y+self.char.height/2,rotation=self.heading.angle('deg') + 90,scale=self.world.graph.grid_size/self.char.height)
             self.still.draw()
         # Path
         if self.path._pts:
@@ -95,14 +95,14 @@ class Guard(object):
 
     def follow_path(self):
         # Goes to the current waypoint and increments on arrival
-        if self.intersect_pos(self.path.current_pt()):
-            self.path.inc_current_pt()
-        elif self.path.is_finished():
+        if self.path.is_finished():
             self.generate_random_path()
+        elif self.intersect_pos(self.path.current_pt()):
+            self.path.inc_current_pt()
         return self.seek(self.path.current_pt())
 
     def generate_random_path(self):
-        rand_node = self.world.graph.rand_node()
+        rand_node = self.world.graph.rand_node(other_node = self.world.graph.get_node(self.pos))
         pts = astar(self.world.graph.grid,self.world.graph.get_node(self.pos),rand_node)
         pts = smooth(pts)
         for pt in pts:

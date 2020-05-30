@@ -36,8 +36,8 @@ class World(object):
                 guard.update(delta)
 
     def render(self):
-        ''' Renders all ofthe world objects'''
-        self.graph.render()
+        ''' Renders all of the world objects'''
+        #self.graph.render()
 
         if self.target:
             egi.red_pen()
@@ -100,3 +100,26 @@ class World(object):
                 if type != 0:
                     self.blocks.append(Block(self,type,Vector2D(x,y)))
         self.map.close()
+
+    def move_up(self):
+        at_boundary = False
+        for y in self.graph.grid[0]:
+            node = self.graph.get_pos(Vector2D(0,y),'middle')
+            if self.graph.node_visible(node):
+                at_boundary = True
+
+        if not at_boundary:
+            amount = Vector2D(0,-self.graph.grid_size)
+            if self.target:
+                self.target.pos += amount
+
+            self.assassin.pos += amount 
+            if self.assassin.path._pts:
+                for pt in self.assassin.path._pts:
+                    pt += amount
+
+            for guard in self.guards:
+                guard.pos += amount
+
+            for block in self.blocks:
+                block.pos += amount

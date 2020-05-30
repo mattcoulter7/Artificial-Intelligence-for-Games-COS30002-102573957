@@ -65,11 +65,18 @@ class Graph(object):
         ''' returns true if a node is valid '''
         return pt.x in range(0,self.height) and pt.y in range(0,self.width)
 
-    def rand_node(self):
-        ''' returns an random node that is still available '''
+    def rand_node(self,other_node = None):
+        ''' returns an random node that is still available, other node is another node to avoid such as the same position as the object requesting a rand_node '''
         node = Vector2D(randrange(0,self.height),randrange(0,self.width))
-        if self.node_available(node):
+        not_self = True
+        if other_node is not None:
+            if node == other_node:
+                not_self = False
+        if self.node_available(node) and not_self:
             return node
         return self.rand_node()
+
+    def node_visible(self,node):
+        return 0 <= node.x <= self.world.cx and 0 <= node.y <= self.world.cy
 
 

@@ -17,12 +17,17 @@ def on_key_press(symbol, modifiers):
         world.paused = not world.paused
     elif symbol == KEY.A:
         world.guards.append(Guard(world))
+    elif symbol == KEY.UP:
+        world.move_up()
 
 def on_mouse_press(x, y, button, modifiers):
     if button == 1:  # left
         pt = Point2D(x,y)
         world.target = world.graph.fit_pos(pt,'center')
         world.assassin.update_path()
+        for guard in world.guards:
+            if world.graph.get_node(pt) == world.graph.get_node(guard.pos):
+                world.assassin.guard = guard
 
 def on_resize(cx, cy):
     world.cx = cx
@@ -42,7 +47,7 @@ if __name__ == '__main__':
     win.push_handlers(on_resize)
     win.push_handlers(on_mouse_press)
     # create a world for agents
-    map = 'maps/map10.csv'
+    map = 'maps/map11.csv'
     world = World(SCREEN_WIDTH, SCREEN_HEIGHT,map)
     world.assassin = Assassin(world)
     # unpause the world ready for movement
