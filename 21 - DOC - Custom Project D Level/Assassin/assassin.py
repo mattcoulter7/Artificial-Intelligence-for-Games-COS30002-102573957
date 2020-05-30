@@ -17,7 +17,7 @@ class Assassin(object):
 
         # where am i and where am i going? random start pos
         dir = radians(random()*360)
-        self.pos = world.graph.get_pos(world.graph.rand_node(),'corner')
+        self.pos = world.graph.get_pos(Vector2D(5,5),'corner')
         self.vel = Vector2D()
         self.heading = Vector2D(sin(dir), cos(dir))
         self.side = self.heading.perp()
@@ -134,9 +134,8 @@ class Assassin(object):
             pts = astar(maze,start,end)
             pts = smooth(pts)
             # Convert points into coordinates
-            for pt in pts:
-                pt.x = pt.x * self.world.graph.grid_size + self.world.graph.grid_size/2
-                pt.y = pt.y * self.world.graph.grid_size + self.world.graph.grid_size/2
+            for i in range(0,len(pts)):
+                pts[i] = self.world.graph.get_pos(pts[i].copy())
             self.path.set_pts(pts)
 
     def kill_guard(self):

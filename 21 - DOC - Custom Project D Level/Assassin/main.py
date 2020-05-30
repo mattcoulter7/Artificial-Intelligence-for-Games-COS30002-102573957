@@ -18,7 +18,13 @@ def on_key_press(symbol, modifiers):
     elif symbol == KEY.A:
         world.guards.append(Guard(world))
     elif symbol == KEY.UP:
-        world.move_up()
+        world.move_screen('up')
+    elif symbol == KEY.DOWN:
+        world.move_screen('down')
+    elif symbol == KEY.LEFT:
+        world.move_screen('left')
+    elif symbol == KEY.RIGHT:
+        world.move_screen('right')
 
 def on_mouse_press(x, y, button, modifiers):
     if button == 1:  # left

@@ -101,25 +101,34 @@ class World(object):
                     self.blocks.append(Block(self,type,Vector2D(x,y)))
         self.map.close()
 
-    def move_up(self):
-        at_boundary = False
-        for y in self.graph.grid[0]:
-            node = self.graph.get_pos(Vector2D(0,y),'middle')
-            if self.graph.node_visible(node):
-                at_boundary = True
-
-        if not at_boundary:
+    def move_screen(self,direction):
+        amount = None
+        if direction == 'left':
+            amount = Vector2D(self.graph.grid_size,0)
+            self.graph.move_compensate.x -= 1
+        elif direction == 'right':
+            amount = Vector2D(-self.graph.grid_size,0)
+            self.graph.move_compensate.x += 1
+        elif direction == 'up':
             amount = Vector2D(0,-self.graph.grid_size)
-            if self.target:
-                self.target.pos += amount
+            self.graph.move_compensate.y += 1
+        elif direction == 'down':
+            amount = Vector2D(0,self.graph.grid_size)
+            self.graph.move_compensate.y -= 1
 
-            self.assassin.pos += amount 
-            if self.assassin.path._pts:
-                for pt in self.assassin.path._pts:
+        if self.target:
+            self.target += amount
+
+        self.assassin.pos += amount 
+        if self.assassin.path._pts:
+            for pt in self.assassin.path._pts:
+                pt += amount
+
+        for guard in self.guards:
+            guard.pos += amount
+            if guard.path._pts:
+                for pt in guard.path._pts:
                     pt += amount
 
-            for guard in self.guards:
-                guard.pos += amount
-
-            for block in self.blocks:
-                block.pos += amount
+        for block in self.blocks:
+            block.pos += amount
