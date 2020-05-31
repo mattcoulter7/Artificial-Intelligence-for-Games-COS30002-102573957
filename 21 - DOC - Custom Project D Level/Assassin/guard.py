@@ -104,13 +104,13 @@ class Guard(object):
 
     def intersect_pos(self,pos):
         ''' Returns true if assassin intersects a particular position'''
-        return self.world.graph.pos_to_node(pos) == self.world.graph.pos_to_node(self.pos)
+        return self.world.graph.pos_to_node(pos.copy()) == self.world.graph.pos_to_node(self.pos.copy())
 
     #--------------------------------------------------------------------------
 
     def seek(self, target_pos):
         ''' move towards target position '''
-        desired_vel = (target_pos - self.pos).normalise() * self.max_speed
+        desired_vel = (_pos - self.pos).normalise() * self.max_speed
         return desired_vel
 
     def follow_path(self):
@@ -123,7 +123,7 @@ class Guard(object):
 
     def approach(self,pt):
         ''' Resets the path to the new specified pts '''
-        pts = astar(self.world.graph.grid,1.0,self.world.graph.pos_to_node(self.pos),pt)
+        pts = astar(self.world.graph.grid,1.0,self.world.graph.pos_to_node(self.pos.copy()),pt)
         pts = smooth(pts)
         for i in range(0,len(pts)):
             pts[i] = self.world.graph.node_to_pos(pts[i].copy(),'center')
@@ -131,5 +131,5 @@ class Guard(object):
 
     def wander(self):
         ''' Chooses a random available location on the map and path finds towards it '''
-        rand_node = self.world.graph.rand_node_from_pos(self.world.graph.pos_to_node(self.pos),10)
+        rand_node = self.world.graph.rand_node_from_pos(self.world.graph.pos_to_node(self.pos.copy()),10)
         self.approach(rand_node)

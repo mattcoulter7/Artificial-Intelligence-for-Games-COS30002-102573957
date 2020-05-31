@@ -106,7 +106,7 @@ class Graph(object):
         ''' returns an random node that is still available, other node is 
         another node to avoid such as the same position as the object 
         requesting a rand_node. Range is a limited distance from other_pos '''
-        node = Point2D(randrange(0,self.width),randrange(0,self.height))
+        node = Vector2D(randrange(0,self.width),randrange(0,self.height))
         not_self = True
         if avoid is not None:
             if node == avoid:
@@ -121,7 +121,7 @@ class Graph(object):
         requesting a rand_node. dist is a limited distance from other_pos '''
         x_rand = choice([i for i in range(-dist,dist) if i != 0])
         y_rand = choice([i for i in range(-dist,dist) if i != 0])
-        rand_node = Point2D(pos.x+x_rand,pos.y+y_rand)
+        rand_node = Vector2D(pos.x+x_rand,pos.y+y_rand)
         rand_node = self.restrict_point_to_grid(rand_node)
         if self.node_available(rand_node):
             return rand_node

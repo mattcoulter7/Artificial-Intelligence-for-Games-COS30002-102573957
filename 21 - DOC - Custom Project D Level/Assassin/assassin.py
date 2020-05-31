@@ -69,7 +69,7 @@ class Assassin(object):
             self.side = self.heading.perp()
 
         if self.world.target:
-            if self.intersect_pos(self.world.target):
+            if self.intersect_pos(self.world.target.copy()):
                 self.path.clear()
 
         if self.mode == 'chase':
@@ -120,13 +120,13 @@ class Assassin(object):
 
     def intersect_pos(self,pos):
         ''' Returns true if assassin intersects a particular position'''
-        return self.world.graph.pos_to_node(self.pos) == self.world.graph.pos_to_node(pos)
+        return self.world.graph.pos_to_node(self.pos.copy()) == self.world.graph.pos_to_node(pos.copy())
 
     def update_path(self):
         ''' Reassigns the points of path to head towards new destination'''
         maze = self.world.graph.grid
-        start = self.world.graph.pos_to_node(self.pos)
-        end = self.world.graph.pos_to_node(self.world.target)
+        start = self.world.graph.pos_to_node(self.pos.copy())
+        end = self.world.graph.pos_to_node(self.world.target.copy())
 
         # Can't travel into blocks
         if self.world.graph.node_available(end):
@@ -135,7 +135,7 @@ class Assassin(object):
             pts = smooth(pts)
             # Convert points into coordinates
             for i in range(0,len(pts)):
-                pts[i] = self.world.graph.node_to_pos(pts[i].copy())
+                pts[i] = self.world.graph.node_to_pos(pts[i].copy(),'center')
             self.path.set_pts(pts)
 
     def kill_guard(self):

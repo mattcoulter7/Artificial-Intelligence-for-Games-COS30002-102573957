@@ -6,7 +6,7 @@ import numpy as np
 
 #ASTAR code referenced from https://github.com/BaijayantaRoy/Medium-Article/blob/master/A_Star.ipynb
 
-#This function return the path of the search as Point2D
+#This function return the path of the search as Vector2D
 def return_path(current_node,maze):
     path = []
     no_rows, no_columns = np.shape(maze)
@@ -165,7 +165,7 @@ def smooth(path, weight_data = 0.5, weight_smooth = 0.1, tolerance = 0.00001):
     newpath = []
     # Make a deep copy of path into newpath
     for i in range(len(path)):
-        newpath.append(Point2D(path[i].x,path[i].y))
+        newpath.append(Vector2D(path[i].x,path[i].y))
 
     #### ENTER CODE BELOW THIS LINE ###
     change = 1
