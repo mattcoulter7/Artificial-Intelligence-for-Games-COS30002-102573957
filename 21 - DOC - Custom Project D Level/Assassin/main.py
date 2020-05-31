@@ -31,9 +31,8 @@ def on_mouse_press(x, y, button, modifiers):
         pt = Vector2D(x,y)
         world.target = world.graph.fit_pos_to(pt.copy(),type = 'center',relative = True)
         world.assassin.update_path()
-        for guard in world.guards:
-            if world.graph.pos_to_node(pt.copy()) == world.graph.pos_to_node(guard.pos.copy()):
-                world.assassin.guard = guard
+        world.assassin.guard = world.click_on(pt,'guards') #Set assassin guard to a guard that was clicked, is None if none were clicked on
+
 
 def on_resize(cx, cy):
     world.cx = cx

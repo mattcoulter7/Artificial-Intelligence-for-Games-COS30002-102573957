@@ -94,6 +94,8 @@ class Assassin(object):
             self.volume = 3
         if self.mode == 'chase':
             self.volume = 8
+        else:
+            self.volume = 0
 
         if event == 'kill':
             self.volume += 15

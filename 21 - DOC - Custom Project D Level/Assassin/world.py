@@ -134,8 +134,6 @@ class World(object):
         for block in self.blocks:
             block.pos += amount
 
-        print(self.graph.move_compensate)
-
     def shift(self,pos):
         ''' use move_screen() based off of an object position and self.shift_tolerance
         This can only be used for the position of ONE existing object as it does not zoom in and out'''
@@ -167,4 +165,9 @@ class World(object):
         elif edge == 'down':
             return bottom_left.y == 0
 
-        
+    def click_on(self,pt,object):
+        for obj in getattr(self,object):
+            to_obj = obj.pos - pt
+            dist = to_obj.length()
+            if dist < 50:
+                return obj
