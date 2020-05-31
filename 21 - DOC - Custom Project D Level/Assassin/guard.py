@@ -27,7 +27,6 @@ class Guard(object):
 
         # nodes
         self.path = Path()
-        self.wander()
 
         # debug draw info?
         self.show_info = True
@@ -41,6 +40,20 @@ class Guard(object):
         # AI variables
         self.hearing_range = 5.0
         self.vision_range = 10.0
+        self.wander_dist = 10
+
+        self.wander()
+
+    def calculate(self):
+        # calculate the current steering force
+        vel = Vector2D(0,0)
+        if self.path._pts:
+            if self.mode == 'suspicious':
+                self.investigate()
+            elif self.mode == 'hunt':
+                self.investigate()
+            vel = self.follow_path()
+        return vel
 
     def update(self, delta):
         ''' update vehicle position and orientation '''
@@ -48,7 +61,7 @@ class Guard(object):
         self.update_mode()
 
         # new velocity
-        self.vel = self.follow_path()
+        self.vel = self.calculate()
         # limit velocity
         self.vel.truncate(self.max_speed)
         # update position
@@ -63,10 +76,8 @@ class Guard(object):
         ''' Updates state according to different variables '''
         if self.hear_assassin():
             self.mode = 'suspicious'
-            self.approach(self.world.assassin.pos.copy())
         elif self.see_assassin():
-            self.mode = 'kill'
-            self.approach(self.world.assassin.pos)
+            self.mode = 'hunt'
         else:
             self.mode = 'wander'
 
@@ -84,19 +95,23 @@ class Guard(object):
 
     #--------------------------------------------------------------------------
 
-    def point_in_range(self,pt,ran):
+    def point_in_range(self,pt,dist):
         ''' Returns true if pt is within a circular radius of self '''
-        ran *= self.world.graph.grid_size
-        return pt.x in range(self.world.graph.pos_to_node(self.pos.x-ran),self.pos.x+ran) and pt.y in range(self.pos.y-ran,self.pos.y+ran)
+        to_point = pt - self.pos
+        dist_to_point = to_point.length()
+        dist_to_point /= self.world.graph.grid_size
+        return dist_to_point <= dist
 
-    def point_in_front_range(self,pt,ran):
+    def point_in_front_range(self,pt,dist):
         ''' Returns true if pt is in front of self '''
-        ran *= self.world.graph.grid_size
-        return pt.x in range(self.pos.x,self.pos.x + (self.heading.x * ran)) and pt.y in range(self.pos.y,self.pos.y + (self.heading.y * ran))
+        to_point = pt - self.pos
+        dist_to_point = to_point.length()
+        dist_to_point /= self.world.graph.grid_size
+        return dist_to_point <= dist
 
     def hear_assassin(self):
         ''' Returns true if assassin walking is in hearing range '''
-        return self.point_in_range(self.world.assassin.pos,self.hearing_range)
+        return self.point_in_range(self.world.assassin.pos,self.hearing_range + self.world.assassin.volume)
 
     def see_assassin(self):
         ''' returns true if assassin is in guard visibility range '''
@@ -110,13 +125,18 @@ class Guard(object):
 
     def seek(self, target_pos):
         ''' move towards target position '''
-        desired_vel = (_pos - self.pos).normalise() * self.max_speed
+        desired_vel = (target_pos - self.pos).normalise() * self.max_speed
         return desired_vel
 
     def follow_path(self):
         ''' Goes to the current waypoint and increments on arrival '''
         if self.path.is_finished():
-            self.wander()
+            if self.mode == 'suspicious':
+                self.investigate()
+            elif self.mode == 'hunt':
+                self.investigate()
+            else:
+                self.wander()
         elif self.intersect_pos(self.path.current_pt()):
             self.path.inc_current_pt()
         return self.seek(self.path.current_pt())
@@ -124,12 +144,18 @@ class Guard(object):
     def approach(self,pt):
         ''' Resets the path to the new specified pts '''
         pts = astar(self.world.graph.grid,1.0,self.world.graph.pos_to_node(self.pos.copy()),pt)
-        pts = smooth(pts)
-        for i in range(0,len(pts)):
-            pts[i] = self.world.graph.node_to_pos(pts[i].copy(),'center')
-        self.path.set_pts(pts)
+        if pts: #ASTAR success
+            pts = smooth(pts)
+            for i in range(0,len(pts)):
+                pts[i] = self.world.graph.global_to_relative(pts[i])
+                pts[i] = self.world.graph.node_to_pos(pts[i].copy(),'center')
+            self.path.set_pts(pts)
 
     def wander(self):
         ''' Chooses a random available location on the map and path finds towards it '''
-        rand_node = self.world.graph.rand_node_from_pos(self.world.graph.pos_to_node(self.pos.copy()),10)
+        rand_node = self.world.graph.rand_node_from_pos(self.world.graph.pos_to_node(self.pos.copy()),self.wander_dist)
         self.approach(rand_node)
+
+    def investigate(self):
+        node = self.world.graph.pos_to_node(self.world.assassin.pos.copy())
+        self.approach(node)

@@ -24,7 +24,7 @@ class Assassin(object):
         self.scale = Vector2D(scale, scale)  # easy scaling of Assassin size
 
         # speed limiting code
-        self.max_speed = 10.0 * scale
+        self.max_speed = 15.0 * scale
 
         # Path
         self.path = Path()
@@ -41,13 +41,16 @@ class Assassin(object):
         # Chasing
         self.guard = None
 
+        # Volume
+        self.volume = 0
+
     def calculate(self):
         # calculate the current steering force
         vel = Vector2D(0,0)
-        if self.path._pts:
-            if self.mode == 'chase':
-                self.chase(self.guard)
-                self.update_path()
+        if self.mode == 'sneaking':
+            vel = self.follow_path()
+        if self.mode == 'chase':
+            self.chase(self.guard)
             vel = self.follow_path()
         return vel
 
@@ -55,7 +58,7 @@ class Assassin(object):
         ''' update vehicle position and orientation '''
         # update mode if necessary
         self.update_mode()
-
+        self.update_volume()
         # new velocity
         self.vel = self.calculate()
         # limit velocity
@@ -79,10 +82,23 @@ class Assassin(object):
 
     def update_mode(self):
         ''' Updates state according to different variables '''
-        if self.guard:
-            self.mode = 'chase'
+        if self.path._pts:
+            self.mode = 'sneaking'
+            if self.guard:
+                self.mode = 'chase'
         else:
             self.mode = None
+
+    def update_volume(self,event = None):
+        if self.mode == 'sneaking':
+            self.volume = 3
+        if self.mode == 'chase':
+            self.volume = 8
+
+        if event == 'kill':
+            self.volume += 15
+
+        print(self.volume)
 
     def render(self):
         ''' Draw the Assassin'''
@@ -119,6 +135,7 @@ class Assassin(object):
 
     def chase(self,guard):
         self.world.target = guard.path.current_pt()
+        self.update_path()
 
     def intersect_pos(self,pos):
         ''' Returns true if assassin intersects a particular position'''
@@ -134,15 +151,17 @@ class Assassin(object):
         if self.world.graph.node_available(end):
             # Calculate points
             pts = astar(maze,1.0,start,end)
-            pts = smooth(pts)
-            # Convert points into coordinates
-            for i in range(0,len(pts)):
-                pts[i] = self.world.graph.global_to_relative(pts[i])
-                pts[i] = self.world.graph.node_to_pos(pts[i].copy(),'center')
-            self.path.set_pts(pts)
+            if pts: #ASTAR success
+                pts = smooth(pts)
+                # Convert points into coordinates
+                for i in range(0,len(pts)):
+                    pts[i] = self.world.graph.global_to_relative(pts[i])
+                    pts[i] = self.world.graph.node_to_pos(pts[i].copy(),'center')
+                self.path.set_pts(pts)
 
     def kill_guard(self):
         if self.intersect_pos(self.guard.pos):
+            self.update_volume('kill')
             self.world.guards.remove(self.guard)
             self.guard = None
 
