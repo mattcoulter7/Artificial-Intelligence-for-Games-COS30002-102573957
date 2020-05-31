@@ -66,13 +66,13 @@ class Graph(object):
 
     def node_exists(self,pt):
         ''' returns true if a node is valid '''
-        return pt.x in range(0,self.height) and pt.y in range(0,self.width)
+        return pt.x in range(0,self.width) and pt.y in range(0,self.height)
 
     def rand_node(self,other_node = None):
         ''' returns an random node that is still available, other node is 
         another node to avoid such as the same position as the object 
         requesting a rand_node. Range is a limited distance from other_pos '''
-        node = Vector2D(randrange(0,self.height),randrange(0,self.width))
+        node = Vector2D(randrange(0,self.width),randrange(0,self.height))
         not_self = True
         if other_node is not None:
             if node == other_node:

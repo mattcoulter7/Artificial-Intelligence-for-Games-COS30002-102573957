@@ -41,7 +41,7 @@ def on_resize(cx, cy):
 
 if __name__ == '__main__':
     # create a pyglet window and set glOptions
-    win = window.Window(width=SCREEN_WIDTH, height=SCREEN_HEIGHT, vsync=True, resizable=False)
+    win = window.Window(width=SCREEN_WIDTH, height=SCREEN_HEIGHT, vsync=True, resizable=True)
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     # needed so that egi knows where to draw
@@ -53,7 +53,7 @@ if __name__ == '__main__':
     win.push_handlers(on_resize)
     win.push_handlers(on_mouse_press)
     # create a world for agents
-    map = 'maps/map11.csv'
+    map = 'maps/map9.csv'
     world = World(SCREEN_WIDTH, SCREEN_HEIGHT,map)
     world.assassin = Assassin(world)
     # unpause the world ready for movement

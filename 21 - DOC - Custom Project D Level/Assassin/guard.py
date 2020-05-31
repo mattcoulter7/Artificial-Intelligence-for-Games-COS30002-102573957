@@ -107,7 +107,7 @@ class Guard(object):
         return self.seek(self.path.current_pt())
 
     def generate_random_path(self):
-        rand_node = self.world.graph.rand_node_from_pos(self.world.graph.get_node(self.pos),15)
+        rand_node = self.world.graph.rand_node_from_pos(self.world.graph.get_node(self.pos),10)
         pts = astar(self.world.graph.grid,1.0,self.world.graph.get_node(self.pos),rand_node)
         # pts = smooth(pts)
         for i in range(0,len(pts)):
