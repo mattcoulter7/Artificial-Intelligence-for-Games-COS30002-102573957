@@ -76,8 +76,6 @@ class Guard(object):
         ''' Updates state according to different variables '''
         if self.hear_assassin():
             self.mode = 'suspicious'
-        elif self.see_assassin():
-            self.mode = 'hunt'
         else:
             self.mode = 'wander'
 
@@ -95,27 +93,20 @@ class Guard(object):
 
     #--------------------------------------------------------------------------
 
-    def point_in_range(self,pt,dist):
-        ''' Returns true if pt is within a circular radius of self '''
-        to_point = pt - self.pos
-        dist_to_point = to_point.length()
-        dist_to_point /= self.world.graph.grid_size
-        return dist_to_point <= dist
+    def astar_distance_to(self,pt):
+        ''' Returns the amount of points for a calculated path from self to pt '''
+        pt = self.world.graph.pos_to_node(pt)
+        pts = astar(self.world.graph.grid,1.0,self.world.graph.pos_to_node(self.pos.copy()),pt)
+        return len(pts)
 
-    def point_in_front_range(self,pt,dist):
-        ''' Returns true if pt is in front of self '''
-        to_point = pt - self.pos
-        dist_to_point = to_point.length()
-        dist_to_point /= self.world.graph.grid_size
-        return dist_to_point <= dist
+    def line_distance_to(self,pt):
+        ''' returns the straight line length divided by gridsize from self to pt '''
+        to_pt = pt - self.pos
+        return to_pt.length() / self.world.graph.grid_size
 
     def hear_assassin(self):
         ''' Returns true if assassin walking is in hearing range '''
-        return self.point_in_range(self.world.assassin.pos,self.hearing_range + self.world.assassin.volume)
-
-    def see_assassin(self):
-        ''' returns true if assassin is in guard visibility range '''
-        return self.point_in_front_range(self.world.assassin.pos,self.hearing_range)
+        return self.line_distance_to(self.world.assassin.pos.copy()) < self.hearing_range + self.world.assassin.volume
 
     def intersect_pos(self,pos):
         ''' Returns true if assassin intersects a particular position'''
@@ -132,8 +123,6 @@ class Guard(object):
         ''' Goes to the current waypoint and increments on arrival '''
         if self.path.is_finished():
             if self.mode == 'suspicious':
-                self.investigate()
-            elif self.mode == 'hunt':
                 self.investigate()
             else:
                 self.wander()

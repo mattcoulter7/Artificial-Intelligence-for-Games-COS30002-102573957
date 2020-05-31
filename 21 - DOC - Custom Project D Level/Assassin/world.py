@@ -166,6 +166,7 @@ class World(object):
             return bottom_left.y == 0
 
     def click_on(self,pt,object):
+        ''' returns an object that was clicked on '''
         for obj in getattr(self,object):
             to_obj = obj.pos - pt
             dist = to_obj.length()

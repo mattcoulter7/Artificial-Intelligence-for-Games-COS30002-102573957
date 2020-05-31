@@ -33,7 +33,6 @@ def on_mouse_press(x, y, button, modifiers):
         world.assassin.update_path()
         world.assassin.guard = world.click_on(pt,'guards') #Set assassin guard to a guard that was clicked, is None if none were clicked on
 
-
 def on_resize(cx, cy):
     world.cx = cx
     world.cy = cy
