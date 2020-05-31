@@ -6,6 +6,7 @@ from math import sin, cos, radians, pi
 from random import random, randrange, uniform
 from path import Path
 from search_functions import astar,smooth
+from weapon import Weapon
 
 class Guard(object):
 
@@ -21,6 +22,9 @@ class Guard(object):
         self.heading = Vector2D(sin(dir), cos(dir))
         self.side = self.heading.perp()
         self.scale = Vector2D(scale, scale)  # easy scaling of Assassin size
+
+        # Weapon
+        self.weapon = Weapon(self,self.world)
 
         # speed limiting code
         self.max_speed = 5.0 * scale
@@ -72,6 +76,8 @@ class Guard(object):
             self.heading = self.vel.get_normalised()
             self.side = self.heading.perp()
 
+        self.weapon.update(delta)
+
     def update_mode(self):
         ''' Updates state according to different variables '''
         if self.hear_assassin():
@@ -91,6 +97,8 @@ class Guard(object):
         if self.path._pts:
             self.path.render()
 
+        self.weapon.render()
+
     #--------------------------------------------------------------------------
 
     def astar_distance_to(self,pt):
@@ -106,7 +114,9 @@ class Guard(object):
 
     def hear_assassin(self):
         ''' Returns true if assassin walking is in hearing range '''
-        return self.line_distance_to(self.world.assassin.pos.copy()) < self.hearing_range + self.world.assassin.volume
+        if self.world.assassin.volume > 0:
+            return self.line_distance_to(self.world.assassin.pos.copy()) < self.hearing_range + self.world.assassin.volume
+
 
     def intersect_pos(self,pos):
         ''' Returns true if assassin intersects a particular position'''

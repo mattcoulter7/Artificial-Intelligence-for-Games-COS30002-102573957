@@ -25,6 +25,8 @@ def on_key_press(symbol, modifiers):
         world.move_screen('left')
     elif symbol == KEY.RIGHT:
         world.move_screen('right')
+    elif symbol == KEY.SPACE:
+        world.guards[0].weapon.shoot()
 
 def on_mouse_press(x, y, button, modifiers):
     if button == 1:  # left
