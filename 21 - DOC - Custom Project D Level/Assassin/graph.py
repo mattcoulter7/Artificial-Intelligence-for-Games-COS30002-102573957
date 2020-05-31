@@ -126,6 +126,3 @@ class Graph(object):
         if self.node_available(rand_node):
             return rand_node
         return self.rand_node_from_pos(pos,dist)
-
-
-

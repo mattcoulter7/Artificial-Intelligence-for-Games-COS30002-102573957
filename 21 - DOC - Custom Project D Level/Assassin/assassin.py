@@ -75,6 +75,8 @@ class Assassin(object):
         if self.mode == 'chase':
             self.kill_guard()
 
+        self.world.shift(self.pos)
+
     def update_mode(self):
         ''' Updates state according to different variables '''
         if self.guard:

@@ -26,6 +26,7 @@ class World(object):
         self.map_name = self.map.readline()
         self.graph = Graph(self,int(self.map.readline()),int(self.map.readline()))
         self.read_file()
+        self.shifting_tolerance = 3
 
     def update(self, delta):
         ''' Updates all of the world objects'''
@@ -100,7 +101,7 @@ class World(object):
                 if type != 0:
                     self.blocks.append(Block(self,type,Vector2D(x,y)))
         self.map.close()
-
+    
     def move_screen(self,direction):
         amount = None
         if direction == 'left':
@@ -134,3 +135,36 @@ class World(object):
             block.pos += amount
 
         print(self.graph.move_compensate)
+
+    def shift(self,pos):
+        ''' use move_screen() based off of an object position and self.shift_tolerance
+        This can only be used for the position of ONE existing object as it does not zoom in and out'''
+        node = self.graph.pos_to_node(pos.copy(),relative = True)
+        max = self.graph.pos_to_node(Vector2D(self.cx,self.cy),relative = True) - Vector2D(1,1) #First component is edge to the right outside of screen
+        min = Vector2D(0,0)
+
+        horizontal_tolerance = floor(max.y / self.shifting_tolerance)
+        vertical_tolerance = floor(max.x / self.shifting_tolerance)
+
+        if node.x <= min.x + horizontal_tolerance and not self.at_edge('left'):
+            self.move_screen('left')
+        elif node.x >= max.x - vertical_tolerance and not self.at_edge('right'):
+            self.move_screen('right')
+        elif node.y >= max.y - vertical_tolerance and not self.at_edge('up'):
+            self.move_screen('up')
+        elif node.y <= min.y + horizontal_tolerance and not self.at_edge('down'):
+            self.move_screen('down')
+
+    def at_edge(self,edge):
+        bottom_left = self.graph.pos_to_node(Vector2D(0,0))
+        top_right = self.graph.pos_to_node(Vector2D(self.cx,self.cy))
+        if edge == 'left':
+            return bottom_left.x == 0
+        elif edge == 'right':
+            return top_right.x == self.graph.width - 1
+        elif edge == 'up':
+            return top_right.y == self.graph.height - 1
+        elif edge == 'down':
+            return bottom_left.y == 0
+
+        
