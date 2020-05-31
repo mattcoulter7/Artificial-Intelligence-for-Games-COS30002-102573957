@@ -135,6 +135,7 @@ class Assassin(object):
             pts = smooth(pts)
             # Convert points into coordinates
             for i in range(0,len(pts)):
+                pts[i] = self.world.graph.global_to_relative(pts[i])
                 pts[i] = self.world.graph.node_to_pos(pts[i].copy(),'center')
             self.path.set_pts(pts)
 

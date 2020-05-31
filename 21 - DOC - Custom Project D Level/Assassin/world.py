@@ -132,3 +132,5 @@ class World(object):
 
         for block in self.blocks:
             block.pos += amount
+
+        print(self.graph.move_compensate)
