@@ -1,4 +1,4 @@
-from vector2d import Vector2D,Vector2DToTuple,TupleToPoint2D
+from vector2d import Vector2D,Vector2DToTuple,TupleToVector2D
 from point2d import Point2D
 from node import Node
 import numpy as np
@@ -14,7 +14,7 @@ def return_path(current_node,maze):
     result = [[-1 for i in range(no_columns)] for j in range(no_rows)]
     current = current_node
     while current is not None:
-        path.append(TupleToPoint2D(current.position))
+        path.append(TupleToVector2D(current.position))
         current = current.parent
     # Return reversed path as we need to show from start to end path
     path = path[::-1]

@@ -37,49 +37,83 @@ class Graph(object):
                     sprites.append(sprite)
         return sprites
 
-    def get_node(self,pt):
-        ''' Returns the node of a given coordinate '''
-        for i in range(len(self.grid)):
-            for j in range(len(self.grid[i])):
-                if floor(pt.x/self.grid_size) == i - self.move_compensate.x and floor(pt.y/self.grid_size) == j - self.move_compensate.y:
-                    return Vector2D(i,j)
+    #---------------------------------------------------------------------
 
-    def fit_pos(self,pt,type):
-        ''' Takes a coord and fits it to a given place in a square '''
-        x = floor(pt.x/self.grid_size)
-        y = floor(pt.y/self.grid_size)
-        if type == 'center':
-            return Vector2D(x*self.grid_size + self.grid_size/2,y*self.grid_size + self.grid_size/2)
-        elif type == 'corner':
-            return Vector2D(x*self.grid_size,y*self.grid_size)
+    def restrict_point_to_grid(self,pt):
+        ''' if a pt is outside of the grid, it will bring it back into the grid '''
+        if pt.x < 0:
+            pt.x = 0
+        elif pt.x > self.width:
+            pt.x = self.width
+        if pt.y < 0:
+            pt.y = 0
+        elif pt.y > self.height:
+            pt.y = self.height
+        return pt
 
-    def get_pos(self,pt,type = None):
+    def relative_to_global(self,node):
+        ''' a position on the screen will be converted to position on grid 
+        I.E. a position of (1,2) on screen to be accurate would assume that position (0,0) is in the bottom left of the screen
+        Because this isn't always the case, it will use move_compensate to compensate for this'''
+        node.x += self.move_compensate.x
+        node.y += self.move_compensate.y
+        return node
+
+    def global_to_relative(self,node):
+        ''' Achieves the opposite of relative_to_global '''
+        node.x -= self.move_compensate.x
+        node.y -= self.move_compensate.y
+        return node
+
+    def pos_to_node(self,pos,relative = False):
+        ''' Returns the restricted node of a given coordinate, return global node by default'''
+        pos.x = floor(pos.x/self.grid_size)
+        pos.y = floor(pos.y/self.grid_size)
+        if not relative:
+            pos = self.relative_to_global(pos)
+        return self.restrict_point_to_grid(pos)
+
+    def node_to_pos(self,node,type = None):
         ''' Returns the position of a node, fitted to the square '''
-        if type is not None:
-            return self.fit_pos(Vector2D((pt.x - self.move_compensate.x) * self.grid_size,(pt.y - self.move_compensate.y) * self.grid_size),type)
-        else:
-            return Vector2D((pt.x - self.move_compensate.x) * self.grid_size + self.grid_size/2,(pt.y - self.move_compensate.y) * self.grid_size + self.grid_size/2)
+        node.x *= self.grid_size
+        node.y *= self.grid_size
+        if type == 'center':
+            node.x += self.grid_size/2
+            node.y += self.grid_size/2
+        return node
+
+    def fit_pos_to(self,pos,type = None,relative = False):
+        ''' Takes a coord and fits it to a given place in a square '''
+        pos = self.pos_to_node(pos,relative)
+        pos = self.node_to_pos(pos,type)
+        return pos
 
     def node_available(self,node):
         ''' returns true if node is 0 '''
-        return self.grid[node.x][node.y] == 0
+        if self.node_exists(node):
+            return self.grid[node.x][node.y] == 0
+        return False
 
     def node_exists(self,pt):
         ''' returns true if a node is valid '''
         return pt.x in range(0,self.width) and pt.y in range(0,self.height)
 
-    def rand_node(self,other_node = None):
+    def node_visible(self,node):
+        ''' Returns true if the current node is visible '''
+        return 0 <= node.x <= self.world.cx and 0 <= node.y <= self.world.cy
+
+    def rand_node(self,avoid = None):
         ''' returns an random node that is still available, other node is 
         another node to avoid such as the same position as the object 
         requesting a rand_node. Range is a limited distance from other_pos '''
-        node = Vector2D(randrange(0,self.width),randrange(0,self.height))
+        node = Point2D(randrange(0,self.width),randrange(0,self.height))
         not_self = True
-        if other_node is not None:
-            if node == other_node:
+        if avoid is not None:
+            if node == avoid:
                 not_self = False
         if self.node_available(node) and not_self:
             return node
-        return self.rand_node(other_node)
+        return self.rand_node(avoid)
 
     def rand_node_from_pos(self,pos,dist):
         ''' returns an random node that is still available, other node is 
@@ -87,14 +121,11 @@ class Graph(object):
         requesting a rand_node. dist is a limited distance from other_pos '''
         x_rand = choice([i for i in range(-dist,dist) if i != 0])
         y_rand = choice([i for i in range(-dist,dist) if i != 0])
-        rand_node = Vector2D(pos.x+x_rand,pos.y+y_rand)
-        if self.node_exists(rand_node):
-            if self.node_available(rand_node):
-                return rand_node
+        rand_node = Point2D(pos.x+x_rand,pos.y+y_rand)
+        rand_node = self.restrict_point_to_grid(rand_node)
+        if self.node_available(rand_node):
+            return rand_node
         return self.rand_node_from_pos(pos,dist)
 
-    def node_visible(self,node):
-        ''' Returns true if the current node is visible '''
-        return 0 <= node.x <= self.world.cx and 0 <= node.y <= self.world.cy
 
 

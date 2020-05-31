@@ -17,7 +17,7 @@ class Assassin(object):
 
         # where am i and where am i going? random start pos
         dir = radians(random()*360)
-        self.pos = world.graph.get_pos(Vector2D(5,5),'corner')
+        self.pos = world.graph.node_to_pos(Vector2D(5,5))
         self.vel = Vector2D()
         self.heading = Vector2D(sin(dir), cos(dir))
         self.side = self.heading.perp()
@@ -120,13 +120,13 @@ class Assassin(object):
 
     def intersect_pos(self,pos):
         ''' Returns true if assassin intersects a particular position'''
-        return self.world.graph.get_node(self.pos) == self.world.graph.get_node(pos)
+        return self.world.graph.pos_to_node(self.pos) == self.world.graph.pos_to_node(pos)
 
     def update_path(self):
         ''' Reassigns the points of path to head towards new destination'''
         maze = self.world.graph.grid
-        start = self.world.graph.get_node(self.pos)
-        end = self.world.graph.get_node(self.world.target)
+        start = self.world.graph.pos_to_node(self.pos)
+        end = self.world.graph.pos_to_node(self.world.target)
 
         # Can't travel into blocks
         if self.world.graph.node_available(end):
@@ -135,7 +135,7 @@ class Assassin(object):
             pts = smooth(pts)
             # Convert points into coordinates
             for i in range(0,len(pts)):
-                pts[i] = self.world.graph.get_pos(pts[i].copy())
+                pts[i] = self.world.graph.node_to_pos(pts[i].copy())
             self.path.set_pts(pts)
 
     def kill_guard(self):
