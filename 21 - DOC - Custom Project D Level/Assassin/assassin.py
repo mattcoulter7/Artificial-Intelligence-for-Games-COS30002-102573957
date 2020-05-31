@@ -92,7 +92,7 @@ class Assassin(object):
     def update_volume(self,event = None):
         if self.mode == 'sneaking':
             self.volume = 5
-        if self.mode == 'chase':
+        elif self.mode == 'chase':
             self.volume = 10
         else:
             self.volume = 0

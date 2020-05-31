@@ -17,14 +17,6 @@ def on_key_press(symbol, modifiers):
         world.paused = not world.paused
     elif symbol == KEY.A:
         world.guards.append(Guard(world))
-    elif symbol == KEY.UP:
-        world.move_screen('up')
-    elif symbol == KEY.DOWN:
-        world.move_screen('down')
-    elif symbol == KEY.LEFT:
-        world.move_screen('left')
-    elif symbol == KEY.RIGHT:
-        world.move_screen('right')
     elif symbol == KEY.SPACE:
         world.guards[0].weapon.shoot()
 

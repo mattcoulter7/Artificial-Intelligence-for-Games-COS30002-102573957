@@ -115,8 +115,7 @@ class Guard(object):
     def hear_assassin(self):
         ''' Returns true if assassin walking is in hearing range '''
         if self.world.assassin.volume > 0:
-            return self.line_distance_to(self.world.assassin.pos.copy()) < self.hearing_range + self.world.assassin.volume
-
+            return self.line_distance_to(self.world.assassin.pos.copy()) < (self.hearing_range + self.world.assassin.volume)
 
     def intersect_pos(self,pos):
         ''' Returns true if assassin intersects a particular position'''

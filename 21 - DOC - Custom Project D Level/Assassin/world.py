@@ -170,5 +170,5 @@ class World(object):
         for obj in getattr(self,object):
             to_obj = obj.pos - pt
             dist = to_obj.length()
-            if dist < 50:
+            if dist < self.graph.grid_size:
                 return obj
