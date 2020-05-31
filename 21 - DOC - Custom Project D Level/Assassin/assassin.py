@@ -1,5 +1,5 @@
 import pyglet
-from vector2d import Vector2D
+from vector2d import Vector2D,TupleToPoint2D
 from vector2d import Point2D
 from graphics import egi, KEY
 from math import sin, cos, radians, pi
@@ -131,7 +131,7 @@ class Assassin(object):
         # Can't travel into blocks
         if self.world.graph.node_available(end):
             # Calculate points
-            pts = astar(maze,start,end)
+            pts = astar(maze,1.0,start,end)
             pts = smooth(pts)
             # Convert points into coordinates
             for i in range(0,len(pts)):

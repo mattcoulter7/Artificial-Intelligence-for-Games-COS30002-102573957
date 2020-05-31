@@ -38,6 +38,9 @@ class Guard(object):
         self.ani = pyglet.resource.animation('resources/guard_walk.gif')
         self.walking = pyglet.sprite.Sprite(img=self.ani)
 
+        # Heard attack
+        self.suspicious = False
+
     def calculate(self):
         # calculate the current steering force
         mode = self.mode
@@ -67,15 +70,17 @@ class Guard(object):
         ''' Updates state according to different variables '''
         if self.path._pts:
             self.mode = 'wander'
+        elif self.heard_attack:
+            self.mode = 'suspicious'
         else:
             self.mode = None
 
     def render(self, color=None):
         ''' Draw the Guard'''
-        if self.mode == 'wander':
+        if self.mode is not None:
             self.walking.update(x=self.pos.x+self.char.width/2,y=self.pos.y+self.char.height/2,rotation=self.heading.angle('deg') + 90,scale=self.world.graph.grid_size/self.char.height)
             self.walking.draw()
-        elif self.mode == None:
+        else:
             self.still.update(x=self.pos.x+self.char.width/2,y=self.pos.y+self.char.height/2,rotation=self.heading.angle('deg') + 90,scale=self.world.graph.grid_size/self.char.height)
             self.still.draw()
         # Path
@@ -102,9 +107,9 @@ class Guard(object):
         return self.seek(self.path.current_pt())
 
     def generate_random_path(self):
-        rand_node = self.world.graph.rand_node_from_pos(self.world.graph.get_node(self.pos),5)
-        pts = astar(self.world.graph.grid,self.world.graph.get_node(self.pos),rand_node)
-        pts = smooth(pts)
+        rand_node = self.world.graph.rand_node_from_pos(self.world.graph.get_node(self.pos),15)
+        pts = astar(self.world.graph.grid,1.0,self.world.graph.get_node(self.pos),rand_node)
+        # pts = smooth(pts)
         for i in range(0,len(pts)):
             pts[i] = self.world.graph.get_pos(pts[i].copy(),'center')
         self.path.set_pts(pts)

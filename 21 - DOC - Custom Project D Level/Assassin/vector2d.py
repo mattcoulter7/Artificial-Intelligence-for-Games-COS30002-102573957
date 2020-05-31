@@ -1,17 +1,7 @@
-'''2D Vector with related methods
-
-Created for COS30002 AI for Games by Clinton Woodward <cwoodward@swin.edu.au>
-
-For class use only. Do not publically share or post this code without permission.
-
-Updated by Steve Dower
-'''
-
 from math import sqrt,atan2,pi
 from point2d import Point2D  # Not used here, but easy way to expose it
 
 MIN_FLOAT = 1e-300
-
 
 def is_equal(a, b):
     return abs(a-b) < 1e-12
@@ -21,6 +11,12 @@ def PointToVector2D(pt):
 
 def Vector2DToPoint(v):
     return Point2D(v.x, v.y)
+
+def Vector2DToTuple(v):
+    return (v.x, v.y)
+
+def TupleToPoint2D(t):
+    return Point2D(t[0],t[1])
 
 
 class Vector2D(object):
