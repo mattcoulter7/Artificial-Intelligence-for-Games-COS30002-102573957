@@ -26,7 +26,7 @@ class World(object):
         self.map_name = self.map.readline()
         self.graph = Graph(self,int(self.map.readline()),int(self.map.readline()))
         self.read_file()
-        self.shifting_tolerance = 3
+        self.shifting_tolerance = 5
 
     def update(self, delta):
         ''' Updates all of the world objects'''
