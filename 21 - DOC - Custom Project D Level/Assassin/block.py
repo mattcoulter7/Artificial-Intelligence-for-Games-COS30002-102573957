@@ -8,7 +8,7 @@ class Block(object):
         self.type = type - 1
         self.world = world
         self.size = world.graph.grid_size
-        self.pos = self.world.graph.get_pos(node,'corner')
+        self.pos = self.world.graph.node_to_pos(node)
 
         images = ['brown_block.png','grey_block.png','purple_block.png']
         self.image = pyglet.image.load('resources/' + images[self.type])

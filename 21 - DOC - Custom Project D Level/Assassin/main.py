@@ -29,10 +29,10 @@ def on_key_press(symbol, modifiers):
 def on_mouse_press(x, y, button, modifiers):
     if button == 1:  # left
         pt = Point2D(x,y)
-        world.target = world.graph.fit_pos(pt,'center')
+        world.target = world.graph.fit_pos_to(pt,type = 'center',relative = True)
         world.assassin.update_path()
         for guard in world.guards:
-            if world.graph.get_node(pt) == world.graph.get_node(guard.pos):
+            if world.graph.pos_to_node(pt) == world.graph.pos_to_node(guard.pos):
                 world.assassin.guard = guard
 
 def on_resize(cx, cy):

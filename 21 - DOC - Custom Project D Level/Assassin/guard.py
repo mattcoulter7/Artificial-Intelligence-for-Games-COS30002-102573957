@@ -16,7 +16,7 @@ class Guard(object):
 
         # where am i and where am i going? random start pos
         dir = radians(random()*360)
-        self.pos = world.graph.get_pos(world.graph.rand_node(),'corner')
+        self.pos = world.graph.node_to_pos(world.graph.rand_node())
         self.vel = Vector2D()
         self.heading = Vector2D(sin(dir), cos(dir))
         self.side = self.heading.perp()
@@ -27,7 +27,7 @@ class Guard(object):
 
         # nodes
         self.path = Path()
-        self.generate_random_path()
+        self.wander()
 
         # debug draw info?
         self.show_info = True
@@ -38,16 +38,9 @@ class Guard(object):
         self.ani = pyglet.resource.animation('resources/guard_walk.gif')
         self.walking = pyglet.sprite.Sprite(img=self.ani)
 
-        # Heard attack
-        self.suspicious = False
-
-    def calculate(self):
-        # calculate the current steering force
-        mode = self.mode
-        vel = Vector2D(0,0)
-        if self.mode == 'wander':
-            vel = self.follow_path()
-        return vel
+        # AI variables
+        self.hearing_range = 5.0
+        self.vision_range = 10.0
 
     def update(self, delta):
         ''' update vehicle position and orientation '''
@@ -55,7 +48,7 @@ class Guard(object):
         self.update_mode()
 
         # new velocity
-        self.vel = self.calculate()
+        self.vel = self.follow_path()
         # limit velocity
         self.vel.truncate(self.max_speed)
         # update position
@@ -68,12 +61,14 @@ class Guard(object):
 
     def update_mode(self):
         ''' Updates state according to different variables '''
-        if self.path._pts:
-            self.mode = 'wander'
-        elif self.heard_attack:
+        if self.hear_assassin():
             self.mode = 'suspicious'
+            self.approach(self.world.assassin.pos.copy())
+        elif self.see_assassin():
+            self.mode = 'kill'
+            self.approach(self.world.assassin.pos)
         else:
-            self.mode = None
+            self.mode = 'wander'
 
     def render(self, color=None):
         ''' Draw the Guard'''
@@ -89,27 +84,52 @@ class Guard(object):
 
     #--------------------------------------------------------------------------
 
+    def point_in_range(self,pt,ran):
+        ''' Returns true if pt is within a circular radius of self '''
+        ran *= self.world.graph.grid_size
+        return pt.x in range(self.world.graph.pos_to_node(self.pos.x-ran),self.pos.x+ran) and pt.y in range(self.pos.y-ran,self.pos.y+ran)
+
+    def point_in_front_range(self,pt,ran):
+        ''' Returns true if pt is in front of self '''
+        ran *= self.world.graph.grid_size
+        return pt.x in range(self.pos.x,self.pos.x + (self.heading.x * ran)) and pt.y in range(self.pos.y,self.pos.y + (self.heading.y * ran))
+
+    def hear_assassin(self):
+        ''' Returns true if assassin walking is in hearing range '''
+        return self.point_in_range(self.world.assassin.pos,self.hearing_range)
+
+    def see_assassin(self):
+        ''' returns true if assassin is in guard visibility range '''
+        return self.point_in_front_range(self.world.assassin.pos,self.hearing_range)
+
+    def intersect_pos(self,pos):
+        ''' Returns true if assassin intersects a particular position'''
+        return self.world.graph.pos_to_node(pos) == self.world.graph.pos_to_node(self.pos)
+
+    #--------------------------------------------------------------------------
+
     def seek(self, target_pos):
         ''' move towards target position '''
         desired_vel = (target_pos - self.pos).normalise() * self.max_speed
         return desired_vel
 
-    def intersect_pos(self,pos):
-        ''' Returns true if assassin intersects a particular position'''
-        return self.world.graph.get_node(pos) == self.world.graph.get_node(self.pos)
-
     def follow_path(self):
-        # Goes to the current waypoint and increments on arrival
+        ''' Goes to the current waypoint and increments on arrival '''
         if self.path.is_finished():
-            self.generate_random_path()
+            self.wander()
         elif self.intersect_pos(self.path.current_pt()):
             self.path.inc_current_pt()
         return self.seek(self.path.current_pt())
 
-    def generate_random_path(self):
-        rand_node = self.world.graph.rand_node_from_pos(self.world.graph.get_node(self.pos),10)
-        pts = astar(self.world.graph.grid,1.0,self.world.graph.get_node(self.pos),rand_node)
-        # pts = smooth(pts)
+    def approach(self,pt):
+        ''' Resets the path to the new specified pts '''
+        pts = astar(self.world.graph.grid,1.0,self.world.graph.pos_to_node(self.pos),pt)
+        pts = smooth(pts)
         for i in range(0,len(pts)):
-            pts[i] = self.world.graph.get_pos(pts[i].copy(),'center')
+            pts[i] = self.world.graph.node_to_pos(pts[i].copy(),'center')
         self.path.set_pts(pts)
+
+    def wander(self):
+        ''' Chooses a random available location on the map and path finds towards it '''
+        rand_node = self.world.graph.rand_node_from_pos(self.world.graph.pos_to_node(self.pos),10)
+        self.approach(rand_node)

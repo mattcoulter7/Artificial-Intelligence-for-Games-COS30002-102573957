@@ -18,6 +18,9 @@ def Vector2DToTuple(v):
 def TupleToPoint2D(t):
     return Point2D(t[0],t[1])
 
+def TupleToVector2D(t):
+    return Vector2D(t[0],t[1])
+
 
 class Vector2D(object):
     __slots__ = ('x', 'y')
