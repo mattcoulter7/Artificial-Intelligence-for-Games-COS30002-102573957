@@ -1,6 +1,5 @@
 from graphics import egi
 from vector2d import Vector2D
-from playsound import playsound
 
 class Projectile(object):
     """description of class"""
