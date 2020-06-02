@@ -10,7 +10,7 @@ from weapon import Weapon
 
 class Guard(object):
 
-    def __init__(self, world=None, scale=30.0, mode='wander'):
+    def __init__(self, world=None, scale=30.0, mode='scout'):
         # keep a reference to the world object
         self.world = world
         self.mode = mode
@@ -47,21 +47,10 @@ class Guard(object):
         # AI Vision
         self.vision_range = 5
         self.vision = []
+        self.history = []
 
         # AI Wandering
-        self.wander_dist = 10
-        self.wander()
-
-    def calculate(self):
-        # calculate the current steering force
-        vel = Vector2D(0,0)
-        if self.path._pts:
-            if self.mode == 'suspicious':
-                self.investigate()
-            elif self.mode == 'attack':
-                self.investigate()
-            vel = self.follow_path()
-        return vel
+        self.wander_dist = 5
 
     def update(self, delta):
         ''' update vehicle position and orientation '''
@@ -72,7 +61,7 @@ class Guard(object):
         self.update_mode()
 
         # new velocity
-        self.vel = self.calculate()
+        self.vel = self.follow_path()
         # limit velocity
         self.vel.truncate(self.max_speed)
         # update position
@@ -92,7 +81,7 @@ class Guard(object):
         elif self.hear_assassin():
             self.mode = 'suspicious'
         else:
-            self.mode = 'wander'
+            self.mode = 'scout'
 
     def update_vision(self):
         # Adjacent edges of node
@@ -119,6 +108,9 @@ class Guard(object):
                         check_from += 1
         for i in range(len(visible_nodes)):
             visible_nodes[i] = self.world.graph.global_to_relative(visible_nodes[i])
+            if visible_nodes[i] not in self.history:
+                self.history.append(visible_nodes[i]) # Update history
+
         self.vision = visible_nodes
 
     def render(self, color=None):
@@ -130,7 +122,9 @@ class Guard(object):
         if self.mode is not None: # Moving
             self.walking.update(x=x_val,y=y_val,rotation=angle)
             self.walking.draw()
-            self.path.render()
+            # Path
+            if self.path._pts:
+                self.path.render()
         else: # Still
             self.still.update(x=x_val,y=y_val,rotation=angle)
             self.still.draw()
@@ -171,11 +165,8 @@ class Guard(object):
 
     def follow_path(self):
         ''' Goes to the current waypoint and increments on arrival '''
-        if self.path.is_finished():
-            if self.mode == 'suspicious':
-                self.investigate()
-            else:
-                self.wander()
+        if self.path.is_finished() or len(self.path._pts) == 0:
+            self.scout()
         elif self.intersect_pos(self.path.current_pt()):
             self.path.inc_current_pt()
         return self.seek(self.path.current_pt())
@@ -193,6 +184,21 @@ class Guard(object):
     def wander(self):
         ''' Chooses a random available location on the map and path finds towards it '''
         rand_node = self.world.graph.rand_node_from_pos(self.world.graph.pos_to_node(self.pos.copy()),self.wander_dist)
+        return rand_node
+
+    def scout(self):
+        ''' Chooses a random available location on the map and path finds towards it '''
+        rand_node = None
+        have_not_visited = list(filter(lambda n: n not in self.history,self.world.graph.all_available_nodes))
+        if not have_not_visited:
+            self.history = [] # Clear history if it has been everywhere
+        # Node of self
+        self_node = self.world.graph.pos_to_node(self.pos.copy())
+        within_range = list(filter(lambda n: (n - self_node).length() <= self.wander_dist,have_not_visited))
+        if within_range:
+            rand_node = self.world.graph.rand_node_from_list(within_range)
+        else: #empty
+            rand_node = self.wander()
         self.approach(rand_node)
 
     def investigate(self):
