@@ -115,6 +115,8 @@ class Assassin(object):
             # Still
             self.still.update(x=x_val,y=y_val,rotation=angle)
             self.still.draw()
+        egi.red_pen()
+        egi.circle(self.pos,5)
 
     def speed(self):
         return self.vel.length()

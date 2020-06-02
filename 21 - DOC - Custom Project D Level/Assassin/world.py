@@ -31,10 +31,9 @@ class World(object):
     def update(self, delta):
         ''' Updates all of the world objects'''
         if not self.paused:
-            self.assassin.update(delta)
-
             for guard in self.guards:
                 guard.update(delta)
+        self.assassin.update(delta)
 
     def render(self):
         ''' Renders all of the world objects'''
@@ -170,5 +169,5 @@ class World(object):
         for obj in getattr(self,object):
             to_obj = obj.pos - pt
             dist = to_obj.length()
-            if dist < self.graph.grid_size:
+            if dist < self.graph.grid_size * 2:
                 return obj
