@@ -27,9 +27,6 @@ def on_key_press(symbol, modifiers):
         world.paused = not world.paused
     elif symbol == KEY.A:
         world.agents.append(Agent(world))
-    elif symbol == KEY.R:
-        for agent in world.agents:
-            agent.weapon.reloading = not agent.weapon.reloading
     elif symbol == KEY.I:
         for agent in world.agents:
             agent.show_info = not agent.show_info

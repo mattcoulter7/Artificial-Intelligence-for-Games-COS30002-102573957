@@ -8,6 +8,7 @@ from block import Block
 from point2d import Point2D
 from assassin import Assassin
 from guard import Guard
+from math import pi
 
 SCREEN_WIDTH = 720
 SCREEN_HEIGHT = 720

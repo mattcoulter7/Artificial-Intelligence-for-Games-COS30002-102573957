@@ -100,19 +100,20 @@ class Assassin(object):
         if event == 'kill':
             self.volume += 15
 
-        print(self.volume)
-
     def render(self):
         ''' Draw the Assassin'''
+        angle = self.heading.angle('deg') + 90
+        x_val = self.pos.x - (self.char.width/2 * cos(angle * pi/180))
+        y_val = self.pos.y + (self.char.height/2 * sin(angle * pi/180))
         if self.path._pts:
             # Walking animation
-            self.walking.update(x=self.pos.x+self.char.width/2,y=self.pos.y+self.char.height/2,rotation=self.heading.angle('deg') + 90,scale=self.world.graph.grid_size/self.char.height)
+            self.walking.update(x=x_val,y=y_val,rotation=angle)
             self.walking.draw()
             # Path
             self.path.render()
         else:
             # Still
-            self.still.update(x=self.pos.x+self.char.width/2,y=self.pos.y+self.char.height/2,rotation=self.heading.angle('deg') + 90,scale=self.world.graph.grid_size/self.char.height)
+            self.still.update(x=x_val,y=y_val,rotation=angle)
             self.still.draw()
 
     def speed(self):
