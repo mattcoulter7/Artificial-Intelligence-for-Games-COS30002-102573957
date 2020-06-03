@@ -30,9 +30,6 @@ class Projectile(object):
             assassin_hit.health.take_damage(self.weapon.damage)
             self.recycle()
 
-        if self.intersect_block():
-            self.recycle()
-
     def render(self):
         self.bullet_spr.update(x=self.pos.x,y=self.pos.y,rotation = self.angle)
         self.bullet_spr.draw()
@@ -58,15 +55,6 @@ class Projectile(object):
         if dist < 40:
             return self.world.assassin
         return False
-
-    def intersect_block(self):
-        '''check if projectile hits another assassin'''
-        intersect = False
-        for block in self.world.blocks:
-            block_node = self.world.graph.pos_to_node(block.pos.copy())
-            self_node = self.world.graph.pos_to_node(self.pos.copy())
-            intersect = self_node == block_node
-        return intersect
 
     def recycle(self):
         '''remove projectile from list and put it at the end of the queue for reuse'''

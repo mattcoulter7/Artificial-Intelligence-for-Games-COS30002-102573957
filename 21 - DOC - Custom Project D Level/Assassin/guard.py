@@ -16,7 +16,6 @@ class Guard(object):
         # keep a reference to the world object
         self.world = world
         self.mode = mode
-
         # where am i and where am i going? random start pos
         dir = radians(random()*360)
         self.pos = world.graph.node_to_pos(world.graph.rand_node())
@@ -24,35 +23,26 @@ class Guard(object):
         self.heading = Vector2D(sin(dir), cos(dir))
         self.side = self.heading.perp()
         self.scale = Vector2D(scale, scale)  # easy scaling of Assassin size
-
         # Weapon
         self.weapon = Weapon(self.world,self)
-
         # speed limiting code
         self.max_speed = 5.0 * scale
-
         # nodes
         self.path = Path()
-
         # debug draw info?
         self.show_info = True
-
         # Sprites
         self.char = pyglet.image.load('resources/guard.png')
         self.still = pyglet.sprite.Sprite(self.char, x=self.pos.x, y=self.pos.y)
         self.ani = pyglet.resource.animation('resources/guard_walk.gif')
         self.walking = pyglet.sprite.Sprite(img=self.ani)
-
         # AI Hearing
         self.hearing_range = 5.0
-
         # AI Vision
         self.vision = Vision(self,3,self.world)
-        self.assassin_seen = 0
-
+        self.alerted = 0
         # Memory
         self.history = History(self,self.world)
-
         # Generate first path
         self.scout()
 
@@ -73,6 +63,7 @@ class Guard(object):
         self.vision.update()
         # update mode if necessary
         self.update_mode()
+        print(self.mode)
         # new velocity
         self.vel = self.calculate()
         # update position
@@ -86,18 +77,18 @@ class Guard(object):
         self.weapon.update(delta)
 
         # Memory of seeing assassin
-        if self.see_assassin():
-            self.assassin_seen = 500
-        if self.assassin_seen > 0:
-            self.assassin_seen -= 1
 
+        if self.see_assassin() or self.hear_assassin():
+            self.alerted = 500
+        if self.alerted > 0:
+            self.alerted -= 1
 
     def update_mode(self):
         ''' Updates state according to different variables '''
         if self.see_assassin():
             self.mode = 'attack'
             return True
-        elif self.assassin_seen > 0 or self.hear_assassin():
+        elif self.alerted or self.hear_assassin():
             self.mode = 'investigate'
             return True
         else:

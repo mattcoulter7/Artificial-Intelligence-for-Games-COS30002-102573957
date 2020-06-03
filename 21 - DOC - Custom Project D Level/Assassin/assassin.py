@@ -106,6 +106,7 @@ class Assassin(object):
             self.volume = 0
         if event == 'kill':
             self.volume = 15
+        print(self.volume)
 
     def render(self):
         ''' Draw the Assassin'''
