@@ -1,5 +1,3 @@
-Fix guards being alerted
-Render question mark on alert
 add guard to map data
 add assassin to map data
 display number of guard remaining

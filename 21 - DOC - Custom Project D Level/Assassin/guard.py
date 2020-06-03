@@ -29,13 +29,6 @@ class Guard(object):
         self.max_speed = 5.0 * scale
         # nodes
         self.path = Path()
-        # debug draw info?
-        self.show_info = True
-        # Sprites
-        self.char = pyglet.image.load('resources/guard.png')
-        self.still = pyglet.sprite.Sprite(self.char, x=self.pos.x, y=self.pos.y)
-        self.ani = pyglet.resource.animation('resources/guard_walk.gif')
-        self.walking = pyglet.sprite.Sprite(img=self.ani)
         # AI Hearing
         self.hearing_range = 5.0
         # AI Vision
@@ -45,6 +38,20 @@ class Guard(object):
         self.history = History(self,self.world)
         # Generate first path
         self.scout()
+        
+        ''' Sprites '''
+        # Still character
+        self.char = pyglet.image.load('resources/guard.png')
+        self.still = pyglet.sprite.Sprite(img = self.char)
+        # Animation
+        self.ani = pyglet.resource.animation('resources/guard_walk.gif')
+        self.walking = pyglet.sprite.Sprite(img=self.ani)
+        # Exclamation Mark
+        self.exclamation = pyglet.image.load('resources/exclamation.png')
+        self.exclamation_spr = pyglet.sprite.Sprite(img=self.exclamation)
+        # Question Mark
+        self.question = pyglet.image.load('resources/question.png')
+        self.question_spr = pyglet.sprite.Sprite(img=self.question)
 
     def calculate(self):
         # Update the path based off mode
@@ -63,7 +70,6 @@ class Guard(object):
         self.vision.update()
         # update mode if necessary
         self.update_mode()
-        print(self.mode)
         # new velocity
         self.vel = self.calculate()
         # update position
@@ -78,7 +84,11 @@ class Guard(object):
 
         # Memory of seeing assassin
 
-        if self.see_assassin() or self.hear_assassin():
+        if self.see_assassin():
+            self.render(other = 'exclamation')
+            self.alerted = 500
+        if self.hear_assassin():
+            self.render(other = 'question')
             self.alerted = 500
         if self.alerted > 0:
             self.alerted -= 1
@@ -96,7 +106,7 @@ class Guard(object):
             return True
         return False
 
-    def render(self, color=None):
+    def render(self, other=None):
         ''' Draw the Guard'''
         # Weapon and Bullets
         self.weapon.render()
@@ -110,6 +120,10 @@ class Guard(object):
         else: # Still
             self.still.update(x=x_val,y=y_val,rotation=angle)
             self.still.draw()
+        
+        if other is not None:
+            getattr(self,other+'_spr').update(x=x_val,y=y_val + 30)
+            getattr(self,other+'_spr').draw()
 
     #--------------------------------------------------------------------------
     

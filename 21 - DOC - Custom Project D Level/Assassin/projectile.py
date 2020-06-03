@@ -13,7 +13,7 @@ class Projectile(object):
         self.angle = None
         # Sprites
         bullet = pyglet.image.load('resources/bullet.png')
-        self.bullet_spr = pyglet.sprite.Sprite(bullet, x=self.pos.x, y=self.pos.y)
+        self.bullet_spr = pyglet.sprite.Sprite(img = bullet)
 
     def update(self,delta):
         # check for limits of new velocity

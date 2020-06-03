@@ -38,7 +38,7 @@ class Weapon(object):
 
         # Graphics
         gunflare = pyglet.image.load('resources/gunflare.png')
-        self.gunflare_spr = pyglet.sprite.Sprite(gunflare, x=0, y=0)
+        self.gunflare_spr = pyglet.sprite.Sprite(img = gunflare)
 
     def update(self,delta):
         # Update position of all projectiles
@@ -79,7 +79,6 @@ class Weapon(object):
         '''Moves obj from queue into list'''
         # Shoot if queue still has obj to move
         if not self.projectiles_queue.empty() and not self.cooling_down and not self.reloading:
-            print('shoot')
             # Get obj at front of queue
             proj = self.projectiles_queue.get()
             # Prepare for shooting
