@@ -27,6 +27,7 @@ class Projectile(object):
         
         assassin_hit = self.intersect_assassin()
         if assassin_hit:
+            assassin_hit.health.take_damage(self.weapon.damage)
             self.recycle()
 
         if self.intersect_block():
@@ -54,7 +55,7 @@ class Projectile(object):
         '''check if projectile hits another assassin'''
         to_assassin = self.world.assassin.pos - self.pos
         dist = to_assassin.length()
-        if dist < 50:
+        if dist < 40:
             return self.world.assassin
         return False
 

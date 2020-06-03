@@ -1,4 +1,11 @@
-
-guard shooting
-Assassin AI
+add sounds
+Fix guards being alerted
+Render question mark on alert
 Menus
+- restart screen
+- main screen
+add guard to map data
+add assassin to map data
+display number of guard remaining
+
+FIX LAG

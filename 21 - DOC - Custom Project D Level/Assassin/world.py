@@ -44,20 +44,19 @@ class World(object):
 
     def render(self):
         ''' Renders all of the world objects'''
-        #self.graph.render()
+        self.graph.render()
 
         if self.target:
             egi.red_pen()
             egi.cross(self.target,self.graph.grid_size/4)
 
-        self.assassin.render()
-            
         for guard in self.guards:
             guard.render()
 
-        if self.show_info:
-            for block in self.blocks:
-                block.render()
+        for block in self.blocks:
+            block.render()
+
+        self.assassin.render()
 
     def transform_points(self, points, pos, forward, side, scale):
         ''' Transform the given list of points, using the provided position,

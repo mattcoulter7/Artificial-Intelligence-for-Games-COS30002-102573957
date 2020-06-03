@@ -7,6 +7,7 @@ from random import random, randrange, uniform
 from path import Path
 from node import Node
 from search_functions import astar,smooth
+from health import Health
 
 class Assassin(object):
 
@@ -44,6 +45,10 @@ class Assassin(object):
         # Volume
         self.volume = 0
 
+        # Health
+        self.health = Health(self)
+        self.alive = True
+
     def calculate(self):
         # calculate the current steering force
         vel = Vector2D(0,0)
@@ -80,6 +85,9 @@ class Assassin(object):
 
         self.world.shift(self.pos)
 
+        if not self.health.still_alive():
+            self.alive = False
+
     def update_mode(self):
         ''' Updates state according to different variables '''
         if self.path._pts:
@@ -108,16 +116,14 @@ class Assassin(object):
             # Walking animation
             self.walking.update(x=x_val,y=y_val,rotation=angle)
             self.walking.draw()
-            if self.world.show_info:
             # Path
-                self.path.render()
+            self.path.render()
         else:
             # Still
             self.still.update(x=x_val,y=y_val,rotation=angle)
             self.still.draw()
-        if self.world.show_info:
-            egi.red_pen()
-            egi.circle(self.pos,5)
+
+        self.health.render()
 
     def speed(self):
         return self.vel.length()

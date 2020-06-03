@@ -116,14 +116,9 @@ class Guard(object):
         if self.mode in ['scout','investigate']: # Moving
             self.walking.update(x=x_val,y=y_val,rotation=angle)
             self.walking.draw()
-            # Path
-            if self.path._pts and self.world.show_info:
-                self.path.render()
         else: # Still
             self.still.update(x=x_val,y=y_val,rotation=angle)
             self.still.draw()
-        if self.world.show_info:
-            self.vision.render()
 
     #--------------------------------------------------------------------------
     
@@ -190,5 +185,6 @@ class Guard(object):
         ''' Prompts guard to shoot assassin '''
         if self.path._pts:
             self.path.clear()
+        self.heading = (self.world.assassin.pos - self.pos).normalise()
         self.weapon.shoot()
 

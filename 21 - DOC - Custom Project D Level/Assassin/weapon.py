@@ -18,6 +18,7 @@ class Weapon(object):
         self.max_ammo = 16
         self.proj_speed = 2000.0
         self.accuracy = 2.0
+        self.damage = 20
 
         # Queue and List
         self.projectiles = []
