@@ -55,8 +55,9 @@ class World(object):
         for guard in self.guards:
             guard.render()
 
-        for block in self.blocks:
-            block.render()
+        if self.show_info:
+            for block in self.blocks:
+                block.render()
 
     def transform_points(self, points, pos, forward, side, scale):
         ''' Transform the given list of points, using the provided position,

@@ -87,8 +87,6 @@ class Guard(object):
         else:
             self.mode = 'scout'
 
-
-
     def render(self, color=None):
         ''' Draw the Guard'''
         # Update variables
@@ -99,12 +97,13 @@ class Guard(object):
             self.walking.update(x=x_val,y=y_val,rotation=angle)
             self.walking.draw()
             # Path
-            if self.path._pts:
+            if self.path._pts and self.world.show_info:
                 self.path.render()
         else: # Still
             self.still.update(x=x_val,y=y_val,rotation=angle)
             self.still.draw()
-        self.vision.render()
+        if self.world.show_info:
+            self.vision.render()
         # Weapon and Bullets
         self.weapon.render()
 

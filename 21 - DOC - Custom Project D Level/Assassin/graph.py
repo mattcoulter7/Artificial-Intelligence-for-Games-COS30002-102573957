@@ -140,7 +140,6 @@ class Graph(object):
             for j in range(len(self.grid[i])):
                 update = True # Assume update
                 node = Vector2D(i,j)
-                print(node)
                 for pt in adjacent:
                     new_node = Vector2D(node.x+pt[0],node.y+pt[1])
                     if self.node_available(new_node):

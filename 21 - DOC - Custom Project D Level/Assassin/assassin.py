@@ -109,14 +109,16 @@ class Assassin(object):
             # Walking animation
             self.walking.update(x=x_val,y=y_val,rotation=angle)
             self.walking.draw()
+            if self.world.show_info:
             # Path
-            self.path.render()
+                self.path.render()
         else:
             # Still
             self.still.update(x=x_val,y=y_val,rotation=angle)
             self.still.draw()
-        egi.red_pen()
-        egi.circle(self.pos,5)
+        if self.world.show_info:
+            egi.red_pen()
+            egi.circle(self.pos,5)
 
     def speed(self):
         return self.vel.length()
