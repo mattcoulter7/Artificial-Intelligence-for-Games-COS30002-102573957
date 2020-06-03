@@ -26,7 +26,7 @@ class Guard(object):
         self.scale = Vector2D(scale, scale)  # easy scaling of Assassin size
 
         # Weapon
-        self.weapon = Weapon(self,self.world)
+        self.weapon = Weapon(self.world,self)
 
         # speed limiting code
         self.max_speed = 5.0 * scale
@@ -47,14 +47,25 @@ class Guard(object):
         self.hearing_range = 5.0
 
         # AI Vision
-        self.vision = Vision(self,5,self.world)
-        self.history = History(self,self.world)
+        self.vision = Vision(self,3,self.world)
+        self.assassin_seen = 0
 
-        # AI Wandering
-        self.wander_dist = 10
+        # Memory
+        self.history = History(self,self.world)
 
         # Generate first path
         self.scout()
+
+    def calculate(self):
+        # Update the path based off mode
+        vel = Vector2D(0,0)
+        if self.mode == 'attack':
+            self.attack()
+        elif self.mode == 'investigate':
+            vel = self.follow_path()
+        elif self.mode == 'scout':
+            vel = self.follow_path()
+        return vel
 
     def update(self, delta):
         ''' update vehicle position and orientation '''
@@ -62,11 +73,9 @@ class Guard(object):
         self.vision.update()
         # update mode if necessary
         self.update_mode()
-
+        print(self.mode)
         # new velocity
-        self.vel = self.follow_path()
-        # limit velocity
-        self.vel.truncate(self.max_speed)
+        self.vel = self.calculate()
         # update position
         self.pos += self.vel * delta
 
@@ -77,14 +86,24 @@ class Guard(object):
 
         self.weapon.update(delta)
 
+        # Memory of seeing assassin
+        if self.see_assassin():
+            self.assassin_seen = 500
+        if self.assassin_seen > 0:
+            self.assassin_seen -= 1
+
     def update_mode(self):
         ''' Updates state according to different variables '''
         if self.see_assassin():
             self.mode = 'attack'
-        elif self.hear_assassin():
-            self.mode = 'suspicious'
+            return True
+        elif self.assassin_seen > 0 or self.hear_assassin():
+            self.mode = 'investigate'
+            return True
         else:
             self.mode = 'scout'
+            return True
+        return False
 
     def render(self, color=None):
         ''' Draw the Guard'''
@@ -120,7 +139,7 @@ class Guard(object):
 
     def see_assassin(self):
         ''' Returns true if the assassin is within the vision blocks '''
-        assassin_node = self.world.graph.pos_to_node(self.world.assassin.pos.copy())
+        assassin_node = self.world.graph.pos_to_node(self.world.assassin.pos.copy(),relative = True)
         return assassin_node in self.vision.vision
 
     def intersect_pos(self,pos):
@@ -137,7 +156,10 @@ class Guard(object):
     def follow_path(self):
         ''' Goes to the current waypoint and increments on arrival '''
         if self.path.is_finished():
-            self.scout()
+            if self.mode == 'investigate':
+                self.investigate()
+            elif self.mode == 'scout':
+                self.scout()
         elif self.intersect_pos(self.path.current_pt()):
             self.path.inc_current_pt()
         return self.seek(self.path.current_pt())
@@ -152,17 +174,21 @@ class Guard(object):
                 pts[i] = self.world.graph.node_to_pos(pts[i].copy(),'center')
             self.path.set_pts(pts)
 
-    def wander(self):
-        ''' Chooses a random available location on the map and path finds towards it '''
-        rand_node = self.world.graph.rand_node_from_pos(self.world.graph.pos_to_node(self.pos.copy()),self.wander_dist)
-        return rand_node
-
     def scout(self):
-        ''' Chooses a random available location on the map and path finds towards it '''
+        ''' Chooses a random available location on the map that hasn't been seen yet and path finds towards it '''
         self.history.update()
         rand_node = self.world.graph.rand_node_from_list(self.history.yet_to_visit)
         self.approach(rand_node)
 
     def investigate(self):
+        ''' Updates the path to target towards last heard sound of assassin '''
         node = self.world.graph.pos_to_node(self.world.assassin.pos.copy())
         self.approach(node)
+
+    def attack(self):
+        ''' Prompts guard to shoot assassin '''
+        if self.path._pts:
+            self.path.clear()
+        if not self.weapon.reloading:
+            self.weapon.shoot()
+

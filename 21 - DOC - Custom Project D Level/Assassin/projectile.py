@@ -22,7 +22,6 @@ class Projectile(object):
         
         assassin_hit = self.intersect_assassin()
         if assassin_hit:
-            self.world.assassins.remove(assassin_hit)
             self.recycle()
 
         if self.intersect_block():
@@ -47,10 +46,10 @@ class Projectile(object):
 
     def intersect_assassin(self):
         '''check if projectile hits another assassin'''
-        to_assassin = assassin.pos - self.pos
+        to_assassin = self.world.assassin.pos - self.pos
         dist = to_assassin.length()
         if dist < 50:
-            return assassin
+            return self.world.assassin
         return False
 
     def intersect_block(self):
@@ -70,6 +69,6 @@ class Projectile(object):
     def calculate(self):
         '''prepare to be put back onto the screen'''
         self.max_speed = self.weapon.proj_speed
-        self.pos = self.weapon.assassin.pos.copy()
-        self.vel = self.weapon.assassin.vel.copy()
+        self.pos = self.weapon.guard.pos.copy()
+        self.vel = self.weapon.guard.vel.copy()
         

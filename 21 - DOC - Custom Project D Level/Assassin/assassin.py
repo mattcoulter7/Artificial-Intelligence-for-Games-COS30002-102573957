@@ -91,14 +91,13 @@ class Assassin(object):
 
     def update_volume(self,event = None):
         if self.mode == 'sneaking':
-            self.volume = 5
+            self.volume = 0
         elif self.mode == 'chase':
-            self.volume = 10
+            self.volume = 0
         else:
             self.volume = 0
-
         if event == 'kill':
-            self.volume += 15
+            self.volume = 15
 
     def render(self):
         ''' Draw the Assassin'''
