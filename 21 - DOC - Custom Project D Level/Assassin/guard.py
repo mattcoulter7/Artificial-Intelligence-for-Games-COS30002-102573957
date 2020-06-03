@@ -11,14 +11,13 @@ from history import History
 from vision import Vision
 
 class Guard(object):
-
-    def __init__(self, world=None, scale=30.0, mode='scout'):
+    def __init__(self, world, x, y, scale=30.0, mode='scout'):
         # keep a reference to the world object
         self.world = world
         self.mode = mode
         # where am i and where am i going? random start pos
         dir = radians(random()*360)
-        self.pos = world.graph.node_to_pos(world.graph.rand_node())
+        self.pos = world.graph.node_to_pos(Vector2D(x,y))
         self.vel = Vector2D()
         self.heading = Vector2D(sin(dir), cos(dir))
         self.side = self.heading.perp()

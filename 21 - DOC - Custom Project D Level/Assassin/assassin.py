@@ -11,7 +11,7 @@ from health import Health
 
 class Assassin(object):
 
-    def __init__(self, world=None, scale=30.0, mode=None):
+    def __init__(self, world, x, y, scale=30.0, mode=None):
         # keep a reference to the world object
         self.world = world
         self.mode = mode

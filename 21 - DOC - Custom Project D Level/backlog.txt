@@ -1,5 +1,3 @@
-add guard to map data
-add assassin to map data
 display number of guard remaining
 fix bug for empty path list
 Menus

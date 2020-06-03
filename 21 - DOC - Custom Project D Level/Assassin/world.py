@@ -2,6 +2,7 @@ from vector2d import Vector2D
 from matrix33 import Matrix33
 from graphics import egi
 from assassin import Assassin
+from guard import Guard
 from point2d import Point2D
 from math import floor
 from graph import Graph
@@ -15,6 +16,7 @@ class World(object):
         self.cy = cy
         # Game objects
         self.assassin = None
+        num_guards = None
         self.guards = []
         self.blocks = []
         self.target = None
@@ -28,10 +30,6 @@ class World(object):
         self.graph = Graph(self,int(self.map.readline()),int(self.map.readline()))
         # Read map data
         self.read_file()
-        # Fix errors of unreachable points in the map
-        self.graph.fix_grid()
-        # Generate list of all available nodes for history checking
-        self.graph.all_available_nodes = self.graph.generate_all_available()
         # Tolerance for automatic screen shifting
         self.shifting_tolerance = 5
 
@@ -64,14 +62,28 @@ class World(object):
             for line in openfileobject:
                 # Get coordinate and type from line
                 point = line.split(',')
-                x = int(point[0])
-                y = int(point[1])
-                type = int(point[2])
-                # Update the grid
-                self.graph.grid[x][y] = type
-                # Add blocks on non zero points
-                if type != 0:
+                key = point[0]
+                if key == 'assassin':
+                    self.assassin = Assassin(self,int(point[1]),int(point[2]))
+                elif key == 'guard':
+                    self.guards.append(Guard(self,int(point[1]),int(point[2])))
+                elif key == 'num_guards':
+                    self.num_guards = int(point[1])
+                elif key == 'tile':
+                    x = int(point[1])
+                    y = int(point[2])
+                    self.graph.grid[x][y] = 0
+                elif key == 'block':
+                    x = int(point[1])
+                    y = int(point[2])
+                    type = int(point[3])
+                    self.graph.grid[x][y] = type
                     self.blocks.append(Block(self,type,Vector2D(x,y)))
+                elif key == 'map_done':
+                    # Fix errors of unreachable points in the map
+                    self.graph.fix_grid()
+                    # Generate list of all available nodes for history checking
+                    self.graph.all_available_nodes = self.graph.generate_all_available()
         self.map.close()
     
     def move_screen(self,direction):

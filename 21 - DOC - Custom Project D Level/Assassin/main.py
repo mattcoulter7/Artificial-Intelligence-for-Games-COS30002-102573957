@@ -18,16 +18,6 @@ def on_key_press(symbol, modifiers):
         world.paused = not world.paused
     elif symbol == KEY.I:
         world.show_info = not world.show_info
-    elif symbol == KEY.A:
-        world.guards.append(Guard(world))
-    elif symbol == KEY.SPACE:
-        world.guards[0].weapon.shoot()
-    elif symbol == KEY.L:
-        for guard in world.guards:
-            guard.vision.vision_range += 1
-    elif symbol == KEY.K:
-        for guard in world.guards:
-            guard.vision.vision_range -= 1
 
 def on_mouse_press(x, y, button, modifiers):
     if button == 1:  # left
@@ -54,9 +44,8 @@ if __name__ == '__main__':
     win.push_handlers(on_resize)
     win.push_handlers(on_mouse_press)
     # create a world for agents
-    map = 'maps/map11.csv'
+    map = 'maps/big.csv'
     world = World(SCREEN_WIDTH, SCREEN_HEIGHT,map)
-    world.assassin = Assassin(world)
     # unpause the world ready for movement
     world.paused = False
 
