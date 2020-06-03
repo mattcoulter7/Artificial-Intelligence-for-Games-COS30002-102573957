@@ -1,35 +1,4 @@
-guard wander function
-	continue in straight line until wall is hit
-		current pos (5,6)
-		previous pos (6,6)
-		direction  = current pos - previous pos = (1,0)
-		next position = current pos - direction = (4,6)
-		if next position is avaiable and exists:
-			go to next position
-		else
-			if direction.y == 0
-				next position = (current position.x, current position.y + direction.x)
-			elif direction.x == 0
-				next position = (current position.x + direction.y, current position.y)
-			else next position = (current position.x + direction.y, current position.y + direction.x)
-	when wall is hit:
-		turn left or right
+
 guard shooting
-guard visibility
-assassin stabbing
-assassin tracking guard
-putting grid into new class
-screen display
-importing graphics
 Assassin AI
 Menus
-read maps from file
-
-
-
-
-
-
-clicking on unavailable node causes crash
-assassin doesn't always walk on the path
-adding a guard in sometimes causes crash

@@ -22,6 +22,12 @@ def on_key_press(symbol, modifiers):
         world.guards.append(Guard(world))
     elif symbol == KEY.SPACE:
         world.guards[0].weapon.shoot()
+    elif symbol == KEY.L:
+        for guard in world.guards:
+            guard.vision.vision_range += 1
+    elif symbol == KEY.K:
+        for guard in world.guards:
+            guard.vision.vision_range -= 1
 
 def on_mouse_press(x, y, button, modifiers):
     if button == 1:  # left
