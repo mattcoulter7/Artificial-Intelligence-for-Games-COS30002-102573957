@@ -32,7 +32,7 @@ class Guard(object):
         self.max_speed = 5.0 * scale
 
         # nodes
-        self.path = Path()
+        self.path = Path(self)
 
         # debug draw info?
         self.show_info = True
@@ -111,7 +111,7 @@ class Guard(object):
         angle = self.heading.angle('deg') + 90
         x_val = self.pos.x - (self.char.width/2 * cos(angle * pi/180))
         y_val = self.pos.y + (self.char.height/2 * sin(angle * pi/180))
-        if self.mode is not None: # Moving
+        if self.mode in ['scout','investigate']: # Moving
             self.walking.update(x=x_val,y=y_val,rotation=angle)
             self.walking.draw()
             # Path
@@ -155,7 +155,7 @@ class Guard(object):
 
     def follow_path(self):
         ''' Goes to the current waypoint and increments on arrival '''
-        if self.path.is_finished():
+        if self.path.is_finished() or len(self.path._pts) == 0:
             if self.mode == 'investigate':
                 self.investigate()
             elif self.mode == 'scout':
@@ -183,7 +183,8 @@ class Guard(object):
     def investigate(self):
         ''' Updates the path to target towards last heard sound of assassin '''
         node = self.world.graph.pos_to_node(self.world.assassin.pos.copy())
-        self.approach(node)
+        rand_node = self.world.graph.rand_node_from_pos(node,5)
+        self.approach(rand_node)
 
     def attack(self):
         ''' Prompts guard to shoot assassin '''

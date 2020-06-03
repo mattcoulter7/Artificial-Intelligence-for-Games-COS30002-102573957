@@ -27,7 +27,7 @@ class Assassin(object):
         self.max_speed = 15.0 * scale
 
         # Path
-        self.path = Path()
+        self.path = Path(self)
 
         # debug draw info?
         self.show_info = True
@@ -50,7 +50,7 @@ class Assassin(object):
         if self.mode == 'sneaking':
             vel = self.follow_path()
         if self.mode == 'chase':
-            self.chase(self.guard)
+            self.chase()
             vel = self.follow_path()
         return vel
 
@@ -139,8 +139,8 @@ class Assassin(object):
                 self.path.inc_current_pt()
             return self.seek(self.path.current_pt())
 
-    def chase(self,guard):
-        self.world.target = guard.path.current_pt()
+    def chase(self):
+        self.world.target = self.guard.pos.copy()
         self.update_path()
 
     def intersect_pos(self,pos):
@@ -167,9 +167,9 @@ class Assassin(object):
 
     def kill_guard(self):
         if self.intersect_pos(self.guard.pos):
-            self.update_volume('kill')
             self.world.guards.remove(self.guard)
             self.guard = None
+            self.update_volume('kill')
 
 
 
