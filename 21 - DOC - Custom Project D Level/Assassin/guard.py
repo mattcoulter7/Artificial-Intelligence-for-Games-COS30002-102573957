@@ -107,22 +107,24 @@ class Guard(object):
 
     def render(self, other=None):
         ''' Draw the Guard'''
-        # Weapon and Bullets
-        self.weapon.render()
         # Update variables
         angle = self.heading.angle('deg') + 90
         x_val = self.pos.x - (self.char.width/2 * cos(angle * pi/180))
         y_val = self.pos.y + (self.char.height/2 * sin(angle * pi/180))
-        if self.mode in ['scout','investigate']: # Moving
-            self.walking.update(x=x_val,y=y_val,rotation=angle)
-            self.walking.draw()
-        else: # Still
-            self.still.update(x=x_val,y=y_val,rotation=angle)
-            self.still.draw()
-        
-        if other is not None:
-            getattr(self,other+'_spr').update(x=x_val,y=y_val + 30)
-            getattr(self,other+'_spr').draw()
+        # Render if visible
+        if self.world.graph.pos_visible(x=x_val,y=y_val):
+            # Weapon and Bullets
+            self.weapon.render()
+            if self.mode in ['scout','investigate']: # Moving
+                self.walking.update(x=x_val,y=y_val,rotation=angle)
+                self.walking.draw()
+            else: # Still
+                self.still.update(x=x_val,y=y_val,rotation=angle)
+                self.still.draw()
+            # Question mark and exclamation mark
+            if other is not None:
+                getattr(self,other+'_spr').update(x=x_val,y=y_val + 30)
+                getattr(self,other+'_spr').draw()
 
     #--------------------------------------------------------------------------
     

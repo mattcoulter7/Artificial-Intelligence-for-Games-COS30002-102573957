@@ -1,5 +1,6 @@
+only render what is on the screen
+update fix grid to 
 display number of guard remaining
-fix bug for empty path list
 Menus
 - restart screen
 - main screen

@@ -15,9 +15,12 @@ class Block(object):
         self.sprite = pyglet.sprite.Sprite(self.image, x=self.pos.x, y=self.pos.y)
 
     def render(self):
-        ''' Render Sprite (more intensive)'''
-        #self.sprite.update(x=self.pos.x,y=self.pos.y,scale=self.size/self.image.width)
-        #self.sprite.draw()
-        ''' Render White Square (less intensive)''' 
-        egi.white_pen()
-        egi.rect(self.pos.x,self.pos.y,self.pos.x + self.world.graph.grid_size,self.pos.y + self.world.graph.grid_size,filled = True)
+        # Render if visible
+        if self.world.graph.pos_visible(pos = self.pos):
+            ''' Render Sprite (more intensive)'''
+            #self.sprite.update(x=self.pos.x,y=self.pos.y,scale=self.size/self.image.width)
+            #self.sprite.draw()
+        
+            ''' Render White Square (less intensive)''' 
+            egi.white_pen()
+            egi.rect(self.pos.x,self.pos.y,self.pos.x + self.world.graph.grid_size,self.pos.y + self.world.graph.grid_size,filled = True)

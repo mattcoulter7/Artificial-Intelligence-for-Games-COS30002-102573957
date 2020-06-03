@@ -22,7 +22,8 @@ class Graph(object):
     def render(self):
         ''' Draws the grid to the screen'''
         for sprite in self.sprites:
-            sprite.draw()
+            if self.pos_visible(x=sprite.x,y=sprite.y):
+                sprite.draw()
 
     def init_sprites(self):
         '''Generates a list of all of the ground sprites'''
@@ -99,9 +100,12 @@ class Graph(object):
         ''' returns true if a node is valid '''
         return pt.x in range(0,self.width) and pt.y in range(0,self.height)
 
-    def node_visible(self,node):
+    def pos_visible(self,x=0,y=0,pos=None):
         ''' Returns true if the current node is visible '''
-        return 0 <= node.x <= self.world.cx and 0 <= node.y <= self.world.cy
+        if pos is not None:
+            x = pos.x
+            y=pos.y
+        return 0 <= x <= self.world.cx and 0 <= y <= self.world.cy
 
     def rand_node(self,avoid = None):
         ''' returns an random node that is still available, other node is 

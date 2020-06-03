@@ -31,8 +31,10 @@ class Projectile(object):
             self.recycle()
 
     def render(self):
-        self.bullet_spr.update(x=self.pos.x,y=self.pos.y,rotation = self.angle)
-        self.bullet_spr.draw()
+        # Render if visible
+        if self.world.graph.pos_visible(pos=self.pos):
+            self.bullet_spr.update(x=self.pos.x,y=self.pos.y,rotation = self.angle)
+            self.bullet_spr.draw()
 
     #--------------------------------------------------------------------------
 
