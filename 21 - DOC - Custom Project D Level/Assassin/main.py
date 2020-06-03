@@ -48,7 +48,7 @@ if __name__ == '__main__':
     win.push_handlers(on_resize)
     win.push_handlers(on_mouse_press)
     # create a world for agents
-    map = 'maps/map9.csv'
+    map = 'maps/map10.csv'
     world = World(SCREEN_WIDTH, SCREEN_HEIGHT,map)
     world.assassin = Assassin(world)
     # unpause the world ready for movement

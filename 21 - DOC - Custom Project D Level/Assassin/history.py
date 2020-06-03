@@ -3,7 +3,7 @@ class History(object):
     def __init__(self,guard,world):
         self.guard = guard
         self.world = world
-        self.yet_to_visit = world.graph.all_available_nodes
+        self.yet_to_visit = world.graph.all_available_nodes.copy()
 
     def update(self):
         # Check if everywhere has been visited
@@ -12,7 +12,7 @@ class History(object):
 
     def reset(self):
         ''' resets history once yet_to_visit is empty '''
-        self.yet_to_visit = world.graph.all_available_nodes
+        self.yet_to_visit = self.world.graph.all_available_nodes.copy()
 
     def remove(self,pt):
         ''' remove a given point from yet_to_visit when it has been visited '''

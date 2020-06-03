@@ -19,7 +19,7 @@ class Vision(object):
         # Node of self
         self_node = self.world.graph.pos_to_node(self.parent.pos.copy())
         # Middle point of vision square that will be made
-        ahead_node = self.world.graph.pos_to_node(self.parent.pos + self.parent.heading * self.world.graph.grid_size * ahead_range)
+        ahead_node = self.world.graph.pos_to_node(self.parent.pos + self.parent.heading * self.world.graph.grid_size * (ahead_range + 1))
         # Add that centre point to begin with
         visible_nodes.append(ahead_node)
         # Expand from centre outwards adding nodes to cover full square

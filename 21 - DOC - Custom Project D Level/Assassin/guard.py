@@ -58,7 +58,6 @@ class Guard(object):
 
     def update(self, delta):
         ''' update vehicle position and orientation '''
-        self.history.update()
         # Refresh what can be seen by guard
         self.vision.update()
         # update mode if necessary
@@ -160,14 +159,8 @@ class Guard(object):
 
     def scout(self):
         ''' Chooses a random available location on the map and path finds towards it '''
-        rand_node = None
-        # Node of self
-        self_node = self.world.graph.pos_to_node(self.pos.copy())
-        within_range = list(filter(lambda n: (n - self_node).length() <= self.wander_dist,self.history.yet_to_visit))
-        if within_range:
-            rand_node = self.world.graph.rand_node_from_list(within_range)
-        else: #empty
-            rand_node = self.wander()
+        self.history.update()
+        rand_node = self.world.graph.rand_node_from_list(self.history.yet_to_visit)
         self.approach(rand_node)
 
     def investigate(self):
