@@ -32,7 +32,7 @@ class Guard(object):
         self.max_speed = 5.0 * scale
 
         # nodes
-        self.path = Path(self)
+        self.path = Path()
 
         # debug draw info?
         self.show_info = True
@@ -73,7 +73,6 @@ class Guard(object):
         self.vision.update()
         # update mode if necessary
         self.update_mode()
-        print(self.mode)
         # new velocity
         self.vel = self.calculate()
         # update position
@@ -92,6 +91,7 @@ class Guard(object):
         if self.assassin_seen > 0:
             self.assassin_seen -= 1
 
+
     def update_mode(self):
         ''' Updates state according to different variables '''
         if self.see_assassin():
@@ -107,6 +107,8 @@ class Guard(object):
 
     def render(self, color=None):
         ''' Draw the Guard'''
+        # Weapon and Bullets
+        self.weapon.render()
         # Update variables
         angle = self.heading.angle('deg') + 90
         x_val = self.pos.x - (self.char.width/2 * cos(angle * pi/180))
@@ -122,8 +124,6 @@ class Guard(object):
             self.still.draw()
         if self.world.show_info:
             self.vision.render()
-        # Weapon and Bullets
-        self.weapon.render()
 
     #--------------------------------------------------------------------------
     
@@ -190,6 +190,5 @@ class Guard(object):
         ''' Prompts guard to shoot assassin '''
         if self.path._pts:
             self.path.clear()
-        if not self.weapon.reloading:
-            self.weapon.shoot()
+        self.weapon.shoot()
 

@@ -42,7 +42,7 @@ def on_resize(cx, cy):
 
 if __name__ == '__main__':
     # create a pyglet window and set glOptions
-    win = window.Window(width=SCREEN_WIDTH, height=SCREEN_HEIGHT, vsync=True, resizable=True)
+    win = window.Window(width=SCREEN_WIDTH, height=SCREEN_HEIGHT, vsync=False, resizable=True)
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     # needed so that egi knows where to draw

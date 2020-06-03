@@ -5,26 +5,39 @@ from graphics import egi, KEY
 from queue import Queue
 from math import sin,cos,radians
 from random import random,randrange
+import pyglet
 
 class Weapon(object):
     """description of class"""
     def __init__(self, world = None, guard = None,scale = 30.0):
-        self.max_ammo = 10
-        self.projectiles = []
-        self.projectiles_queue = Queue(maxsize = self.max_ammo)
+        # References
         self.guard = guard
         self.world = world
 
+        # Statistics
+        self.max_ammo = 16
         self.proj_speed = 2000.0
         self.accuracy = 2.0
-        self.fire_rate = 20
+
+        # Queue and List
+        self.projectiles = []
+        self.projectiles_queue = Queue(maxsize = self.max_ammo)
+
+        # Fire Rate
+        self.fire_rate = 10
         self.fire_rate_tmr = self.fire_rate
         self.cooling_down = False # time for reloading and rate of fire
+
+        # Magazine/reloading
         self.remaining_ammo = self.max_ammo
         self.reloading = False
-        self.reloading_time = 300
+        self.reloading_time = 100
         self.reloading_tmr = self.reloading_time
         self.initialise_queue(self.projectiles_queue)
+
+        # Graphics
+        gunflare = pyglet.image.load('resources/gunflare.png')
+        self.gunflare_spr = pyglet.sprite.Sprite(gunflare, x=0, y=0)
 
     def update(self,delta):
         # Update position of all projectiles
@@ -50,14 +63,22 @@ class Weapon(object):
             self.cooling_down = False
             self.fire_rate_tmr = self.fire_rate
 
-    def render(self):
+    def render(self,gunflare = False):
+        # Bullets
         for proj in self.projectiles:
             proj.render()
+        # Gunflare
+        if gunflare:
+            angle = self.guard.heading.angle('deg') + 90
+            gunflare_pos = self.guard.pos + (self.guard.heading * 100) + (self.guard.side * 10) # Adjustment for gunflare to be positioned at weapon
+            self.gunflare_spr.update(x = gunflare_pos.x,y = gunflare_pos.y,rotation = angle)
+            self.gunflare_spr.draw()
 
     def shoot(self):
         '''Moves obj from queue into list'''
         # Shoot if queue still has obj to move
         if not self.projectiles_queue.empty() and not self.cooling_down and not self.reloading:
+            print('shoot')
             # Get obj at front of queue
             proj = self.projectiles_queue.get()
             # Prepare for shooting
@@ -66,6 +87,9 @@ class Weapon(object):
             self.projectiles.append(proj)
             self.cooling_down = True
             self.remaining_ammo -= 1
+            # Render the gunflare
+            self.render(gunflare = True)
+
 
     def initialise_queue(self,queue):
         '''Fills up a queue to its max size'''

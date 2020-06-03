@@ -22,12 +22,11 @@ class Path(object):
         current way point. The cursor can be moved to the next way point by
         calling set_next_way_pt(). Paths can be open or looped. '''
 
-    def __init__(self, parent,num_pts=0,looped = False):
+    def __init__(self, num_pts=0,looped = False):
         ''' If number of points (num_pts) is provided, a path of random
             non-overlapping waypoints will be created in the region specified
             by the min/max x/y values provided. If the path is looped, the last
             way point is connected to the first. '''
-        self.parent = parent
         self.looped = looped
         self._num_pts = num_pts
         self._cur_pt_idx = -1

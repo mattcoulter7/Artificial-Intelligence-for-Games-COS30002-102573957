@@ -1,5 +1,6 @@
 from graphics import egi
 from vector2d import Vector2D
+import pyglet
 
 class Projectile(object):
     """description of class"""
@@ -9,6 +10,10 @@ class Projectile(object):
         self.pos = Vector2D()
         self.vel = Vector2D()
         self.max_speed = None
+        self.angle = None
+        # Sprites
+        bullet = pyglet.image.load('resources/bullet.png')
+        self.bullet_spr = pyglet.sprite.Sprite(bullet, x=self.pos.x, y=self.pos.y)
 
     def update(self,delta):
         # check for limits of new velocity
@@ -28,7 +33,8 @@ class Projectile(object):
             self.recycle()
 
     def render(self):
-        egi.circle(self.pos,5)
+        self.bullet_spr.update(x=self.pos.x,y=self.pos.y,rotation = self.angle)
+        self.bullet_spr.draw()
 
     #--------------------------------------------------------------------------
 
@@ -69,6 +75,7 @@ class Projectile(object):
     def calculate(self):
         '''prepare to be put back onto the screen'''
         self.max_speed = self.weapon.proj_speed
-        self.pos = self.weapon.guard.pos.copy()
-        self.vel = self.weapon.guard.vel.copy()
+        self.pos = self.weapon.guard.pos + (self.weapon.guard.heading * 70) - (self.weapon.guard.side * 10) # Adjustment for bullet to come out of weapon
+        self.vel = self.weapon.guard.heading.copy()
+        self.angle = self.vel.angle('deg') + 90
         

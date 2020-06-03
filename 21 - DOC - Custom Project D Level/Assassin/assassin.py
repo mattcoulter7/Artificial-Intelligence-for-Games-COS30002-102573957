@@ -27,7 +27,7 @@ class Assassin(object):
         self.max_speed = 15.0 * scale
 
         # Path
-        self.path = Path(self)
+        self.path = Path()
 
         # debug draw info?
         self.show_info = True
