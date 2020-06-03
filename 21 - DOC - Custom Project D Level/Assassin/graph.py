@@ -16,8 +16,8 @@ class Graph(object):
         self.grid = [[0 for x in range(self.height)] for y in range(self.width)]
         self.image = pyglet.image.load('resources/grey_tile.png')
         self.sprites = self.init_sprites()
+        self.all_available_nodes = None
         self.move_compensate = Vector2D(0,0) # Keeps track of how much the screen has moved for position calculations.
-        self.all_available_nodes = self.generate_all_available()
 
     def render(self):
         ''' Draws the grid to the screen'''
@@ -28,8 +28,8 @@ class Graph(object):
         '''Generates a list of all of the ground sprites'''
         sprites = []
         grid=self.grid_size
-        for i in range(self.width):
-            for j in range(self.height):
+        for i in range(len(self.grid)):
+            for j in range(len(self.grid[0])):
                 if self.grid[i][j] == 0:
                     x = i*grid
                     y = j*grid
@@ -132,12 +132,26 @@ class Graph(object):
         ''' Generates a random node from a provided list '''
         choice = randrange(len(list))
         return list[choice]
-    
+
+    def fix_grid(self):
+        ''' automatically replaces any points that can't be travelled to with 1 '''
+        adjacent = [(1,0),(0,1),(-1,0),(0,-1)]
+        for i in range(len(self.grid)):
+            for j in range(len(self.grid[i])):
+                update = True # Assume update
+                node = Vector2D(i,j)
+                print(node)
+                for pt in adjacent:
+                    new_node = Vector2D(node.x+pt[0],node.y+pt[1])
+                    if self.node_available(new_node):
+                        update = False # Update not required
+                if update:
+                    self.grid[i][j] = -1
     def generate_all_available(self):
         ''' generates a list of all nodes that are available '''
         available = []
-        for i in range(self.width):
-            for j in range(self.height):
+        for i in range(len(self.grid)):
+            for j in range(len(self.grid[i])):
                 node = Vector2D(i,j)
                 if self.node_available(node):
                     available.append(node)

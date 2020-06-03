@@ -24,8 +24,15 @@ class World(object):
         # Read map from file
         self.map = open(map, "r")
         self.map_name = self.map.readline()
+        # Generate graph
         self.graph = Graph(self,int(self.map.readline()),int(self.map.readline()))
+        # Read map data
         self.read_file()
+        # Fix errors of unreachable points in the map
+        self.graph.fix_grid()
+        # Generate list of all available nodes for history checking
+        self.graph.all_available_nodes = self.graph.generate_all_available()
+        # Tolerance for automatic screen shifting
         self.shifting_tolerance = 5
 
     def update(self, delta):

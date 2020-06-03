@@ -7,6 +7,7 @@ from random import random, randrange, uniform
 from path import Path
 from search_functions import astar,smooth
 from weapon import Weapon
+from history import History
 
 class Guard(object):
 
@@ -47,14 +48,17 @@ class Guard(object):
         # AI Vision
         self.vision_range = 5
         self.vision = []
-        self.history = []
+        self.history = History(self,self.world)
 
         # AI Wandering
-        self.wander_dist = 5
+        self.wander_dist = 10
+
+        # Generate first path
+        self.scout()
 
     def update(self, delta):
         ''' update vehicle position and orientation '''
-        
+        self.history.update()
         # Refresh what can be seen by guard
         self.update_vision()
         # update mode if necessary
@@ -108,8 +112,7 @@ class Guard(object):
                         check_from += 1
         for i in range(len(visible_nodes)):
             visible_nodes[i] = self.world.graph.global_to_relative(visible_nodes[i])
-            if visible_nodes[i] not in self.history:
-                self.history.append(visible_nodes[i]) # Update history
+            self.history.remove(visible_nodes[i]) # Remove point from yet_to_visit list
 
         self.vision = visible_nodes
 
@@ -165,7 +168,7 @@ class Guard(object):
 
     def follow_path(self):
         ''' Goes to the current waypoint and increments on arrival '''
-        if self.path.is_finished() or len(self.path._pts) == 0:
+        if self.path.is_finished():
             self.scout()
         elif self.intersect_pos(self.path.current_pt()):
             self.path.inc_current_pt()
@@ -189,12 +192,9 @@ class Guard(object):
     def scout(self):
         ''' Chooses a random available location on the map and path finds towards it '''
         rand_node = None
-        have_not_visited = list(filter(lambda n: n not in self.history,self.world.graph.all_available_nodes))
-        if not have_not_visited:
-            self.history = [] # Clear history if it has been everywhere
         # Node of self
         self_node = self.world.graph.pos_to_node(self.pos.copy())
-        within_range = list(filter(lambda n: (n - self_node).length() <= self.wander_dist,have_not_visited))
+        within_range = list(filter(lambda n: (n - self_node).length() <= self.wander_dist,self.history.yet_to_visit))
         if within_range:
             rand_node = self.world.graph.rand_node_from_list(within_range)
         else: #empty

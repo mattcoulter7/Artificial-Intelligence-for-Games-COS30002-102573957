@@ -24,6 +24,9 @@ def on_key_press(symbol, modifiers):
 def on_mouse_press(x, y, button, modifiers):
     if button == 1:  # left
         pt = Vector2D(x,y)
+        node = world.graph.pos_to_node(pt.copy())
+        print(node)
+        print(world.graph.node_available(node))
         world.target = world.graph.fit_pos_to(pt.copy(),type = 'center',relative = True)
         world.assassin.update_path()
         world.assassin.guard = world.click_on(pt,'guards') #Set assassin guard to a guard that was clicked, is None if none were clicked on
