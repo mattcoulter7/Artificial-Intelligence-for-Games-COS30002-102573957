@@ -1,3 +1,4 @@
+import pyglet
 from vector2d import Vector2D
 from matrix33 import Matrix33
 from graphics import egi
@@ -16,7 +17,7 @@ class World(object):
         self.cy = cy
         # Game objects
         self.assassin = None
-        num_guards = None
+        self.num_guards = None
         self.guards = []
         self.blocks = []
         self.target = None
@@ -32,7 +33,14 @@ class World(object):
         self.read_file()
         # Tolerance for automatic screen shifting
         self.shifting_tolerance = 5
-
+        
+        # Score Rendering
+        target = pyglet.image.load('resources/target.png')
+        self.target_spr = pyglet.sprite.Sprite(img=target,x=15,y=self.cy - 80)
+        self.label = pyglet.text.Label('{}/{}'.format(self.num_guards-len(self.guards),self.num_guards),
+                          font_name='Arial Black',
+                          font_size=36,
+                          x=100,y=self.cy - 65)
     def update(self, delta):
         ''' Updates all of the world objects'''
         if not self.paused:
@@ -43,7 +51,6 @@ class World(object):
     def render(self):
         ''' Renders all of the world objects'''
         #self.graph.render()
-
         if self.target:
             egi.red_pen()
             egi.cross(self.target,self.graph.grid_size/4)
@@ -55,6 +62,13 @@ class World(object):
             block.render()
 
         self.assassin.render()
+
+        # Render top left guard data
+        self.target_spr.update(y=self.cy - 80)
+        self.target_spr.draw()
+        self.label.y = self.cy - 65
+        self.label.text = '{}/{}'.format(self.num_guards-len(self.guards),self.num_guards)
+        self.label.draw()
 
     def read_file(self):
         # Loop until end of file

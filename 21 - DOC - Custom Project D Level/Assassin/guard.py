@@ -25,7 +25,7 @@ class Guard(object):
         # Weapon
         self.weapon = Weapon(self.world,self)
         # speed limiting code
-        self.max_speed = 5.0 * scale
+        self.max_speed = 4.0 * scale
         # nodes
         self.path = Path()
         # AI Hearing
