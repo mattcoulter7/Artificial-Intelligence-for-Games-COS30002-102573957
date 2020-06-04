@@ -4,11 +4,10 @@ from pyglet.gl import *
 
 from vector2d import Vector2D
 from world import World
-from block import Block
 from point2d import Point2D
-from assassin import Assassin
-from guard import Guard
+
 from math import pi
+from random import randrange
 
 SCREEN_WIDTH = 720
 SCREEN_HEIGHT = 720
@@ -44,7 +43,7 @@ if __name__ == '__main__':
     win.push_handlers(on_resize)
     win.push_handlers(on_mouse_press)
     # create a world for agents
-    map = 'maps/map0.csv'
+    map = 'maps/map{}.csv'.format(randrange(0,99))
     world = World(SCREEN_WIDTH, SCREEN_HEIGHT,map)
     # unpause the world ready for movement
     world.paused = False
