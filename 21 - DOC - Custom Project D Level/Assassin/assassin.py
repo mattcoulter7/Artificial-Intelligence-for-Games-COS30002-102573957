@@ -102,7 +102,7 @@ class Assassin(object):
         if self.mode == 'sneaking':
             self.volume = 0
         elif self.mode == 'chase':
-            self.volume = 0
+            self.volume = 1
         ''' Event-based volume '''
         if event == 'kill':
             self.volume = 20

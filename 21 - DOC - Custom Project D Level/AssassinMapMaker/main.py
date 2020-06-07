@@ -67,11 +67,11 @@ def generate_loc():
     return (x,y)
 
 if __name__ == '__main__':
-    for i in range(100):
+    for i in range(500):
         # Meta
         name = 'map{}'.format(i)
-        height = randrange(10,40)
-        width = randrange(10,40)
+        height = randrange(10,20)
+        width = randrange(10,20)
         num_guards = round(((width+height)/2)/5)
 
         # Create grid

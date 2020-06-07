@@ -65,15 +65,16 @@ class Weapon(object):
             self.fire_rate_tmr = self.fire_rate
 
     def render(self,gunflare = False):
-        # Bullets
-        for proj in self.projectiles:
-            proj.render()
         # Gunflare
         if gunflare:
             angle = self.guard.heading.angle('deg') + 90
             gunflare_pos = self.guard.pos + (self.guard.heading * 100) + (self.guard.side * 10) # Adjustment for gunflare to be positioned at weapon
             self.gunflare_spr.update(x = gunflare_pos.x,y = gunflare_pos.y,rotation = angle)
             self.gunflare_spr.draw()
+        else:
+            # Bullets
+            for proj in self.projectiles:
+                proj.render()
 
     def shoot(self):
         '''Moves obj from queue into list'''

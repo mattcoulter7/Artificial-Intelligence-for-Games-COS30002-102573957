@@ -21,7 +21,8 @@ class Guard(object):
         self.vel = Vector2D()
         self.heading = Vector2D(sin(dir), cos(dir))
         self.side = self.heading.perp()
-        self.scale = Vector2D(scale, scale)  # easy scaling of Assassin size
+        self.scale = scale
+        self.scale_v = Vector2D(scale, scale)  # easy scaling of Assassin size
         # Weapon
         self.weapon = Weapon(self.world,self)
         # speed limiting code
@@ -47,10 +48,10 @@ class Guard(object):
         self.walking = pyglet.sprite.Sprite(img=self.ani)
         # Exclamation Mark
         self.exclamation = pyglet.image.load('resources/exclamation.png')
-        self.exclamation_spr = pyglet.sprite.Sprite(img=self.exclamation)
+        self.exclamation_spr = pyglet.sprite.Sprite(img=self.exclamation,group = self.world.foreground)
         # Question Mark
         self.question = pyglet.image.load('resources/question.png')
-        self.question_spr = pyglet.sprite.Sprite(img=self.question)
+        self.question_spr = pyglet.sprite.Sprite(img=self.question,group = self.world.foreground)
 
     def calculate(self):
         # Update the path based off mode
@@ -58,8 +59,10 @@ class Guard(object):
         if self.mode == 'attack':
             self.attack()
         elif self.mode == 'investigate':
+            self.max_speed = 8.0 * self.scale
             vel = self.follow_path()
         elif self.mode == 'scout':
+            self.max_speed = 4.0 * self.scale
             vel = self.follow_path()
         return vel
 
@@ -84,10 +87,10 @@ class Guard(object):
         # Memory of seeing assassin
         if self.see_assassin():
             self.render(other = 'exclamation')
-            self.alerted = 500
+            self.alerted = 1500
         if self.hear_assassin():
             self.render(other = 'question')
-            self.alerted = 500
+            self.alerted = 1000
         if self.alerted > 0:
             self.alerted -= 1
 
@@ -112,18 +115,19 @@ class Guard(object):
         y_val = self.pos.y + (self.char.height/2 * sin(angle * pi/180))
         # Render if visible
         if self.world.graph.pos_visible(x=x_val,y=y_val):
-            # Weapon and Bullets
-            self.weapon.render()
-            if self.mode in ['scout','investigate']: # Moving
-                self.walking.update(x=x_val,y=y_val,rotation=angle)
-                self.walking.draw()
-            else: # Still
-                self.still.update(x=x_val,y=y_val,rotation=angle)
-                self.still.draw()
             # Question mark and exclamation mark
             if other is not None:
                 getattr(self,other+'_spr').update(x=x_val,y=y_val + 30)
                 getattr(self,other+'_spr').draw()
+            else:
+                if self.mode in ['scout','investigate']: # Moving
+                    self.walking.update(x=x_val,y=y_val,rotation=angle)
+                    self.walking.draw()
+                else: # Still
+                    self.still.update(x=x_val,y=y_val,rotation=angle)
+                    self.still.draw()
+                # Weapon and Bullets
+                self.weapon.render()
 
     #--------------------------------------------------------------------------
     

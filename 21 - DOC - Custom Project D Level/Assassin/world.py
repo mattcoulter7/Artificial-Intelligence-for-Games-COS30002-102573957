@@ -8,6 +8,8 @@ from point2d import Point2D
 from math import floor
 from graph import Graph
 from block import Block
+from random import randrange
+import os
 
 class World(object):
 
@@ -17,7 +19,7 @@ class World(object):
         self.cy = cy
         self.main_batch = pyglet.graphics.Batch()
         self.background = pyglet.graphics.OrderedGroup(0)
-        self.foreground = pyglet.graphics.OrderedGroup(2)
+        self.foreground = pyglet.graphics.OrderedGroup(1)
         # Game objects
         self.assassin = None
         self.num_guards = None
@@ -29,7 +31,7 @@ class World(object):
         self.show_info = True
         # Read map from file
         self.map = open(map, "r")
-        self.map_name = self.map.readline()
+        self.map_name = self.map.readline().rstrip()
         # Generate graph
         self.graph = Graph(self,int(self.map.readline()),int(self.map.readline()))
         # Read map data
@@ -40,18 +42,24 @@ class World(object):
         target = pyglet.image.load('resources/target.png')
         self.target_spr = pyglet.sprite.Sprite(img=target,x=15,y=self.cy - 80,batch=self.main_batch,group = self.foreground)
         self.label = pyglet.text.Label('{}/{}'.format(self.num_guards-len(self.guards),self.num_guards),
-                          font_name='Arial Black',
-                          font_size=36,
-                          x=100,y=self.cy - 65,
-                          batch=self.main_batch,
-                          group = self.foreground)
+            font_name='Arial Black',
+            font_size=36,
+            x=100,y=self.cy - 65,
+            batch=self.main_batch,
+            group = self.foreground)
 
     def update(self, delta):
         ''' Updates all of the world objects'''
         if not self.paused:
+            # Check for win or loss
+            if self.assassin.alive and self.remaining_guards() == 0:
+                self.next_level()
+            elif not self.assassin.alive and self.remaining_guards():
+                self.restart_level()
+            # Update
             for guard in self.guards:
                 guard.update(delta)
-        self.assassin.update(delta)
+            self.assassin.update(delta)
 
     def render(self):
         ''' Renders all of the world objects'''
@@ -61,19 +69,15 @@ class World(object):
         self.target_spr.update(y=self.cy - 80)
         self.label.y = self.cy - 65
         self.label.text = '{}/{}'.format(self.num_guards-len(self.guards),self.num_guards)
-
         # Draw most sprites at once
         self.main_batch.draw()
-        
         # Target
         if self.target:
             egi.red_pen()
             egi.cross(self.target,self.graph.grid_size/4)
-
         # Guards
         for guard in self.guards:
             guard.render()
-
         # Assassin
         self.assassin.render()
     
@@ -112,7 +116,7 @@ class World(object):
 
     def shift(self,pos):
         ''' use move_screen() based off of an object position and self.shift_tolerance
-        This can only be used for the position of ONE existing object as it does not zoom in and out'''
+            This can only be used for the position of ONE existing object as it does not zoom in and out'''
         node = self.graph.pos_to_node(pos.copy(),relative = True)
         max = self.graph.pos_to_node(Vector2D(self.cx,self.cy),relative = True) - Vector2D(1,1) #First component is edge to the right outside of screen
         min = Vector2D(0,0)
@@ -175,3 +179,13 @@ class World(object):
                     # Generate list of all available nodes for history checking
                     self.graph.all_available_nodes = self.graph.generate_all_available()
         self.map.close()
+
+    def remaining_guards(self):
+        return len(self.guards)
+
+    def restart_level(self):
+        self.__init__(self.cx,self.cy,'maps/{}.csv'.format(self.map_name))
+
+    def next_level(self):
+        map_count = len([name for name in os.listdir('maps')])
+        self.__init__(self.cx,self.cy,'maps/map{}.csv'.format(randrange(0,map_count - 1)))

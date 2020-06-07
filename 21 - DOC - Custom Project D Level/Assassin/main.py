@@ -42,9 +42,8 @@ if __name__ == '__main__':
     win.push_handlers(on_key_press)
     win.push_handlers(on_resize)
     win.push_handlers(on_mouse_press)
-    # create a world for agents
-    map = 'maps/map{}.csv'.format(randrange(0,99))
-    #map = 'maps/map82.csv'
+    # create a world for game
+    map = 'maps/map0.csv'
     print(map)
     world = World(SCREEN_WIDTH, SCREEN_HEIGHT,map)
     # unpause the world ready for movement
@@ -55,8 +54,9 @@ if __name__ == '__main__':
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         # show nice FPS bottom right (default)
         delta = clock.tick()
-        world.update(delta)
+        
         world.render()
+        world.update(delta)
         fps_display.draw()
         # swap the double buffer
         win.flip()
