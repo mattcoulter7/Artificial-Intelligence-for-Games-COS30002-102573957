@@ -22,10 +22,11 @@ class Assassin(object):
         self.vel = Vector2D()
         self.heading = Vector2D(sin(dir), cos(dir))
         self.side = self.heading.perp()
-        self.scale = Vector2D(scale, scale)  # easy scaling of Assassin size
+        self.scale = scale
+        self.scale_v = Vector2D(scale, scale)  # easy scaling of Assassin size
 
         # speed limiting code
-        self.max_speed = 15.0 * scale
+        self.max_speed = 4.0 * scale
 
         # Path
         self.path = Path()
@@ -53,8 +54,10 @@ class Assassin(object):
         # calculate the current steering force
         vel = Vector2D(0,0)
         if self.mode == 'sneaking':
+            self.max_speed = 8.0 * self.scale
             vel = self.follow_path()
         if self.mode == 'chase':
+            self.max_speed = 16.0 * self.scale
             self.chase()
             vel = self.follow_path()
         return vel
