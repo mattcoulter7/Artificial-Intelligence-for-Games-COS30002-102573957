@@ -82,7 +82,6 @@ class Guard(object):
         self.weapon.update(delta)
 
         # Memory of seeing assassin
-
         if self.see_assassin():
             self.render(other = 'exclamation')
             self.alerted = 500

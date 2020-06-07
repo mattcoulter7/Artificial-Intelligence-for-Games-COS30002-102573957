@@ -18,21 +18,21 @@ class Weapon(object):
         self.max_ammo = 16
         self.proj_speed = 2000.0
         self.accuracy = 2.0
-        self.damage = 20
+        self.damage = 25
 
         # Queue and List
         self.projectiles = []
         self.projectiles_queue = Queue(maxsize = self.max_ammo)
 
         # Fire Rate
-        self.fire_rate = 10
+        self.fire_rate = 4
         self.fire_rate_tmr = self.fire_rate
         self.cooling_down = False # time for reloading and rate of fire
 
         # Magazine/reloading
         self.remaining_ammo = self.max_ammo
         self.reloading = False
-        self.reloading_time = 100
+        self.reloading_time = 50
         self.reloading_tmr = self.reloading_time
         self.initialise_queue(self.projectiles_queue)
 

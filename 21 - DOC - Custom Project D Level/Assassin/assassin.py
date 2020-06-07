@@ -113,11 +113,11 @@ class Assassin(object):
         x_val = self.pos.x - (self.char.width/2 * cos(angle * pi/180))
         y_val = self.pos.y + (self.char.height/2 * sin(angle * pi/180))
         if self.path._pts:
+            # Path
+            self.path.render()
             # Walking animation
             self.walking.update(x=x_val,y=y_val,rotation=angle)
             self.walking.draw()
-            # Path
-            self.path.render()
         else:
             # Still
             self.still.update(x=x_val,y=y_val,rotation=angle)

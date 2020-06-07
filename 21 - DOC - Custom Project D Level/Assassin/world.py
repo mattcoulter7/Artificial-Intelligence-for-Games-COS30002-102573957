@@ -15,6 +15,9 @@ class World(object):
         # sizing
         self.cx = cx
         self.cy = cy
+        self.main_batch = pyglet.graphics.Batch()
+        self.background = pyglet.graphics.OrderedGroup(0)
+        self.foreground = pyglet.graphics.OrderedGroup(2)
         # Game objects
         self.assassin = None
         self.num_guards = None
@@ -33,14 +36,16 @@ class World(object):
         self.read_file()
         # Tolerance for automatic screen shifting
         self.shifting_tolerance = 5
-        
-        # Score Rendering
+        # Score graphics
         target = pyglet.image.load('resources/target.png')
-        self.target_spr = pyglet.sprite.Sprite(img=target,x=15,y=self.cy - 80)
+        self.target_spr = pyglet.sprite.Sprite(img=target,x=15,y=self.cy - 80,batch=self.main_batch,group = self.foreground)
         self.label = pyglet.text.Label('{}/{}'.format(self.num_guards-len(self.guards),self.num_guards),
                           font_name='Arial Black',
                           font_size=36,
-                          x=100,y=self.cy - 65)
+                          x=100,y=self.cy - 65,
+                          batch=self.main_batch,
+                          group = self.foreground)
+
     def update(self, delta):
         ''' Updates all of the world objects'''
         if not self.paused:
@@ -50,57 +55,30 @@ class World(object):
 
     def render(self):
         ''' Renders all of the world objects'''
-        #self.graph.render()
+        # Update the sprites
+        for block in self.blocks:
+            block.update_sprite()
+        self.target_spr.update(y=self.cy - 80)
+        self.label.y = self.cy - 65
+        self.label.text = '{}/{}'.format(self.num_guards-len(self.guards),self.num_guards)
+
+        # Draw most sprites at once
+        self.main_batch.draw()
+        
+        # Target
         if self.target:
             egi.red_pen()
             egi.cross(self.target,self.graph.grid_size/4)
 
+        # Guards
         for guard in self.guards:
             guard.render()
 
-        for block in self.blocks:
-            block.render()
-
+        # Assassin
         self.assassin.render()
-
-        # Render top left guard data
-        self.target_spr.update(y=self.cy - 80)
-        self.target_spr.draw()
-        self.label.y = self.cy - 65
-        self.label.text = '{}/{}'.format(self.num_guards-len(self.guards),self.num_guards)
-        self.label.draw()
-
-    def read_file(self):
-        # Loop until end of file
-        with self.map as openfileobject:
-            for line in openfileobject:
-                # Get coordinate and type from line
-                point = line.split(',')
-                key = point[0]
-                if key == 'assassin':
-                    self.assassin = Assassin(self,int(point[1]),int(point[2]))
-                elif key == 'guard':
-                    self.guards.append(Guard(self,int(point[1]),int(point[2])))
-                elif key == 'num_guards':
-                    self.num_guards = int(point[1])
-                elif key == 'tile':
-                    x = int(point[1])
-                    y = int(point[2])
-                    self.graph.grid[x][y] = 0
-                elif key == 'block':
-                    x = int(point[1])
-                    y = int(point[2])
-                    type = int(point[3])
-                    self.graph.grid[x][y] = type
-                    self.blocks.append(Block(self,type,Vector2D(x,y)))
-                elif key == 'map_done':
-                    # Fix errors of unreachable points in the map
-                    self.graph.fix_grid()
-                    # Generate list of all available nodes for history checking
-                    self.graph.all_available_nodes = self.graph.generate_all_available()
-        self.map.close()
     
     def move_screen(self,direction):
+        ''' Move all of the objects in a particular direction '''
         amount = None
         if direction == 'left':
             amount = Vector2D(self.graph.grid_size,0)
@@ -152,14 +130,15 @@ class World(object):
             self.move_screen('down')
 
     def at_edge(self,edge):
+        ''' Returns true when the screen sees the edge of the map '''
         bottom_left = self.graph.pos_to_node(Vector2D(0,0))
         top_right = self.graph.pos_to_node(Vector2D(self.cx,self.cy))
         if edge == 'left':
             return bottom_left.x == 0
         elif edge == 'right':
-            return top_right.x == self.graph.width - 1
+            return top_right.x == self.graph.width
         elif edge == 'up':
-            return top_right.y == self.graph.height - 1
+            return top_right.y == self.graph.height
         elif edge == 'down':
             return bottom_left.y == 0
 
@@ -170,3 +149,29 @@ class World(object):
             dist = to_obj.length()
             if dist < self.graph.grid_size * 2:
                 return obj
+
+    def read_file(self):
+        # Loop until end of file
+        with self.map as openfileobject:
+            for line in openfileobject:
+                # Get coordinate and type from line
+                point = line.split(',')
+                key = point[0]
+                if key == 'assassin':
+                    self.assassin = Assassin(self,int(point[1]),int(point[2]))
+                elif key == 'guard':
+                    self.guards.append(Guard(self,int(point[1]),int(point[2])))
+                elif key == 'num_guards':
+                    self.num_guards = int(point[1])
+                elif key in ['tile','block']:
+                    x = int(point[1])
+                    y = int(point[2])
+                    type = int(point[3])
+                    self.graph.grid[x][y] = type
+                    self.blocks.append(Block(self,type,Vector2D(x,y)))
+                elif key == 'map_done':
+                    # Fix errors of unreachable points in the map
+                    self.graph.fix_grid()
+                    # Generate list of all available nodes for history checking
+                    self.graph.all_available_nodes = self.graph.generate_all_available()
+        self.map.close()

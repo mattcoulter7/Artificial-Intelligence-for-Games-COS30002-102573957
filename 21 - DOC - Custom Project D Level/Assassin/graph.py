@@ -14,30 +14,8 @@ class Graph(object):
         self.height = height
         self.width = width
         self.grid = [[0 for x in range(self.height)] for y in range(self.width)]
-        self.image = pyglet.image.load('resources/grey_tile.png')
-        self.sprites = self.init_sprites()
         self.all_available_nodes = None
         self.move_compensate = Vector2D(0,0) # Keeps track of how much the screen has moved for position calculations.
-
-    def render(self):
-        ''' Draws the grid to the screen'''
-        for sprite in self.sprites:
-            if self.pos_visible(x=sprite.x,y=sprite.y):
-                sprite.draw()
-
-    def init_sprites(self):
-        '''Generates a list of all of the ground sprites'''
-        sprites = []
-        grid=self.grid_size
-        for i in range(len(self.grid)):
-            for j in range(len(self.grid[0])):
-                if self.grid[i][j] == 0:
-                    x = i*grid
-                    y = j*grid
-                    sprite = pyglet.sprite.Sprite(self.image,x,y)
-                    sprite.update(scale=grid/self.image.width)
-                    sprites.append(sprite)
-        return sprites
 
     #---------------------------------------------------------------------
 
@@ -104,7 +82,7 @@ class Graph(object):
         ''' Returns true if the current node is visible '''
         if pos is not None:
             x = pos.x
-            y=pos.y
+            y = pos.y
         return 0 <= x <= self.world.cx and 0 <= y <= self.world.cy
 
     def rand_node(self,avoid = None):

@@ -44,6 +44,8 @@ if __name__ == '__main__':
     win.push_handlers(on_mouse_press)
     # create a world for agents
     map = 'maps/map{}.csv'.format(randrange(0,99))
+    #map = 'maps/map82.csv'
+    print(map)
     world = World(SCREEN_WIDTH, SCREEN_HEIGHT,map)
     # unpause the world ready for movement
     world.paused = False
