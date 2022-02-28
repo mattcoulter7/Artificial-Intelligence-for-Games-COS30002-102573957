@@ -115,7 +115,7 @@ class Vector2D(object):
         ''' return a new vector that is the reverse of self. '''
         return Vector2D(-self.x, -self.y)
 
-    def __neg__(self):  # -
+ # -
         ''' get_reverse(), but using - operator based instead. '''
         return Vector2D(-self.x, -self.y)
 
@@ -123,46 +123,46 @@ class Vector2D(object):
         ''' Simple copy Vector2D with self values '''
         return Vector2D(self.x, self.y)
 
-    def __iadd__(self, rhs):  # +=
+ # +=
         self.x += rhs.x
         self.y += rhs.y
         return self
 
-    def __isub__(self, rhs):  # -=
+ # -=
         self.x -= rhs.x
         self.y -= rhs.y
         return self
 
-    def __imul__(self, rhs):  # *=
+ # *=
         self.x *= rhs
         self.y *= rhs
         return self
 
-    def __itruediv__(self, rhs):  # /=
+ # /=
         self.x /= rhs
         self.y /= rhs
         return self
 
-    def __eq__(self, rhs):  # ==
+ # ==
         return is_equal(self.x, rhs.x) and is_equal(self.y, rhs.y)
 
-    def __ne__(self, rhs):  # !=
+ # !=
         return (self.x != rhs.x) or (self.y != rhs.y)
 
-    def __add__(self, rhs):  # self + rhs
+ # self + rhs
         return Vector2D(self.x+rhs.x, self.y+rhs.y)
 
-    def __sub__(self, rhs):  # self - rhs
+ # self - rhs
         return Vector2D(self.x-rhs.x, self.y-rhs.y)
 
-    def __mul__(self, rhs):  # self * rhs (scalar)
+ # self * rhs (scalar)
         return Vector2D(self.x*rhs, self.y*rhs)
-    def __rmul__(self, lhs):  # lhs (scalar) * self
+ # lhs (scalar) * self
         return Vector2D(self.x*lhs, self.y*lhs)
 
-    def __truediv__(self, rhs):  # self / rhs (scalar)
+ # self / rhs (scalar)
         return Vector2D(self.x/rhs, self.y/rhs)
-    def __rtruediv__(self, lhs):  # lhs (scalar) / self
+ # lhs (scalar) / self
         return Vector2D(lhs/self.x, lhs/self.y)
 
     def __str__(self):

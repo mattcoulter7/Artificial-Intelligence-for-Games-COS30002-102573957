@@ -8,7 +8,7 @@ This module creates a simple object named "egi", which is an instance of the
 EasyGraphics interface, as well as making the pyglet key codes avaiable as
 KEY.
 
-Note: This has not been designed for performance! In particular, excessive
+This has not been designed for performance! In particular, excessive
 text drawing will be very expensive. If you need better performance, you
 should implement opengl code for yourself.
 
@@ -20,22 +20,22 @@ from pyglet import text, window
 KEY = window.key  # the key codes
 
 COLOR_NAMES = {
-    'BLACK':  (0.0, 0.0, 0.0, 1),
-    'WHITE':  (1.0, 1.0, 1.0, 1),
-    'RED':    (1.0, 0.0, 0.0, 1),
-    'GREEN':  (0.0, 1.0, 0.0, 1),
-    'BLUE':   (0.0, 0.0, 1.0, 1),
-    'GREY':   (0.6, 0.6, 0.6, 1),
-    'PINK':   (1.0, 0.7, 0.7, 1),
-    'YELLOW': (1.0, 1.0, 0.0, 1),
-    'ORANGE': (1.0, 0.7, 0.0, 1),
-    'PURPLE': (1.0, 0.0, 0.7, 1),
-    'BROWN':  (0.5, 0.35,0.0, 1),
-    'AQUA':   (0.0, 1.0, 1.0, 1),
-    'DARK_GREEN': (0.0, 0.4, 0.0, 1),
-    'LIGHT_BLUE': (0.6, 0.6, 1.0, 1),
-    'LIGHT_GREY': (0.8, 0.8, 0.8, 1),
-    'LIGHT_PINK': (1.0, 0.9, 0.9, 1)
+ (0.0, 0.0, 0.0, 1),
+ (1.0, 1.0, 1.0, 1),
+   (1.0, 0.0, 0.0, 1),
+ (0.0, 1.0, 0.0, 1),
+  (0.0, 0.0, 1.0, 1),
+  (0.6, 0.6, 0.6, 1),
+  (1.0, 0.7, 0.7, 1),
+(1.0, 1.0, 0.0, 1),
+(1.0, 0.7, 0.0, 1),
+(1.0, 0.0, 0.7, 1),
+ (0.5, 0.35,0.0, 1),
+  (0.0, 1.0, 1.0, 1),
+(0.0, 0.4, 0.0, 1),
+(0.6, 0.6, 1.0, 1),
+(0.8, 0.8, 0.8, 1),
+(1.0, 0.9, 0.9, 1)
 }
 
 
@@ -90,7 +90,7 @@ class EasyGraphics(object):
         glEnd()
 
     def polyline(self, points):
-        if len(points) < 2: return
+return
         pts = [(p.x, p.y) for p in points]  # convert to list of tuples
         pts = ((GLfloat * 2)*len(pts))(*pts)  # convert to GLfloat list
         glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT)
@@ -140,7 +140,7 @@ class EasyGraphics(object):
         glEnd()
 
     def closed_shape(self, points, filled=False):
-        if len(points) < 2: return
+return
         gl_array_type = GL_POLYGON if filled else GL_LINE_LOOP
         # convert points to a list of types, then GLfloat list
         pts = [(p.x, p.y) for p in points]
@@ -166,15 +166,15 @@ class EasyGraphics(object):
         self.curr_color = color
         glColor4f(*self.curr_color)
 
-    def red_pen(self):    self.set_pen_color(name='RED')
-    def blue_pen(self):   self.set_pen_color(name='BLUE')
-    def green_pen(self):  self.set_pen_color(name='GREEN')
-    def black_pen(self):  self.set_pen_color(name='BLACK')
-    def white_pen(self):  self.set_pen_color(name='WHITE')
-    def grey_pen(self):   self.set_pen_color(name='GREY')
-    def aqua_pen(self):   self.set_pen_color(name='AQUA')
-    def orange_pen(self): self.set_pen_color(name='ORANGE')
-    def pink_pen(self) :  self.set_pen_color(name='PINK')
+   self.set_pen_color(name='RED')
+  self.set_pen_color(name='BLUE')
+ self.set_pen_color(name='GREEN')
+ self.set_pen_color(name='BLACK')
+ self.set_pen_color(name='WHITE')
+  self.set_pen_color(name='GREY')
+  self.set_pen_color(name='AQUA')
+self.set_pen_color(name='ORANGE')
+ self.set_pen_color(name='PINK')
 
     def set_stroke(self, stroke):
         self.stroke = stroke

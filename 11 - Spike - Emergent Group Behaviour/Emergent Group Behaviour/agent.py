@@ -76,7 +76,7 @@ class Agent(object):
         ''' update vehicle position and orientation '''
         # calculate and set self.force to be applied
         ## force = self.calculate()
-        self.force += self.calculate(delta)
+        self.force = self.calculate(delta)
         ## limit force? <-- for wander
         self.force.truncate(self.max_force)
         # determine the new acceleration

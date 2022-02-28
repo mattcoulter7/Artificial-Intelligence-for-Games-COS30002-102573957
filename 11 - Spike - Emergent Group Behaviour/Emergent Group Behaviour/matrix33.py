@@ -79,7 +79,7 @@ class Matrix33(object):
         pt.x = tmp_x
         pt.y = tmp_y
 
-    def __mul__(self, rhs):  # the self * rhs operator
+ # the self * rhs operator
         ''' 3x3 matrix matrix multiplication. Rarely used however...'''
         a11, a12, a13,  a21, a22, a23,  a31, a32, a33 = self._m
         b11, b12, b13,  b21, b22, b23,  b31, b32, b33 = rhs._m
@@ -100,7 +100,7 @@ class Matrix33(object):
 
         return Matrix33(retm)
 
-    def __imul__(self, rhs):  # the *= operator
+ # the *= operator
         ''' 3x3 matrix matrix multiplication result applied to self. '''
         a11, a12, a13,  a21, a22, a23,  a31, a32, a33 = self._m
         b11, b12, b13,  b21, b22, b23,  b31, b32, b33 = rhs._m
@@ -119,7 +119,7 @@ class Matrix33(object):
             a31*b13 + a32*b23 + a33*b33
         ]
 
-    def _fast_imul(self, rhs):  # the *= operator
+ # the *= operator
         ''' Fast 3x3 matrix multiplication result applied to self.
             Because column 3 is always 0,0,1 for translate, scale and rotate
             we can reduce this operation for these cases.'''

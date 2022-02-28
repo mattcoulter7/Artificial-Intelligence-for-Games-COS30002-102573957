@@ -1,4 +1,4 @@
-'''Autonomous Agent Movement: Paths and Wandering
+Paths and Wandering
 
 Created for COS30002 AI for Games by Clinton Woodward <cwoodward@swin.edu.au>
 
@@ -20,9 +20,9 @@ SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 1000
 
 MODIFIERS = {
-    KEY.C: 'cohesion',
-    KEY.S: 'separation',
-    KEY.A: 'alignment'
+'cohesion',
+'separation',
+'alignment'
 }
 
 CURRENT_MODIFIER = 'cohesion'
